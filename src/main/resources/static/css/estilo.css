@@ -1,0 +1,101 @@
+/* Sistema visual HCE (docs/diseno_ui.md). Clases con prefijo hce-. Sin CDN: fuente Inter incluida (OFL). */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --hce-primario: #0f9d94;
+  --hce-primario-oscuro: #0a4f4b;
+  --hce-primario-claro: #e6f6f4;
+  --hce-ok: #1f8a4c;       --hce-ok-fondo: #e3f5ea;
+  --hce-alerta: #b7791f;   --hce-alerta-fondo: #fdf1dc;
+  --hce-error: #c2352b;    --hce-error-fondo: #fbe6e3;
+  --hce-info: #2563a8;     --hce-info-fondo: #e4eefb;
+  --hce-fondo: #f4f7f8;
+  --hce-tarjeta: #ffffff;
+  --hce-borde: #d5e0e2;
+  --hce-texto: #1a2b30;
+  --hce-texto-suave: #4a626a;
+  --hce-radio: 12px;
+  --hce-sombra: 0 1px 3px rgba(16, 40, 46, .08), 0 4px 14px rgba(16, 40, 46, .06);
+  --hce-sidebar: 248px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "Inter", "Segoe UI", Arial, sans-serif; font-size: 14.5px; color: var(--hce-texto); background: var(--hce-fondo); line-height: 1.45; }
+[hidden] { display: none !important; }
+h1 { font-size: 28px; margin: 0 0 4px; line-height: 1.2; }
+h2 { font-size: 17px; margin: 0 0 16px; }
+
+/* ---- Layout comun ---- */
+.hce-app { min-height: 100vh; padding-left: var(--hce-sidebar); }
+.hce-sidebar { position: fixed; inset: 0 auto 0 0; width: var(--hce-sidebar); background: var(--hce-primario-oscuro); color: #fff;
+  display: flex; flex-direction: column; padding: 20px 14px; gap: 24px; }
+.hce-marca { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; padding: 0 6px; }
+.hce-marca img { width: 34px; height: 34px; }
+.hce-menu { display: grid; gap: 4px; flex: 1; align-content: start; }
+.hce-menu a { display: flex; align-items: center; gap: 10px; color: #cfeae7; text-decoration: none; padding: 10px 12px; border-radius: 10px; font-weight: 500; }
+.hce-menu a svg { width: 18px; height: 18px; flex: none; }
+.hce-menu a:hover { background: rgba(255,255,255,.08); }
+.hce-menu a.activo { background: var(--hce-primario-claro); color: var(--hce-primario-oscuro); font-weight: 600; }
+.hce-perfil { border-top: 1px solid rgba(255,255,255,.18); padding-top: 14px; display: grid; gap: 10px; }
+.hce-perfil .nombre { font-weight: 600; }
+.hce-perfil .rol { font-size: 12.5px; color: #cfeae7; }
+.hce-barra { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 12px 28px; background: var(--hce-tarjeta); border-bottom: 1px solid var(--hce-borde); }
+.hce-barra .hce-hospital { font-weight: 600; }
+.hce-contenido { max-width: 1080px; margin: 0 auto; padding: 28px; display: grid; gap: 20px; }
+
+/* ---- Componentes ---- */
+.hce-tarjeta { background: var(--hce-tarjeta); border: 1px solid var(--hce-borde); border-radius: var(--hce-radio); box-shadow: var(--hce-sombra); padding: 22px; }
+.hce-subtitulo { color: var(--hce-texto-suave); margin: 0; }
+.hce-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--hce-primario-claro); color: var(--hce-primario-oscuro); }
+.hce-chip.ok { background: var(--hce-ok-fondo); color: var(--hce-ok); }
+.hce-chip.alerta { background: var(--hce-alerta-fondo); color: var(--hce-alerta); }
+.hce-chip.error { background: var(--hce-error-fondo); color: var(--hce-error); }
+.hce-chip.info { background: var(--hce-info-fondo); color: var(--hce-info); }
+.hce-aviso { border-left: 5px solid var(--hce-primario); background: var(--hce-tarjeta); border-radius: 10px; padding: 12px 16px; box-shadow: var(--hce-sombra); }
+.hce-mensaje { display: none; margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-weight: 500; }
+.hce-mensaje.ok { display: block; background: var(--hce-ok-fondo); color: var(--hce-ok); }
+.hce-mensaje.info { display: block; background: var(--hce-info-fondo); color: var(--hce-info); }
+.hce-mensaje.error { display: block; background: var(--hce-error-fondo); color: var(--hce-error); }
+.hce-formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.hce-campo { display: grid; gap: 4px; font-weight: 600; font-size: 13.5px; }
+.hce-campo input, .hce-campo select { padding: 10px 12px; border: 1px solid var(--hce-borde); border-radius: 8px; font: inherit; font-weight: 400; background: #fff; color: var(--hce-texto); }
+.hce-campo input:focus, .hce-campo select:focus { outline: 2px solid var(--hce-primario); outline-offset: 1px; }
+.hce-boton { font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px; padding: 10px 20px; border: 1px solid transparent; }
+.hce-boton.primario { background: var(--hce-primario); color: #fff; }
+.hce-boton.primario:hover { background: #0c8a82; }
+.hce-boton.secundario { background: transparent; color: #fff; border-color: rgba(255,255,255,.5); padding: 8px 14px; }
+.hce-formulario .hce-boton { grid-column: 1 / -1; justify-self: start; }
+.hce-tabla-contenedor { overflow-x: auto; }
+.hce-tabla { border-collapse: collapse; width: 100%; }
+.hce-tabla th, .hce-tabla td { padding: 11px 10px; text-align: left; border-bottom: 1px solid var(--hce-borde); }
+.hce-tabla th { background: var(--hce-primario-claro); color: var(--hce-primario-oscuro); font-size: 13px; }
+.hce-vacio { color: var(--hce-texto-suave); padding: 16px 10px; }
+
+/* ---- Login a dos columnas ---- */
+.hce-login { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.hce-login-marca { background: linear-gradient(160deg, var(--hce-primario-oscuro), #06312f); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+.hce-login-marca img { width: 72px; height: 72px; }
+.hce-login-marca h1 { font-size: 32px; }
+.hce-login-marca p { margin: 0; opacity: .92; max-width: 48ch; font-size: 16px; }
+.hce-login-marca ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.hce-login-marca li { display: flex; gap: 12px; align-items: flex-start; }
+.hce-login-marca li span { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--hce-primario); display: grid; place-items: center; font-weight: 700; }
+.hce-login-acceso { display: grid; place-items: center; padding: 32px; }
+.hce-login-caja { width: 100%; max-width: 400px; }
+.hce-login-caja form { display: grid; gap: 14px; margin-top: 18px; }
+.hce-demo { margin-top: 18px; background: var(--hce-primario-claro); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; }
+.hce-demo button { all: unset; cursor: pointer; color: var(--hce-primario-oscuro); text-decoration: underline; font-weight: 600; }
+
+@media (max-width: 800px) {
+  .hce-login { grid-template-columns: 1fr; }
+  .hce-login-marca { padding: 28px; }
+  .hce-app { padding-left: 0; }
+  .hce-sidebar { position: static; width: auto; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .hce-menu { display: flex; flex: 1; }
+  .hce-perfil { border: 0; padding: 0; }
+  .hce-contenido { padding: 16px; }
+}

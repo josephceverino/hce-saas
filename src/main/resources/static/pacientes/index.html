@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pacientes · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div>
+      <h1>Pacientes</h1>
+      <p class="hce-subtitulo">Registro de pacientes y apertura de historia clínica.</p>
+    </div>
+    <div class="hce-aviso">
+      <b>CU-03:</b> registrar paciente y abrir historia clínica (RF-01, RF-04, RN-01).
+      Tu hospital solo ve las historias que abrió (RN-06). Prueba entrar con la otra cuenta de demostración para comprobarlo.
+    </div>
+    <section class="hce-tarjeta">
+      <h2>Registrar paciente</h2>
+      <form id="formulario" class="hce-formulario">
+        <label class="hce-campo">Tipo de documento
+          <select id="tipoDocumento" required>
+            <option value="DNI">DNI</option>
+            <option value="CE">Carné de extranjería</option>
+            <option value="PASAPORTE">Pasaporte</option>
+          </select>
+        </label>
+        <label class="hce-campo">Número de documento <input id="nroDocumento" required></label>
+        <label class="hce-campo">Nombres <input id="nombres" required></label>
+        <label class="hce-campo">Apellidos <input id="apellidos" required></label>
+        <label class="hce-campo">Fecha de nacimiento <input id="fechaNacimiento" type="date" required></label>
+        <label class="hce-campo">Sexo
+          <select id="sexo" required>
+            <option value="F">Femenino</option>
+            <option value="M">Masculino</option>
+          </select>
+        </label>
+        <label class="hce-campo">Teléfono <input id="telefono" required></label>
+        <label class="hce-campo">Correo <input id="correo" type="email" required></label>
+        <label class="hce-campo">Dirección <input id="direccion" required></label>
+        <button class="hce-boton primario" type="submit">Registrar y abrir historia clínica</button>
+      </form>
+      <div id="mensaje" class="hce-mensaje" role="status"></div>
+    </section>
+    <section class="hce-tarjeta">
+      <h2>Historias clínicas abiertas <span class="hce-chip" id="cuenta">0</span></h2>
+      <div class="hce-tabla-contenedor">
+        <table class="hce-tabla">
+          <thead>
+            <tr><th>N.° HC</th><th>Documento</th><th>Paciente</th><th>Apertura</th><th>Establecimiento</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+        <div id="vacio" class="hce-vacio" hidden>Aún no hay historias abiertas en tu hospital.</div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="pacientes.js"></script>
+</body>
+</html>

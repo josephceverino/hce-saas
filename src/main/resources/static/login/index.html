@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iniciar sesión · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-login">
+  <div class="hce-login-marca">
+    <img src="/logo.svg" alt="Logo de la plataforma">
+    <h1>Historia clínica electrónica para hospitales públicos</h1>
+    <p>Una plataforma compartida, por suscripción, donde cada hospital guarda sus historias y el paciente consulta la suya.</p>
+    <ul>
+      <li><span>1</span> Una sola historia clínica por paciente</li>
+      <li><span>2</span> Cada hospital ve solo sus propios datos</li>
+      <li><span>3</span> Sin instalar nada en cada establecimiento</li>
+    </ul>
+  </div>
+  <div class="hce-login-acceso">
+    <div class="hce-login-caja hce-tarjeta">
+      <h2>Iniciar sesión</h2>
+      <p class="hce-subtitulo">Ingresa con la cuenta de tu hospital.</p>
+      <form id="formLogin">
+        <label class="hce-campo">Usuario <input id="usuario" autocomplete="username" required></label>
+        <label class="hce-campo">Clave <input id="clave" type="password" autocomplete="current-password" required></label>
+        <button class="hce-boton primario" type="submit">Ingresar</button>
+      </form>
+      <div id="mensajeLogin" class="hce-mensaje" role="status"></div>
+      <div class="hce-demo">
+        <b>Cuentas de demostración</b> (clave: demo123)<br>
+        <button type="button" data-u="admision.a">admision.a</button> &middot; Hospital Demo A<br>
+        <button type="button" data-u="admision.b">admision.b</button> &middot; Hospital Demo B
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/comun.js"></script>
+<script src="login.js"></script>
+</body>
+</html>

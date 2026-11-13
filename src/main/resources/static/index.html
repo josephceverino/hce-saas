@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plataforma HCE</title>
+<script>
+  // Entrada: segun haya sesion o no, va a pacientes o al login.
+  fetch('/api/sesion').then(r => { window.location.replace(r.ok ? '/pacientes/index.html' : '/login/index.html'); })
+    .catch(() => { window.location.replace('/login/index.html'); });
+</script>
+</head>
+<body></body>
+</html>
