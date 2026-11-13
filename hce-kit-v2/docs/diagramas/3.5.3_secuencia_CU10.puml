@@ -1,0 +1,30 @@
+@startuml
+title Figura: Diagrama de secuencia de diseño, CU-10 Consultar mi historial clínico
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber "<b>00"
+actor "A-01\nPaciente" as A
+participant PortalPacienteController as C
+participant AccesoPacienteService as S
+participant UsuarioRepository as UR
+participant HistoriaClinicaRepository as HR
+participant AuditoriaService as AU
+
+A -> C : GET /portal/mi-historial (sesión iniciada, CU-01)
+C -> S : obtenerMiHistorial(idUsuario)
+S -> UR : findById(idUsuario)
+UR --> S : usuario del paciente
+opt acceso por representante legal (RN-05)
+  S -> S : verificarVigenciaRepresentante()
+end
+S -> HR : findByPaciente(idPaciente)
+note right of HR : RN-04: solo su propia historia,\nsolo lectura
+HR --> S : historia clínica
+S -> AU : registrar(idUsuario, "consulta del paciente", ...)
+S --> C : atenciones, recetas y exámenes
+C --> A : 200 OK (solo lectura)
+A -> C : GET /portal/resumen
+C -> S : generarResumen(idUsuario)
+S --> C : documento de resumen
+C --> A : pantalla o descarga
+@enduml

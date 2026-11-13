@@ -1,0 +1,34 @@
+@startuml
+title Figura: Diagrama de secuencia de diseño, CU-05 Registrar atención médica
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber "<b>00"
+actor "A-02\nMédico" as A
+participant AtencionController as C
+participant AtencionService as S
+participant AutorizacionService as Z
+participant AtencionRepository as AR
+participant AuditoriaService as AU
+
+A -> C : POST /historias/{id}/atenciones
+C -> S : abrirAtencion(idHc, idUsuario)
+S -> Z : verificarPermiso(idUsuario, "registrar_atencion")
+Z --> S : permitido (RN-02)
+S -> Z : verificarEstablecimiento(idUsuario, idHc)
+Z --> S : mismo hospital (RN-06)
+S -> AR : save(atencion en estado abierta)
+AR --> S : idAtencion
+S --> C : atención abierta
+C --> A : 201 Created
+A -> C : PUT /atenciones/{id} (motivo, anamnesis, examen, diagnóstico CIE-10)
+C -> S : registrarDatos(idAtencion, datos)
+S -> AR : save(atencion)
+A -> C : POST /atenciones/{id}/cierre
+C -> S : cerrarAtencion(idAtencion)
+S -> S : atencion.cerrar()
+note right of S : RN-03: una atención cerrada no se\nelimina ni se sobrescribe
+S -> AR : save(atencion cerrada)
+S -> AU : registrar(idUsuario, "cierre de atención", ...)
+S --> C : confirmación
+C --> A : 200 OK
+@enduml

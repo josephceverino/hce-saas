@@ -1,0 +1,43 @@
+@startuml
+title Figura: Diagrama de navegabilidad
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #F4F8FC
+  BorderColor #3B6EA5
+}
+hide empty description
+
+state "P-01 Inicio de sesión" as P01
+state "P-02 Buscar paciente" as P02
+state "Registrar paciente\n(abre historia clínica)" as REG
+state "P-04 Ver historial" as P04
+state "P-03 Registrar atención\n(incluye tratamiento)" as P03
+state "P-05 Mi historial\n(portal del paciente)" as P05
+state "Resumen del historial" as RES
+state "P-06 Consentimiento\ny privacidad" as P06
+state "Usuarios, roles y permisos" as ADM1
+state "Auditoría de accesos" as ADM2
+state "Reportes de atenciones" as ADM3
+state "Hospitales suscritos" as SAAS
+
+[*] --> P01
+P01 --> P02 : personal de salud o administrativo
+P01 --> P05 : paciente
+P01 --> ADM1 : administrador del hospital
+P01 --> SAAS : administrador SaaS
+P02 --> REG : no existe
+P02 --> P04 : existe
+REG --> P04
+P04 --> P03 : nueva atención
+P03 --> P04 : consultar historial previo
+P04 --> P02 : nueva búsqueda
+P05 --> RES : ver o descargar
+P05 --> P06
+P06 --> P05
+ADM1 --> ADM2
+ADM1 --> ADM3
+P04 --> P01 : cerrar sesión
+P05 --> P01 : cerrar sesión
+ADM1 --> P01 : cerrar sesión
+SAAS --> P01 : cerrar sesión
+@enduml

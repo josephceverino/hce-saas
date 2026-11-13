@@ -1,0 +1,52 @@
+@startuml
+title Figura: Arquitectura del software por capas (modelo SaaS multiinstitución)
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BackgroundColor #F4F8FC
+  BorderColor #3B6EA5
+}
+skinparam database {
+  BackgroundColor #E8F5E9
+  BorderColor #3C8D4B
+}
+
+actor "Personal del hospital\nA-02 a A-06" as U1
+actor "Paciente\nA-01" as U2
+actor "Administrador SaaS\nA-07" as U3
+
+rectangle "Navegador web (diseño adaptable a móvil)" as WEB {
+  rectangle "Módulo hospitalario" as WH
+  rectangle "Portal del paciente" as WP
+  rectangle "Administración SaaS" as WA
+}
+
+rectangle "Plataforma SaaS en la nube (comunicación TLS)" as CLOUD {
+  rectangle "CAPA DE PRESENTACIÓN\nControladores REST y autenticación" as L1
+  rectangle "CAPA DE APLICACIÓN\nServicios que implementan los casos de uso\n(+ autorización por rol y consentimiento, + auditoría)" as L2
+  rectangle "CAPA DE DOMINIO\nEntidades y reglas de negocio (RN-01 a RN-12)" as L3
+  rectangle "CAPA DE PERSISTENCIA\nRepositorios (JPA)" as L4
+  database "Base de datos\nSQL Server\n(filtro por id_establecimiento)" as DB
+}
+
+rectangle "Sistema externo de interoperabilidad\nA-08 (HL7 CDA R2)" as EXT
+
+U1 --> WH
+U2 --> WP
+U3 --> WA
+WH --> L1 : HTTPS
+WP --> L1 : HTTPS
+WA --> L1 : HTTPS
+L1 --> L2
+L2 --> L3
+L2 --> L4
+L3 ..> L4 : persiste
+L4 --> DB
+L2 <--> EXT : intercambio autorizado\n(RF-18)
+
+note right of DB
+  Aislamiento entre hospitales (RNF-06):
+  toda consulta incluye el establecimiento
+  del usuario autenticado.
+end note
+@enduml

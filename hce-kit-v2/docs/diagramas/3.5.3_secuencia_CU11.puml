@@ -1,0 +1,31 @@
+@startuml
+title Figura: Diagrama de secuencia de diseño, CU-11 Gestionar consentimiento de acceso
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber "<b>00"
+actor "A-01\nPaciente" as A
+participant ConsentimientoController as C
+participant ConsentimientoService as S
+participant ConsentimientoRepository as KR
+participant AuditoriaService as AU
+
+A -> C : GET /portal/consentimientos
+C -> S : listarVigentes(idPaciente)
+S -> KR : findVigentes(idPaciente)
+KR --> S : autorizaciones activas
+S --> C : lista
+C --> A : 200 OK
+alt otorgar acceso
+  A -> C : POST /portal/consentimientos (otorgado_a, alcance)
+  C -> S : otorgar(idPaciente, datos)
+  S -> KR : save(consentimiento.otorgar())
+else revocar acceso
+  A -> C : DELETE /portal/consentimientos/{id}
+  C -> S : revocar(idConsentimiento)
+  S -> KR : save(consentimiento.revocar())
+end
+note right of KR : RN-06 y RN-09: el acceso de terceros\nsolo existe con consentimiento vigente
+S -> AU : registrar(idUsuario, "cambio de consentimiento", ...)
+S --> C : confirmación
+C --> A : 200 OK
+@enduml

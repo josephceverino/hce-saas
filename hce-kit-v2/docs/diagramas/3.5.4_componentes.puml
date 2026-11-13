@@ -1,0 +1,59 @@
+@startuml
+title Figura: Diagrama de componentes
+skinparam shadowing false
+skinparam component {
+  BackgroundColor #F4F8FC
+  BorderColor #3B6EA5
+}
+skinparam database {
+  BackgroundColor #E8F5E9
+  BorderColor #3C8D4B
+}
+
+package "Cliente web" {
+  [Módulo hospitalario] as WH
+  [Portal del paciente (M-04)] as WP
+  [Administración SaaS] as WA
+}
+package "Plataforma SaaS" {
+  [API REST (controladores)] as API
+  [M-01 Seguridad y accesos] as M1
+  [M-02 Gestión de pacientes] as M2
+  [M-03 Historia clínica] as M3
+  [M-04 Portal del paciente] as M4
+  [M-05 Auditoría y trazabilidad] as M5
+  [M-06 Interoperabilidad] as M6
+  [M-07 Reportes] as M7
+  [M-08 Administración SaaS] as M8
+  [Acceso a datos (JPA)] as DAL
+}
+database "SQL Server" as DB
+[Sistema externo de interoperabilidad (A-08)] as EXT
+
+WH --> API
+WP --> API
+WA --> API
+API --> M1
+API --> M2
+API --> M3
+API --> M4
+API --> M6
+API --> M7
+API --> M8
+M2 ..> M1 : autoriza
+M3 ..> M1 : autoriza
+M4 ..> M1 : autentica
+M2 ..> M5 : registra
+M3 ..> M5 : registra
+M4 ..> M5 : registra
+M4 ..> M3 : lee
+M7 ..> M3 : lee
+M2 --> DAL
+M3 --> DAL
+M4 --> DAL
+M5 --> DAL
+M1 --> DAL
+M8 --> DAL
+DAL --> DB
+M6 <--> EXT : HL7
+@enduml

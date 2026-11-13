@@ -1,0 +1,30 @@
+@startuml
+title Figura: Diagrama de secuencia de diseño, CU-08 Registrar tratamiento e indicaciones
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber "<b>00"
+actor "A-02\nMédico" as A
+participant TratamientoController as C
+participant TratamientoService as S
+participant AutorizacionService as Z
+participant AtencionRepository as AR
+participant TratamientoRepository as TR
+participant AuditoriaService as AU
+
+A -> C : POST /atenciones/{id}/tratamientos
+C -> S : agregarTratamiento(idAtencion, datos)
+S -> Z : verificarPermiso(idUsuario, "registrar_tratamiento")
+Z --> S : permitido (RN-02)
+S -> AR : findById(idAtencion)
+AR --> S : atención
+alt la atención está cerrada (RN-03)
+  S --> C : no se puede registrar
+  C --> A : 409 Conflict
+else la atención está abierta
+  S -> S : validarDatos(datos)
+  S -> TR : save(tratamiento)
+  S -> AU : registrar(idUsuario, "registro de tratamiento", ...)
+  S --> C : tratamiento registrado
+  C --> A : 201 Created
+end
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+title Figura: Diagrama de secuencia de diseño, CU-03 Registrar paciente y abrir historia clínica
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber "<b>00"
+actor "A-04\nPersonal administrativo" as A
+participant PacienteController as C
+participant RegistroPacienteService as S
+participant AutorizacionService as Z
+participant PacienteRepository as PR
+participant HistoriaClinicaRepository as HR
+participant AuditoriaService as AU
+
+A -> C : POST /pacientes (datos)
+C -> S : registrarPaciente(datos, idUsuario)
+S -> Z : verificarPermiso(idUsuario, "registrar_paciente")
+Z --> S : permitido (RN-02)
+S -> PR : findByDocumento(tipo, nro)
+PR --> S : resultado
+alt el paciente ya existe (RN-01)
+  S --> C : historia clínica existente
+  C --> A : 200 OK
+else paciente nuevo
+  S -> S : paciente.validarDocumento()
+  S -> PR : save(paciente)
+  S -> HR : save(historiaClinica.abrir(idEstablecimiento))
+  HR --> S : nro_hc
+  S -> AU : registrar(idUsuario, "apertura de historia clínica", ...)
+  S --> C : paciente e historia clínica
+  C --> A : 201 Created
+end
+@enduml

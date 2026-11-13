@@ -1,0 +1,31 @@
+@startuml
+title Figura: Diagrama de secuencia de diseño, CU-06 Consultar historia clínica
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber "<b>00"
+actor "A-02 Médico /\nA-03 Enfermería" as A
+participant HistorialController as C
+participant HistorialService as S
+participant AutorizacionService as Z
+participant HistoriaClinicaRepository as HR
+participant AuditoriaService as AU
+
+A -> C : GET /historias?documento={nro}
+C -> S : consultarHistorial(nroDocumento, idUsuario)
+S -> Z : verificarPermiso(idUsuario, "consultar_historia")
+Z --> S : permitido
+S -> HR : findByDocumento(nro)
+HR --> S : historia clínica
+S -> Z : verificarEstablecimiento(idUsuario, idHc)
+alt otro establecimiento sin intercambio autorizado (RN-06)
+  Z --> S : denegado
+  S --> C : acceso denegado
+  C --> A : 403 Forbidden
+else acceso permitido
+  Z --> S : permitido
+  S -> AU : registrar(idUsuario, "lectura de historia clínica", ...)
+  note right of AU : RN-07
+  S --> C : atenciones, antecedentes y alergias
+  C --> A : 200 OK
+end
+@enduml

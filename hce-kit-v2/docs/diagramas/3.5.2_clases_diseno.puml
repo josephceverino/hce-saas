@@ -1,0 +1,155 @@
+@startuml
+title Figura: Diagrama de clases de diseño (casos de uso principales)
+hide empty members
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor<<controller>> #FFF4E0
+  BorderColor<<controller>> #C98A1B
+  BackgroundColor<<service>> #E8F5E9
+  BorderColor<<service>> #3C8D4B
+  BackgroundColor<<repository>> #EDE7F6
+  BorderColor<<repository>> #6A4FB3
+  BackgroundColor<<entity>> #F4F8FC
+  BorderColor<<entity>> #3B6EA5
+}
+left to right direction
+
+package "Presentación" {
+  class PacienteController <<controller>> {
+    +registrar(datos): Respuesta
+  }
+  class AtencionController <<controller>> {
+    +abrir(idHc): Respuesta
+    +registrarDatos(datos): Respuesta
+    +cerrar(idAtencion): Respuesta
+  }
+  class HistorialController <<controller>> {
+    +consultar(nroDocumento): Respuesta
+  }
+  class TratamientoController <<controller>> {
+    +agregar(idAtencion, datos): Respuesta
+  }
+  class PortalPacienteController <<controller>> {
+    +miHistorial(): Respuesta
+    +resumen(): Respuesta
+  }
+  class ConsentimientoController <<controller>> {
+    +listar(): Respuesta
+    +otorgar(datos): Respuesta
+    +revocar(id): Respuesta
+  }
+}
+package "Aplicación" {
+  class RegistroPacienteService <<service>> {
+    +registrarPaciente(datos, idUsuario)
+  }
+  class AtencionService <<service>> {
+    +abrirAtencion(idHc, idUsuario)
+    +registrarDatos(idAtencion, datos)
+    +cerrarAtencion(idAtencion)
+  }
+  class HistorialService <<service>> {
+    +consultarHistorial(nroDocumento, idUsuario)
+  }
+  class TratamientoService <<service>> {
+    +agregarTratamiento(idAtencion, datos)
+  }
+  class AccesoPacienteService <<service>> {
+    +obtenerMiHistorial(idUsuario)
+    +generarResumen(idUsuario)
+  }
+  class ConsentimientoService <<service>> {
+    +listarVigentes(idPaciente)
+    +otorgar(idPaciente, datos)
+    +revocar(idConsentimiento)
+  }
+  class AutorizacionService <<service>> {
+    +verificarPermiso(idUsuario, permiso)
+    +verificarEstablecimiento(idUsuario, idHc)
+  }
+  class AuditoriaService <<service>> {
+    +registrar(idUsuario, accion, entidad, idEntidad)
+  }
+}
+package "Dominio" {
+  class Paciente <<entity>> {
+    +validarDocumento()
+  }
+  class HistoriaClinica <<entity>> {
+    +abrir()
+  }
+  class Atencion <<entity>> {
+    +cerrar()
+    +estaAbierta(): boolean
+    +agregarEnmienda(motivo, contenido)
+  }
+  class Diagnostico <<entity>>
+  class Tratamiento <<entity>>
+  class ConsentimientoAcceso <<entity>> {
+    +otorgar()
+    +revocar()
+  }
+  class Usuario <<entity>> {
+    +tienePermiso(codigo): boolean
+  }
+  class RegistroAuditoria <<entity>>
+}
+package "Persistencia" {
+  interface PacienteRepository <<repository>> {
+    findByDocumento()
+  }
+  interface HistoriaClinicaRepository <<repository>> {
+    findByPaciente()
+  }
+  interface AtencionRepository <<repository>>
+  interface TratamientoRepository <<repository>>
+  interface ConsentimientoRepository <<repository>> {
+    findVigentes()
+  }
+  interface UsuarioRepository <<repository>>
+  interface AuditoriaRepository <<repository>>
+}
+
+PacienteController --> RegistroPacienteService
+AtencionController --> AtencionService
+HistorialController --> HistorialService
+TratamientoController --> TratamientoService
+PortalPacienteController --> AccesoPacienteService
+ConsentimientoController --> ConsentimientoService
+
+RegistroPacienteService --> AutorizacionService
+AtencionService --> AutorizacionService
+HistorialService --> AutorizacionService
+TratamientoService --> AutorizacionService
+RegistroPacienteService --> AuditoriaService
+AtencionService --> AuditoriaService
+HistorialService --> AuditoriaService
+TratamientoService --> AuditoriaService
+AccesoPacienteService --> AuditoriaService
+ConsentimientoService --> AuditoriaService
+
+RegistroPacienteService --> PacienteRepository
+RegistroPacienteService --> HistoriaClinicaRepository
+HistorialService --> HistoriaClinicaRepository
+AtencionService --> AtencionRepository
+TratamientoService --> TratamientoRepository
+ConsentimientoService --> ConsentimientoRepository
+AutorizacionService --> UsuarioRepository
+AuditoriaService --> AuditoriaRepository
+AccesoPacienteService --> HistoriaClinicaRepository
+
+PacienteRepository ..> Paciente
+HistoriaClinicaRepository ..> HistoriaClinica
+AtencionRepository ..> Atencion
+TratamientoRepository ..> Tratamiento
+ConsentimientoRepository ..> ConsentimientoAcceso
+UsuarioRepository ..> Usuario
+AuditoriaRepository ..> RegistroAuditoria
+
+Paciente "1" -- "1" HistoriaClinica
+HistoriaClinica "1" -- "0..*" Atencion
+Atencion "1" -- "0..*" Diagnostico
+Atencion "1" -- "0..*" Tratamiento
+Paciente "1" -- "0..*" ConsentimientoAcceso
+@enduml

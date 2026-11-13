@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<style>
+  :root { --brand:#0B4F6C; --teal:#1B7F8C; --soft:#EAF4F4; --line:#C9D8DB; --ink:#17313B; --muted:#52707A;
+          --bad:#B8432F; --ok:#2E7D4F; --amber:#F2A541; }
+  * { box-sizing: border-box; }
+  body { font-family: Calibri, Arial, sans-serif; color: var(--ink); margin: 0; background: #F3F8F8; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Login ---------- */
+  #vistaLogin { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .marca { background: linear-gradient(160deg, var(--brand), #0A3E55); color: #fff; padding: 48px; display: flex;
+           flex-direction: column; justify-content: center; gap: 22px; }
+  .marca img { width: 72px; height: 72px; }
+  .marca h1 { margin: 0; font-size: 2.1rem; line-height: 1.15; }
+  .marca p { margin: 0; opacity: .9; font-size: 1.05rem; max-width: 46ch; }
+  .marca ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .marca li { display: flex; gap: 12px; align-items: flex-start; }
+  .marca li span { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--teal);
+                   display: grid; place-items: center; font-weight: 700; }
+  .acceso { display: grid; place-items: center; padding: 32px; }
+  .caja { width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
+  .caja h2 { margin: 0 0 4px; color: var(--brand); }
+  .caja .sub { margin: 0 0 18px; color: var(--muted); }
+  .caja label { display: grid; gap: 4px; font-size: .9rem; font-weight: 600; margin-bottom: 12px; }
+  .demo { margin-top: 18px; background: var(--soft); border-radius: 10px; padding: 12px 14px; font-size: .88rem; }
+  .demo b { color: var(--brand); }
+  .demo button { all: unset; cursor: pointer; color: var(--teal); text-decoration: underline; }
+
+  /* ---------- Aplicacion ---------- */
+  .barra { background: var(--brand); color: #fff; padding: 10px 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .barra img { width: 38px; height: 38px; }
+  .barra .titulo { font-weight: 700; font-size: 1.1rem; }
+  .barra .espacio { flex: 1; }
+  .hospital { background: var(--amber); color: var(--ink); font-weight: 700; padding: 4px 12px; border-radius: 999px; font-size: .9rem; }
+  .barra .usuario { font-size: .9rem; opacity: .95; }
+  .barra button { background: transparent; border: 1px solid rgba(255,255,255,.6); color: #fff; padding: 6px 12px; }
+  main { max-width: 1040px; margin: 0 auto; padding: 20px; display: grid; gap: 20px; }
+  .aviso { background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--teal); border-radius: 8px; padding: 12px 16px; font-size: .92rem; }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+  section h2 { margin-top: 0; color: var(--brand); font-size: 1.1rem; }
+  form.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  label { display: grid; gap: 4px; font-size: .9rem; font-weight: 600; }
+  input, select { padding: 9px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+  input:focus, select:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+  button { font: inherit; cursor: pointer; border-radius: 6px; }
+  .primario { background: var(--brand); color: #fff; border: 0; padding: 10px 20px; font-weight: 700; }
+  form.grid .primario { grid-column: 1 / -1; justify-self: start; }
+  .mensaje { margin-top: 12px; padding: 10px 12px; border-radius: 6px; display: none; }
+  .mensaje.ok { display: block; background: #DDF1E4; color: var(--ok); }
+  .mensaje.error { display: block; background: #F8E1DC; color: var(--bad); }
+  .tabla { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  th, td { border-bottom: 1px solid var(--line); padding: 9px 8px; text-align: left; }
+  th { background: var(--soft); color: var(--brand); }
+  .vacio { color: var(--muted); padding: 14px 8px; }
+  .etiqueta { background: var(--soft); color: var(--brand); font-weight: 700; padding: 2px 10px; border-radius: 999px; font-size: .8rem; }
+  @media (max-width: 800px) { #vistaLogin { grid-template-columns: 1fr; } .marca { padding: 28px; } }
+</style>
+</head>
+<body>
+
+<!-- ============ INICIO DE SESION ============ -->
+<div id="vistaLogin" hidden>
+  <div class="marca">
+    <img src="/logo.svg" alt="Logo de la plataforma">
+    <h1>Historia clinica electronica para hospitales publicos</h1>
+    <p>Una plataforma compartida, por suscripcion, donde cada hospital guarda sus historias y el paciente consulta la suya.</p>
+    <ul>
+      <li><span>1</span> Una sola historia clinica por paciente</li>
+      <li><span>2</span> Cada hospital ve solo sus propios datos</li>
+      <li><span>3</span> Sin instalar nada en cada establecimiento</li>
+    </ul>
+  </div>
+  <div class="acceso">
+    <div class="caja">
+      <h2>Iniciar sesion</h2>
+      <p class="sub">Ingresa con la cuenta de tu hospital.</p>
+      <form id="formLogin">
+        <label>Usuario <input id="usuario" autocomplete="username" required></label>
+        <label>Clave <input id="clave" type="password" autocomplete="current-password" required></label>
+        <button class="primario" type="submit">Ingresar</button>
+      </form>
+      <div id="mensajeLogin" class="mensaje" role="status"></div>
+      <div class="demo">
+        <b>Cuentas de demostracion</b> (clave: demo123)<br>
+        <button type="button" data-u="admision.a">admision.a</button> &middot; Hospital Demo A<br>
+        <button type="button" data-u="admision.b">admision.b</button> &middot; Hospital Demo B
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APLICACION ============ -->
+<div id="vistaApp" hidden>
+  <div class="barra">
+    <img src="/logo.svg" alt="Logo">
+    <span class="titulo">Plataforma HCE</span>
+    <span class="hospital" id="hospital"></span>
+    <span class="espacio"></span>
+    <span class="usuario" id="datosUsuario"></span>
+    <button type="button" id="salir">Cerrar sesion</button>
+  </div>
+  <main>
+    <div class="aviso">
+      <b>Avance CU-03:</b> registrar paciente y abrir historia clinica (RF-01, RF-04, RN-01).
+      Tu hospital solo ve las historias que abrio (RN-06). Prueba entrar con la otra cuenta de demostracion para comprobarlo.
+    </div>
+    <section>
+      <h2>Registrar paciente</h2>
+      <form id="formulario" class="grid">
+        <label>Tipo de documento
+          <select id="tipoDocumento" required>
+            <option value="DNI">DNI</option>
+            <option value="CE">Carne de extranjeria</option>
+            <option value="PASAPORTE">Pasaporte</option>
+          </select>
+        </label>
+        <label>Numero de documento <input id="nroDocumento" required></label>
+        <label>Nombres <input id="nombres" required></label>
+        <label>Apellidos <input id="apellidos" required></label>
+        <label>Fecha de nacimiento <input id="fechaNacimiento" type="date" required></label>
+        <label>Sexo
+          <select id="sexo" required>
+            <option value="F">Femenino</option>
+            <option value="M">Masculino</option>
+          </select>
+        </label>
+        <label>Telefono <input id="telefono" required></label>
+        <label>Correo <input id="correo" type="email" required></label>
+        <label>Direccion <input id="direccion" required></label>
+        <button class="primario" type="submit">Registrar y abrir historia clinica</button>
+      </form>
+      <div id="mensaje" class="mensaje" role="status"></div>
+    </section>
+    <section>
+      <h2>Historias clinicas abiertas <span class="etiqueta" id="cuenta">0</span></h2>
+      <div class="tabla">
+        <table>
+          <thead>
+            <tr><th>N.° HC</th><th>Documento</th><th>Paciente</th><th>Apertura</th><th>Establecimiento</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+        <div id="vacio" class="vacio" hidden>Aun no hay historias abiertas en tu hospital.</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const campos = ['tipoDocumento','nroDocumento','nombres','apellidos','fechaNacimiento','sexo','telefono','correo','direccion'];
+
+  function mostrar(caja, texto, tipo) { caja.textContent = texto; caja.className = 'mensaje ' + tipo; }
+
+  function verLogin() { $('vistaApp').hidden = true; $('vistaLogin').hidden = false; }
+
+  function verApp(sesion) {
+    $('vistaLogin').hidden = true;
+    $('vistaApp').hidden = false;
+    $('hospital').textContent = sesion.establecimiento;
+    $('datosUsuario').textContent = sesion.usuario + ' · ' + sesion.rol;
+    $('mensaje').className = 'mensaje';
+    cargar();
+  }
+
+  async function cargar() {
+    const respuesta = await fetch('/api/historias');
+    if (respuesta.status === 401) { verLogin(); return; }
+    const filas = await respuesta.json();
+    const cuerpo = $('cuerpo');
+    cuerpo.innerHTML = '';
+    filas.forEach(h => {
+      const tr = document.createElement('tr');
+      [h.nroHc, h.tipoDocumento + ' ' + h.nroDocumento, h.paciente, h.fechaApertura, h.establecimiento, h.estado]
+        .forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
+      cuerpo.appendChild(tr);
+    });
+    $('cuenta').textContent = filas.length;
+    $('vacio').hidden = filas.length > 0;
+  }
+
+  $('formLogin').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const respuesta = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario: $('usuario').value, clave: $('clave').value })
+    });
+    const cuerpo = await respuesta.json();
+    if (respuesta.ok) {
+      $('clave').value = '';
+      $('mensajeLogin').className = 'mensaje';
+      verApp(cuerpo);
+    } else {
+      mostrar($('mensajeLogin'), cuerpo.mensaje || 'No se pudo iniciar sesion.', 'error');
+    }
+  });
+
+  document.querySelectorAll('.demo button').forEach(b => b.addEventListener('click', () => {
+    $('usuario').value = b.dataset.u;
+    $('clave').value = 'demo123';
+  }));
+
+  $('salir').addEventListener('click', async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    verLogin();
+  });
+
+  $('formulario').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const datos = {};
+    campos.forEach(c => datos[c] = $(c).value);
+    const respuesta = await fetch('/api/pacientes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    });
+    if (respuesta.status === 401) { verLogin(); return; }
+    const cuerpo = await respuesta.json();
+    if (respuesta.ok) {
+      mostrar($('mensaje'), 'Historia clinica ' + cuerpo.nroHc + ' abierta para ' + cuerpo.paciente + '.', 'ok');
+      e.target.reset();
+      cargar();
+    } else {
+      mostrar($('mensaje'), cuerpo.mensaje || 'No se pudo registrar.', 'error');
+    }
+  });
+
+  (async () => {
+    const respuesta = await fetch('/api/sesion');
+    if (respuesta.ok) { verApp(await respuesta.json()); } else { verLogin(); }
+  })();
+</script>
+</body>
+</html>
