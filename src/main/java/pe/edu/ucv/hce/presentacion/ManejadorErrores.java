@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import pe.edu.ucv.hce.dominio.AccesoDenegadoException;
 import pe.edu.ucv.hce.dominio.DocumentoDuplicadoException;
 import pe.edu.ucv.hce.dominio.NoAutenticadoException;
 
@@ -21,6 +22,12 @@ public class ManejadorErrores {
     @ExceptionHandler(NoAutenticadoException.class)
     public ResponseEntity<Map<String, String>> noAutenticado(NoAutenticadoException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje", e.getMessage()));
+    }
+
+    /** RN-02, DEC-03: el rol no tiene permiso. */
+    @ExceptionHandler(AccesoDenegadoException.class)
+    public ResponseEntity<Map<String, String>> sinPermiso(AccesoDenegadoException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("mensaje", e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

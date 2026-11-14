@@ -50,7 +50,8 @@ Seguir `docs/diseno_ui.md` (sistema visual propio, inspirado en paneles de admin
 Ver `docs/equipo_y_flujo.md`. Resumen: rama por tarea, pull request revisado por Pablo, nadie hace push directo a `main`.
 
 ## Estado actual
-Fase 0 (pendiente de tu confirmación): proyecto en la raíz con Spring Boot 4.1.2, `release=21`, puerto 8090, H2 en `./data/hce`, frontend dividido (`static/css`, `static/js`, `static/login`, `static/pacientes`), 8 tests en verde. CU-03 (RN-01, DEC-02) y login por sesión (CU-01), dos hospitales demo (admision.a / admision.b, clave demo123). La semilla original queda en `referencia/semilla-v2/` (solo consulta). Decisiones DEC-01 a DEC-07 en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
+Fase 0 cerrada (tag `v2`, PR #1): proyecto en la raíz con Spring Boot 4.1.2, `release=21`, puerto 8090, H2 en `./data/hce`, frontend dividido (`static/css`, `static/js`, `static/login`, `static/pacientes`), 8 tests en verde. CU-03 (RN-01, DEC-02) y login por sesión (CU-01), dos hospitales demo (admision.a / admision.b, clave demo123). La semilla original queda en `referencia/semilla-v2/` (solo consulta). Decisiones DEC-01 a DEC-07 en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
+v3-base (rama `feat/v3-base`): roles DEC-03 (`AutorizacionService`), `AuditoriaService` mínimo (DEC-06) en CU-03, usuarios `medico.a`/`medico.b`, `cie10_demo.csv`, esqueletos de M-1.
 Pendiente: v3 (CU-06, CU-05, CU-08) · v4 (CU-10, CU-11) · v5 (auditoría, roles, BCrypt) · empaquetado portable. Ver `PLAN_CALENDARIO.md`.
 
 ## Fuera de alcance (no implementar)

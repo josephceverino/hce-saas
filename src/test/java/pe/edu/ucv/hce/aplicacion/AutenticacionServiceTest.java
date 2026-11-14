@@ -3,6 +3,7 @@ package pe.edu.ucv.hce.aplicacion;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,5 +36,14 @@ class AutenticacionServiceTest {
         NoAutenticadoException e = assertThrows(NoAutenticadoException.class,
             () -> servicio.iniciarSesion("nadie", "demo123"));
         assertEquals("Usuario o clave incorrectos.", e.getMessage());
+    }
+
+    /**
+     * Ficha M-1 (Mattias), CU-01: un usuario con estado distinto de ACTIVO no entra, aunque la clave sea correcta.
+     * Pista: crea un Usuario con estado "INACTIVO" usando UsuarioRepository y RolRepository.
+     */
+    @Test
+    @Disabled("pendiente M-1")
+    void usuarioInactivoNoEntra() {
     }
 }

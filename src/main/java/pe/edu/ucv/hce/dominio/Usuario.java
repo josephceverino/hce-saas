@@ -48,6 +48,12 @@ public class Usuario {
     public Integer getId() { return id; }
     public Establecimiento getEstablecimiento() { return establecimiento; }
     public Rol getRol() { return rol; }
+    public void setRol(Rol rol) { this.rol = rol; }
+
+    /** DEC-03: true si el codigo de rol (rol.nombre) es el indicado. */
+    public boolean tieneRol(CodigoRol codigo) {
+        return rol != null && codigo.name().equals(rol.getNombre());
+    }
     public String getUsuario() { return usuario; }
     public String getContrasenaHash() { return contrasenaHash; }
     public String getEstado() { return estado; }

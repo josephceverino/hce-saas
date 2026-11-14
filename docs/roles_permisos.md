@@ -32,4 +32,4 @@ Roles: `PACIENTE` (A-01), `MEDICO` (A-02), `ENFERMERIA` (A-03), `ADMISION` (A-04
 - RF-11, RF-12 y RF-19 solo se implementan a partir de v5 (y RF-19 es lo primero que se recorta, ver `PLAN_CALENDARIO.md`).
 - Aislamiento por hospital (RNF-06, RN-06) es independiente del rol: todo rol con datos clínicos filtra por el `id_establecimiento` de la sesión. `PACIENTE` solo ve lo propio (RN-04).
 - **v3:** constantes de permiso en `AutorizacionService`. **v5:** se migra a `rol_permiso`.
-- Los usuarios demo de la semilla (`admision.a`, `admision.b`) tienen hoy un rol genérico "Personal administrativo"; deberán pasar a `ADMISION` en v3.
+- Usuarios demo: `admision.a`, `admision.b` (`ADMISION`) y `medico.a`, `medico.b` (`MEDICO`), clave `demo123`. Implementado en `aplicacion/Permiso.java` (v3-base).
