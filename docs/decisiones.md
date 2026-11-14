@@ -5,10 +5,10 @@ Decididas por Pablo (líder técnico) el 13/11/2026. Si algo cambia, se agrega u
 |---|---|---|
 | DEC-01 | Estructura | Hecho (Fase 0) |
 | DEC-02 | RN-01 frente a multi-tenant | Hecho (Fase 0) |
-| DEC-03 | Roles y permisos | Documentado; se implementa en v3 |
-| DEC-04 | Catálogo CIE-10 de demostración | Pendiente (v3) |
+| DEC-03 | Roles y permisos | Hecho (v3-base): `CodigoRol`, `Permiso`, `AutorizacionService`; aplicado a CU-03 |
+| DEC-04 | Catálogo CIE-10 de demostración | CSV hecho (v3-base); cargador y validación pendientes (M-4) |
 | DEC-05 | Representante legal fuera de v4 | Documentado |
-| DEC-06 | Auditoría mínima desde v3 | Pendiente (v3) |
+| DEC-06 | Auditoría mínima desde v3 | Hecho (v3-base) en CU-03; falta CU-05, CU-06, CU-08 |
 | DEC-07 | Versión de Spring Boot y Java | Hecho (Fase 0) |
 
 ## DEC-01: Ubicación y estructura
@@ -25,6 +25,7 @@ El paciente es global (`tipo_documento` + `nro_documento` únicos) y tiene una s
 Códigos de rol en mayúsculas: `PACIENTE` (A-01), `MEDICO` (A-02), `ENFERMERIA` (A-03), `ADMISION` (A-04), `APOYO_DIAGNOSTICO` (A-05), `ADMIN_HOSPITAL` (A-06), `ADMIN_PLATAFORMA` (A-07). Los permisos salen de la columna "Actor" de la tabla de RF (`docs/requisitos.md`); matriz en `docs/roles_permisos.md`.
 - **v3:** la verificación por rol vive en `AutorizacionService` con constantes de permiso.
 - **v5:** se migra a la tabla `rol_permiso`.
+- **Implementación:** la tabla `rol` no tiene columna `codigo`; el código va en `rol.nombre` (`ADMISION`) y el texto legible en `rol.descripcion` ("Admisión y archivo"). `/api/sesion` devuelve `rol` (texto) y `rolCodigo` (código). Un rol sin código válido no tiene ningún permiso.
 
 ## DEC-04: Catálogo CIE-10 de demostración (RN-10)
 Un CSV pequeño (`cie10_demo.csv`: código, descripción) con códigos reales y frecuentes, más validación de formato (letra + 2 dígitos, opcional punto y 1 a 2 dígitos). Solo se incluyen códigos y descripciones conocidos con certeza. El archivo se marca como **"subconjunto de demostración, NO el catálogo oficial completo; verificar contra la fuente oficial"**. No se inventan códigos.
@@ -34,6 +35,7 @@ Fuera de v4: v4 implementa solo al paciente titular. Se conserva la tabla `repre
 
 ## DEC-06: Auditoría mínima desde v3 (RN-07, RNF-08, RF-13)
 `AuditoriaService` mínimo desde v3: usuario, establecimiento, acción, entidad afectada, id y fecha y hora, escribiendo en `registro_auditoria`. Se invoca desde CU-03, CU-05, CU-06 y CU-08. En v5 se completa (pantalla del administrador, filtros, cobertura total). Así los casos de prueba de auditoría (CP-08) se ejecutan desde v3.
+- **Implementación:** `registro_auditoria` no tiene columna de establecimiento en el modelo; el establecimiento se obtiene del usuario (`usuario.id_establecimiento`), sin cambiar el modelo. La auditoría corre en la transacción del caso de uso: si la operación falla, no queda registro (por eso el rechazo de DEC-02 no se audita todavía).
 
 ## DEC-07: Versión de Spring Boot y Java
 Se verificó el `pom.xml` de la semilla: `spring-boot-starter-parent 3.3.5` y `java.version=17`. En la Fase 0 se migró a **Spring Boot 4.1.2** (última estable en Maven Central a la fecha; 4.2.0 sigue en RC) con `maven.compiler.release=21`. La migración compiló sin cambios de código. Plan B (3.5.x) no fue necesario.

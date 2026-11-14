@@ -6,4 +6,5 @@ import pe.edu.ucv.hce.dominio.Establecimiento;
 
 public interface EstablecimientoRepository extends JpaRepository<Establecimiento, Integer> {
     Optional<Establecimiento> findFirstByEstado(String estado);
+    Optional<Establecimiento> findByCodigoIpress(String codigoIpress);
 }

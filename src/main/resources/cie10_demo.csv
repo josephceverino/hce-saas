@@ -1,0 +1,18 @@
+# cie10_demo.csv (DEC-04, RN-10)
+# SUBCONJUNTO DE DEMOSTRACION, NO el catalogo oficial completo; verificar contra la fuente oficial (CIE-10, OPS/OMS).
+# Solo codigos frecuentes cuyo codigo y descripcion se conocen con certeza. No ampliar de memoria ni con IA.
+# Formato: codigo,descripcion (descripcion entre comillas si lleva comas). Lineas con # son comentarios.
+codigo,descripcion
+J00,"Rinofaringitis aguda [resfriado común]"
+J02.9,"Faringitis aguda, no especificada"
+J06.9,"Infección aguda de las vías respiratorias superiores, no especificada"
+J18.9,"Neumonía, no especificada"
+J45.9,"Asma, no especificada"
+I10,"Hipertensión esencial (primaria)"
+E11.9,"Diabetes mellitus no insulinodependiente, sin mención de complicación"
+A09,"Diarrea y gastroenteritis de presunto origen infeccioso"
+K29.7,"Gastritis, no especificada"
+N39.0,"Infección de vías urinarias, sitio no especificado"
+R50.9,"Fiebre, no especificada"
+R51,"Cefalea"
+M54.5,"Lumbago no especificado"

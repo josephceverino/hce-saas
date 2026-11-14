@@ -2,12 +2,18 @@
 
 ## Cómo probar (Fase 0)
 Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene incluido (`mvnw`). La primera vez necesita internet para bajar dependencias.
-1. `./mvnw test` (en Windows también `mvnw.cmd test`): deben pasar los 8 tests.
+1. `./mvnw test` (en Windows también `mvnw.cmd test`): deben pasar todos los tests (los `@Disabled` de M-1 salen como omitidos).
 2. `./mvnw spring-boot:run` y abrir `http://localhost:8090`.
 3. Entrar con `admision.a` / `demo123` (Hospital Demo A) y registrar un paciente con un DNI de 8 dígitos.
 4. Repetir el mismo DNI en el mismo hospital: se muestra la historia existente, no se crea otra (RN-01).
 5. Cerrar sesión, entrar con `admision.b` / `demo123` y registrar ese mismo DNI: se rechaza con el mensaje de DEC-02 y no se ve ningún dato del paciente (RN-06). La lista de B está vacía.
 6. Detener y volver a arrancar: los datos siguen ahí (H2 en archivo `./data/hce`, ignorado por Git).
+
+## Cómo probar (v3-base: roles y auditoría)
+1. `./mvnw test`: 18 tests en verde y 9 omitidos (`@Disabled("pendiente M-1")`, son de Mattias).
+2. Entrar con `medico.a` / `demo123` e intentar registrar un paciente: se rechaza con "No tienes permiso para realizar esta acción." (403). El médico sí ve la lista de su hospital.
+3. Entrar con `admision.a`: el rol en el menú dice "Admisión y archivo". Registrar funciona como antes y cada registro deja una fila en `registro_auditoria`.
+4. Una base creada en la Fase 0 se actualiza sola al arrancar (roles nuevos y médicos demo); no hace falta borrar `./data`.
 
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
