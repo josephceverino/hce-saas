@@ -1,35 +1,202 @@
 package pe.edu.ucv.hce.aplicacion;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import pe.edu.ucv.hce.dominio.*;
+import pe.edu.ucv.hce.persistencia.AtencionRepository;
+import pe.edu.ucv.hce.persistencia.RegistroAuditoriaRepository;
+import pe.edu.ucv.hce.persistencia.TratamientoRepository;
 
-/** CONTRATO de CU-08 (RF-08; RN-02, RN-03, RN-06, RN-07, RN-11). Lo activa Mattias en la tarea M-2. */
-@Disabled("Contrato: se activa en la tarea M-2 (CU-08), despues del merge de feat/v3-atencion")
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class TratamientoServiceTest {
 
-    /** El medico que abrio la atencion agrega un tratamiento y queda vinculado a ella. */
-    @Test
-    void medicoAgregaTratamientoAAtencionAbierta() { fail("Pendiente"); }
+    @Mock
+    private TratamientoRepository tratamientoRepository;
 
-    /** RN-02: enfermeria no registra tratamientos: AccesoDenegadoException. */
-    @Test
-    void enfermeriaNoRegistraTratamiento() { fail("Pendiente"); }
+    @Mock
+    private AtencionRepository atencionRepository;
 
-    /** RN-03: en una atencion cerrada se lanza AtencionCerradaException (hay que usar enmienda). */
-    @Test
-    void noSeAgregaTratamientoAAtencionCerrada() { fail("Pendiente"); }
+    @Mock
+    private RegistroAuditoriaRepository auditoriaRepository;
 
-    /** RN-06: el medico del hospital B no puede agregar tratamiento a una atencion del hospital A. */
-    @Test
-    void otroHospitalNoPuedeAgregarTratamiento() { fail("Pendiente"); }
+    @InjectMocks
+    private TratamientoService tratamientoService;
 
-    /** Los campos vacios se rechazan con mensaje en espanol. */
     @Test
-    void rechazaCamposVacios() { fail("Pendiente"); }
+    void medicoAgregaTratamientoAAtencionAbierta() {
+        Establecimiento est = Mockito.mock(Establecimiento.class);
+        when(est.getId()).thenReturn(1);
 
-    /** RN-07: la accion queda auditada como REGISTRAR_TRATAMIENTO. */
+        Atencion atencion = Mockito.mock(Atencion.class);
+        when(atencion.getEstado()).thenReturn("ABIERTA");
+        when(atencion.getEstablecimiento()).thenReturn(est);
+        when(atencionRepository.findById(1)).thenReturn(Optional.of(atencion));
+
+        Rol rolMock = Mockito.mock(Rol.class);
+        when(rolMock.getNombre()).thenReturn("MEDICO");
+        Usuario usuarioMock = Mockito.mock(Usuario.class);
+        when(usuarioMock.getRol()).thenReturn(rolMock);
+        when(usuarioMock.getEstablecimiento()).thenReturn(est);
+
+        Tratamiento tratamientoMock = Mockito.mock(Tratamiento.class);
+        when(tratamientoRepository.save(any(Tratamiento.class))).thenReturn(tratamientoMock);
+
+        Tratamiento resultado = tratamientoService.agregar(
+            usuarioMock, 
+            1, 
+            "Reposo", 
+            "Paracetamol", 
+            "500mg", 
+            "3 dias", 
+            "127.0.0.1"
+        );
+
+        assertNotNull(resultado);
+    }
+
     @Test
-    void laAccionQuedaAuditada() { fail("Pendiente"); }
+    void enfermeriaNoRegistraTratamiento() {
+        Rol rolMock = Mockito.mock(Rol.class);
+        when(rolMock.getNombre()).thenReturn("ENFERMERA");
+        Usuario enfermeraMock = Mockito.mock(Usuario.class);
+        when(enfermeraMock.getRol()).thenReturn(rolMock);
+
+        assertThrows(AccesoDenegadoException.class, () -> {
+            tratamientoService.agregar(
+                enfermeraMock, 
+                1, 
+                "Reposo", 
+                "Paracetamol", 
+                "500mg", 
+                "3 dias", 
+                "127.0.0.1"
+            );
+        });
+    }
+
+    @Test
+    void noSeAgregaTratamientoAAtencionCerrada() {
+        Establecimiento est = Mockito.mock(Establecimiento.class);
+        when(est.getId()).thenReturn(1);
+
+        Atencion atencion = Mockito.mock(Atencion.class);
+        when(atencion.getEstado()).thenReturn("CERRADA");
+        when(atencion.getEstablecimiento()).thenReturn(est);
+        when(atencionRepository.findById(1)).thenReturn(Optional.of(atencion));
+
+        Rol rolMock = Mockito.mock(Rol.class);
+        when(rolMock.getNombre()).thenReturn("MEDICO");
+        Usuario medicoMock = Mockito.mock(Usuario.class);
+        when(medicoMock.getRol()).thenReturn(rolMock);
+        when(medicoMock.getEstablecimiento()).thenReturn(est);
+
+        assertThrows(AtencionCerradaException.class, () -> {
+            tratamientoService.agregar(
+                medicoMock, 
+                1, 
+                "Reposo", 
+                "Paracetamol", 
+                "500mg", 
+                "3 dias", 
+                "127.0.0.1"
+            );
+        });
+    }
+
+    @Test
+    void otroHospitalNoPuedeAgregarTratamiento() {
+        Establecimiento estA = Mockito.mock(Establecimiento.class);
+        when(estA.getId()).thenReturn(1);
+
+        Establecimiento estB = Mockito.mock(Establecimiento.class);
+        when(estB.getId()).thenReturn(2);
+
+        Atencion atencion = Mockito.mock(Atencion.class);
+        when(atencion.getEstado()).thenReturn("ABIERTA");
+        when(atencion.getEstablecimiento()).thenReturn(estA);
+        when(atencionRepository.findById(1)).thenReturn(Optional.of(atencion));
+
+        Rol rolMock = Mockito.mock(Rol.class);
+        when(rolMock.getNombre()).thenReturn("MEDICO");
+        Usuario medicoMock = Mockito.mock(Usuario.class);
+        when(medicoMock.getRol()).thenReturn(rolMock);
+        when(medicoMock.getEstablecimiento()).thenReturn(estB);
+
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            tratamientoService.agregar(
+                medicoMock, 
+                1, 
+                "Reposo", 
+                "Paracetamol", 
+                "500mg", 
+                "3 dias", 
+                "127.0.0.1"
+            );
+        });
+    }
+
+    @Test
+    void rechazaCamposVacios() {
+        Rol rolMock = Mockito.mock(Rol.class);
+        when(rolMock.getNombre()).thenReturn("MEDICO");
+        Usuario medicoMock = Mockito.mock(Usuario.class);
+        when(medicoMock.getRol()).thenReturn(rolMock);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            tratamientoService.agregar(
+                medicoMock, 
+                1, 
+                "", 
+                "Paracetamol", 
+                "500mg", 
+                "3 dias", 
+                "127.0.0.1"
+            );
+        });
+    }
+
+    @Test
+    void laAccionQuedaAuditada() {
+        Establecimiento est = Mockito.mock(Establecimiento.class);
+        when(est.getId()).thenReturn(1);
+
+        Atencion atencion = Mockito.mock(Atencion.class);
+        when(atencion.getEstado()).thenReturn("ABIERTA");
+        when(atencion.getEstablecimiento()).thenReturn(est);
+        when(atencionRepository.findById(1)).thenReturn(Optional.of(atencion));
+
+        Rol rolMock = Mockito.mock(Rol.class);
+        when(rolMock.getNombre()).thenReturn("MEDICO");
+        Usuario medicoMock = Mockito.mock(Usuario.class);
+        when(medicoMock.getRol()).thenReturn(rolMock);
+        when(medicoMock.getEstablecimiento()).thenReturn(est);
+
+        Tratamiento tratamientoMock = Mockito.mock(Tratamiento.class);
+        when(tratamientoRepository.save(any(Tratamiento.class))).thenReturn(tratamientoMock);
+
+        Tratamiento resultado = tratamientoService.agregar(
+            medicoMock, 
+            1, 
+            "Reposo", 
+            "Paracetamol", 
+            "500mg", 
+            "3 dias", 
+            "127.0.0.1"
+        );
+
+        assertNotNull(resultado);
+    }
 }
