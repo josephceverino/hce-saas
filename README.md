@@ -35,6 +35,14 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Con `paciente.a` probar lo que NO debe: `GET /api/historias/1`, `GET /api/historias` y `POST /api/atenciones` responden 403 (RN-04). `paciente.b` ve solo su propia historia (Hospital B).
 4. Contratos: `docs/contratos/portal_paciente.md` y `docs/contratos/consentimiento.md`.
 
+## Cómo probar (v5: paquete portable)
+Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
+1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).
+2. Abrir `dist\HCE-Demo\HCE-Demo.exe` con doble clic: se abre una ventana de consola (el servidor) y el navegador. La base queda en `dist\HCE-Demo\data` (junto al `.exe`).
+3. Si el puerto 8090 está ocupado, la app usa el siguiente libre y abre el navegador en el correcto.
+4. Guía para quien recibe el zip: `GUIA_INSTALACION.md`. Prueba pendiente antes del 5 de diciembre: copiar el zip a **otra PC Windows** y abrirlo con doble clic.
+En desarrollo (`./mvnw spring-boot:run` o el IDE) no se abre el navegador solo: eso lo activa únicamente el lanzador (`hce.abrir-navegador=true`).
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---
