@@ -72,5 +72,12 @@ public class Atencion {
     public String getAnamnesis() { return anamnesis; }
     public String getExamenFisico() { return examenFisico; }
     public String getEstado() { return estado; }
-    // Sin setters de contenido (RN-03). El metodo de cierre se agrega en el Bloque 2 (CU-05).
+    /** RN-03: cierra la atencion. Una atencion ya cerrada no vuelve a cerrarse. */
+    public void cerrar() {
+        if (estaCerrada()) {
+            throw new AtencionCerradaException("La atención ya está cerrada.");
+        }
+        this.estado = CERRADA;
+    }
+    // Sin setters de contenido (RN-03): lo cerrado se corrige solo con Enmienda.
 }

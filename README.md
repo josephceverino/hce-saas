@@ -15,6 +15,14 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Entrar con `admision.a`: el rol en el menú dice "Admisión y archivo". Registrar funciona como antes y cada registro deja una fila en `registro_auditoria`.
 4. Una base creada en la Fase 0 se actualiza sola al arrancar (roles nuevos y médicos demo); no hace falta borrar `./data`.
 
+## Cómo probar (v3: historia y atención, CU-06 y CU-05)
+1. `./mvnw test`: pasan los tests de `HistorialServiceTest` (5) y `AtencionServiceTest` (13). Quedan omitidos los contratos de Mattias (CIE-10 y tratamiento).
+2. `./mvnw spring-boot:run`. Con `admision.a` registrar un paciente (queda la historia HC-000001).
+3. Entrar con `medico.a`. Contrato de la API: `docs/contratos/atencion_historia.md`. Hoy se prueba con la API (las pantallas son de Alexander): `GET /api/historias/1`, `POST /api/atenciones`, `POST /api/atenciones/1/cierre`.
+4. Con `medico.b` (otro hospital): `GET /api/historias/1` da 403 (RN-06) y `GET /api/atenciones/1` da 404.
+5. Con `admision.a`: `GET /api/historias/1` da 403 (RN-02).
+6. Agregar diagnóstico necesita el catálogo CIE-10 (tarea M-4); hasta entonces responde 500.
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---

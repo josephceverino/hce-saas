@@ -1,11 +1,11 @@
 # Contrato de la API: historia clínica, atención, tratamiento y CIE-10
 Cubre CU-06, CU-05 y CU-08 (RF-05, RF-06, RF-08; RN-02, RN-03, RN-06, RN-07, RN-10, RN-11).
-**Estado:** contrato definido (rama `feat/v3-contratos`). Los endpoints se publican cuando se implementen los controladores:
-Pablo (historia y atención, Bloque 2), Mattias (tratamiento y CIE-10). Hasta entonces el frontend puede trabajar con datos de ejemplo de este documento.
+**Estado:** historia y atención (secciones 1 a 5) **implementadas** en `feat/v3-atencion`. Tratamiento y CIE-10 (secciones 6 y 7) los implementa Mattias; hasta entonces el frontend usa los datos de ejemplo. Mientras no esté el catálogo CIE-10 (M-4), agregar un diagnóstico responde 500.
 
 Reglas comunes:
 - Todo requiere sesión iniciada (si no: **401**). Errores con cuerpo `{"mensaje": "texto en español"}`.
-- Sin permiso del rol: **403**. Historia o atención de otro hospital: **403** (RN-06). No existe: **404**.
+- Sin permiso del rol: **403**. Historia de otro hospital: **403** (RN-06). Atención de otro hospital o inexistente: **404** (no se revela que existe). Historia inexistente: **404**.
+- Diagnóstico, cierre y tratamiento: solo el médico que creó la atención (si no: **403**). La enmienda la puede registrar cualquier médico del hospital; queda su autor.
 - Datos inválidos: **400**. Atención cerrada: **409** (RN-03).
 - Valores asumidos que **Pablo debe confirmar**: estado de atención `ABIERTA`/`CERRADA`; tipo de diagnóstico `PRINCIPAL`/`SECUNDARIO`.
 
@@ -30,6 +30,9 @@ Reglas comunes:
 ```
 Las atenciones vienen de la más reciente a la más antigua. `cerrada: true` ⇒ mostrar candado y **sin** botón de editar.
 Cada lectura queda auditada (RN-07).
+
+## 1b. Ver una atención · MEDICO, ENFERMERIA
+`GET /api/atenciones/{idAtencion}` → **200** `AtencionDto` (mismo formato que cada elemento de `atenciones`). Atención de otro hospital: **404**.
 
 ## 2. Crear atención (CU-05) · solo MEDICO
 `POST /api/atenciones` — cuerpo `AtencionRequest`:
