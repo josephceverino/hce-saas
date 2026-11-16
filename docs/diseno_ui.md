@@ -14,10 +14,19 @@ Sidebar fijo a la izquierda (logo del sistema, menú según el rol, perfil y cer
 El nombre del hospital activo se ve siempre (refuerza el multi-tenant en la demo).
 
 ## Menú por rol (solo lo que existe en el alcance)
-- Admisión: Inicio, Pacientes, Registrar paciente.
-- Médico / Enfermería: Inicio, Pacientes, Historia clínica, Registrar atención.
-- Paciente: Mi historial, Consentimiento y privacidad.
-- Administrador del hospital (v5): Usuarios y roles, Auditoría, Reportes.
+El **servidor** decide el menú (`MenuService`) y lo entrega en `menu` dentro de `/api/login` y `/api/sesion` (cada opción: `clave`, `titulo`, `ruta`). El JS solo lo dibuja; no decide permisos. Ocultar una opción no es seguridad: cada servicio sigue exigiendo su permiso.
+
+| Rol | Menú |
+|---|---|
+| Admisión | Inicio, Pacientes, Registrar paciente |
+| Médico | Inicio, Pacientes, Historia clínica, Registrar atención |
+| Enfermería | Inicio, Pacientes, Historia clínica (**sin** Registrar atención, RN-02) |
+| Paciente | Mi historial, Consentimiento |
+| Administrador del hospital (v5) | Inicio (tablero con gráficos), Usuarios y roles, Auditoría, Reportes |
+| Administrador de plataforma (v5) | Hospitales |
+| Apoyo al diagnóstico | Sin casos de uso en el alcance: solo Mi perfil |
+| Todos | **Mi perfil** (al final) |
+
 **Prohibido en el menú:** calendario, citas, chat, correo, kanban, facturación, telemedicina (fuera de alcance).
 
 ## Componentes reutilizables (un archivo CSS, clases con prefijo `hce-`)
@@ -33,10 +42,35 @@ Tarjeta con indicador (título, número, nota) · tabla con paginación y chips 
 | P-03 Registrar atención | formulario en tarjetas | Motivo, anamnesis, examen, diagnóstico CIE-10, tratamiento; botón Cerrar atención con confirmación |
 | P-05 Mi historial | variante simplificada de P-04 | Solo lectura; botón de resumen |
 | P-06 Consentimiento | lista con interruptores | Otorgar o revocar con fecha |
-| Reportes (opcional) | gráficos de barras | Atenciones por día; solo si sobra tiempo |
+| Registrar paciente | formulario en tarjeta | Pantalla aparte de P-02; confirmación con el N.° de HC; mensajes distintos para 201, 200 y 409 (DEC-02) |
+| Mi perfil (todos) | perfil de usuario | Usuario, rol, hospital y último acceso; refuerza el multi-tenant en la demo |
+| Tablero del Administrador del hospital (v5, DEC-10) | tablero con gráficos | Atenciones por día (barras), pacientes nuevos por semana, 5 diagnósticos CIE-10 más frecuentes, atenciones abiertas frente a cerradas, últimos accesos (de la auditoría) |
+| Hospitales (Administrador de plataforma, v5, DEC-11) | tarjetas por hospital | Plan, estado, n.° de usuarios y n.° de pacientes. **Solo totales, nunca datos clínicos** |
+| Auditoría (v5) | tabla filtrable | Quién accedió a qué y cuándo (D-11) |
+| Reportes (opcional) | gráficos de barras | Atenciones por día; solo si sobra tiempo. Se recorta primero |
+
+## Inicio por rol (tarjetas)
+- **Admisión:** pacientes registrados, historias abiertas, registrados hoy.
+- **Médico:** mis atenciones de hoy y **atenciones abiertas pendientes de cerrar** (lo más útil para el médico).
+- **Enfermería:** pacientes del hospital e historias abiertas.
+- **Administrador del hospital:** el tablero con gráficos (arriba).
+
+## Reglas de los tableros (DEC-10)
+- **Cada cifra sale de la base de datos**, con el filtro por hospital. Ninguna se inventa.
+- **Gráficos en SVG dibujado con JS propio**, sin librerías ni CDN: bastan barras y una dona.
+- **Estado vacío claro:** sin datos se muestra "Aún no hay atenciones", nunca un gráfico de mentira.
+- **Ningún gráfico de más:** si no responde una pregunta del usuario, se quita.
+- Si el endpoint de una cifra aún no existe, la tarjeta no se muestra.
+
+## Prioridad para la demo
+- **Imprescindible:** Login, Pacientes, Registrar paciente, Historia, Atención, Mi historial, Consentimiento.
+- **Importante:** Inicio por rol con tarjetas, Mi perfil.
+- **Si hay tiempo:** tablero con gráficos, Auditoría, Hospitales.
+- **Se recorta primero:** Reportes aparte y Usuarios y roles.
 
 ## Reglas
 - Íconos: SVG en línea (o un set libre incluido en el repo). Sin fotos de personas: avatares con iniciales.
 - Todos los textos en español. Datos de la demo ficticios y marcados ("Paciente de prueba").
+- Una atención cerrada se muestra con candado y **sin** botón de editar; se corrige con "Agregar enmienda" (RN-03).
 - Responsive básico (RNF-10), pero la prioridad es que se vea bien en pantalla de laptop y proyector.
 - Contraste suficiente para proyector (evitar grises muy claros en texto).
