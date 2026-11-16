@@ -29,6 +29,12 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Usuarios (clave `demo123`): `admision.a/b`, `medico.a/b`, `enfermera.a/b`, `admin.a` y `plataforma`.
 4. `POST /api/login` y `GET /api/sesion` devuelven `menu` (lista de `clave`, `titulo`, `ruta`) según el rol, más `ultimoAcceso`. Entrar con `medico.a`: `GET /api/historias` muestra 4 historias; con `medico.b`, 2 (RN-06).
 
+## Cómo probar (v4: portal del paciente, CU-10)
+1. `./mvnw test`: se suman los 8 tests de `PortalPacienteServiceTest`; el contrato de CU-11 (`ConsentimientoServiceTest`) sale omitido (es de Mattias, M-5).
+2. Arrancar la app y entrar con `paciente.a` / `demo123`: el menú es Mi historial, Consentimiento y Mi perfil. Por API: `GET /api/mi-historial` (mi historia, solo atenciones cerradas) y `GET /api/mi-historial/resumen`.
+3. Con `paciente.a` probar lo que NO debe: `GET /api/historias/1`, `GET /api/historias` y `POST /api/atenciones` responden 403 (RN-04). `paciente.b` ve solo su propia historia (Hospital B).
+4. Contratos: `docs/contratos/portal_paciente.md` y `docs/contratos/consentimiento.md`.
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---

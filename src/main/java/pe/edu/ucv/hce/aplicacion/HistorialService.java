@@ -67,13 +67,21 @@ public class HistorialService {
                 || !historia.getEstablecimiento().getId().equals(usuario.getEstablecimiento().getId())) {
             throw new AccesoDenegadoException(MENSAJE_OTRO_HOSPITAL);
         }
-        List<AtencionDetalle> detalle = atenciones.findAllByHistoriaClinicaIdOrderByFechaHoraDesc(historia.getId())
-            .stream().map(this::armar).toList();
-        HistorialClinico resultado = new HistorialClinico(historia,
-            antecedentes.findAllByHistoriaClinicaIdOrderByFechaRegistroDesc(historia.getId()),
-            alergias.findAllByHistoriaClinicaId(historia.getId()), detalle);
+        HistorialClinico resultado = cargar(historia);
         auditoria.registrar(usuario, ACCION_CONSULTAR, "historia_clinica", historia.getId(), historia, ip);
         return resultado;
+    }
+
+    /**
+     * Arma el historial completo de una historia YA autorizada por quien llama (sin permisos ni auditoria aqui).
+     * Lo usan CU-06 (personal de salud) y CU-10 (el propio paciente).
+     */
+    public HistorialClinico cargar(HistoriaClinica historia) {
+        List<AtencionDetalle> detalle = atenciones.findAllByHistoriaClinicaIdOrderByFechaHoraDesc(historia.getId())
+            .stream().map(this::armar).toList();
+        return new HistorialClinico(historia,
+            antecedentes.findAllByHistoriaClinicaIdOrderByFechaRegistroDesc(historia.getId()),
+            alergias.findAllByHistoriaClinicaId(historia.getId()), detalle);
     }
 
     private AtencionDetalle armar(Atencion a) {

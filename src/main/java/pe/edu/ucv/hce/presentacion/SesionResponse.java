@@ -15,7 +15,8 @@ public record SesionResponse(String usuario, String rol, String rolCodigo, Strin
                              LocalDateTime ultimoAcceso, List<ItemMenu> menu) {
 
     public static SesionResponse de(Usuario u, List<ItemMenu> menu) {
-        String hospital = u.getEstablecimiento() == null ? "Plataforma" : u.getEstablecimiento().getNombre();
+        String hospital = u.getEstablecimiento() != null ? u.getEstablecimiento().getNombre()
+            : u.tieneRol(pe.edu.ucv.hce.dominio.CodigoRol.PACIENTE) ? "Portal del paciente" : "Plataforma";
         return new SesionResponse(u.getUsuario(), u.getRol().getDescripcion(), u.getRol().getNombre(), hospital,
             u.getUltimoAcceso(), menu);
     }

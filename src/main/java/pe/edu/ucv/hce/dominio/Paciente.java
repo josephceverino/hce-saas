@@ -42,6 +42,11 @@ public class Paciente {
     @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 
+    /** Usuario del portal del paciente (CU-10). Nulo si el paciente no tiene cuenta. Un paciente es global (DEC-02). */
+    @OneToOne
+    @JoinColumn(name = "id_usuario", unique = true)
+    private Usuario usuario;
+
     protected Paciente() { }
 
     public Paciente(String tipoDocumento, String nroDocumento, String nombres, String apellidos,
@@ -58,6 +63,9 @@ public class Paciente {
         this.direccion = direccion;
     }
 
+    public Usuario getUsuario() { return usuario; }
+    /** Vincula la cuenta del portal (RN-04: el paciente entra solo a lo suyo a traves de este vinculo). */
+    public void vincularUsuario(Usuario usuario) { this.usuario = usuario; }
     public Integer getId() { return id; }
     public String getTipoDocumento() { return tipoDocumento; }
     public String getNroDocumento() { return nroDocumento; }

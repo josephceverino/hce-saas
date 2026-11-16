@@ -134,7 +134,7 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 - **Plan B:** no hay; se recorta.
 
 ### A-6 · P-05 Mi historial, solo lectura (CU-10, antes F2-2)
-- **Depende de:** F2-1 (Pablo, v4). Contrato en `docs/contratos/portal_paciente.md`.
+- **Depende de:** F2-1 (Pablo): **ya está** (rama `feat/v4`). Contrato: `docs/contratos/portal_paciente.md` (`GET /api/mi-historial` y `GET /api/mi-historial/resumen`, solo lectura, sin ids). Cuentas demo: `paciente.a` y `paciente.b` (clave `demo123`).
 - **Archivos exactos:** `static/mi-historial/index.html`, `static/mi-historial/mi-historial.js`.
 - **Demo:** D-9. **Criterio:** variante simplificada de A-4 sin ningún botón de edición; botón "Ver resumen" (HTML imprimible); si pide una historia ajena por URL, ve un mensaje de acceso denegado.
 - **Plan B (Pablo):** página de resumen en texto plano.
@@ -196,8 +196,8 @@ Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion
 - **Preguntas:** ¿por qué el CIE-10 se valida en la aplicación y no en la base de datos? ¿Qué pasa si el catálogo cambia? ¿Qué riesgo hay en que una IA complete la lista?
 
 ### M-5 · CU-11 completo: backend, tests y P-06 (antes F2-3 y F2-4)
-- **Depende de:** F2-1 (Pablo, v4): usuario `PACIENTE` y portal con sesión.
-- **Contrato (Pablo):** interfaz `ConsentimientoService` (otorgar, revocar, listar activos), DTO, la tabla `consentimiento_acceso` del modelo, y los tests que fallan: CP-19 (otorgar registra fecha y alcance) y CP-20 (revocar corta el acceso de inmediato).
+- **Depende de:** F2-1 (Pablo): **ya está** (rama `feat/v4`): cuentas `paciente.a` y `paciente.b` (clave `demo123`) y portal con sesión.
+- **Contrato (ya en la rama `feat/v4`): `docs/contratos/consentimiento.md`.** Están `ConsentimientoAcceso`, `ConsentimientoAccesoRepository`, las firmas de `ConsentimientoService` (`listar`, `otorgar`, `revocar`, con sus errores), `ConsentimientoRequest`, `ConsentimientoResponse` y `ConsentimientoServiceTest` (`@Disabled`). Tú haces los cuerpos del servicio, `ConsentimientoController` y la pantalla P-06. Estados `ACTIVO`/`REVOCADO` (DEC-13).
 - **Archivos exactos:** `dominio/ConsentimientoAcceso.java`, `persistencia/ConsentimientoAccesoRepository.java`, `aplicacion/ConsentimientoService.java`, `presentacion/ConsentimientoController.java`, DTO, tests, `static/consentimiento/index.html`, `static/consentimiento/consentimiento.js`. La pantalla lista autorizaciones con interruptores y fecha.
 - **Reglas:** RN-06, RN-09, RN-07; el paciente solo ve y cambia **sus** consentimientos (RN-04).
 - **Demo:** D-10. **Plan B (Pablo):** botones Otorgar y Revocar en una tabla, sin interruptores.
@@ -221,7 +221,7 @@ Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion
 - **Antes de que Alexander y Mattias empiecen A-3, A-4, M-2, M-3, M-4:** dejar en el repo los contratos (`docs/contratos/`), los DTO, las interfaces y los tests que fallan. Esa es la condición para que trabajen en paralelo.
 - Incluye `AutorizacionService` con constantes de permiso (DEC-03), `AuditoriaService` mínimo (DEC-06) y los usuarios demo `medico.a` y `medico.b`.
 
-### F2-1 · Backend CU-10 (v4)
+### F2-1 · Backend CU-10 (v4) — HECHA (rama `feat/v4`)
 - Portal del paciente y usuarios `PACIENTE` demo. RN-04; RN-05 queda documentada como no implementada (DEC-05).
 
 ### F3-6 · Indicadores para el Inicio y los tableros (v5, DEC-10 y DEC-11)

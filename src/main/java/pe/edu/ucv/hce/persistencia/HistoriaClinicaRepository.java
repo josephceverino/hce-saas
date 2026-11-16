@@ -9,6 +9,9 @@ public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica
     /** RN-06: cada hospital solo ve las historias que abrio. */
     List<HistoriaClinica> findAllByEstablecimientoIdOrderByIdDesc(Integer idEstablecimiento);
 
+    /** CU-10 / RN-04: la historia de un paciente. */
+    Optional<HistoriaClinica> findByPacienteId(Integer idPaciente);
+
     /** CU-03 / RN-01: busca la historia unica de un documento (el paciente es global). */
     Optional<HistoriaClinica> findByPacienteTipoDocumentoAndPacienteNroDocumento(String tipoDocumento, String nroDocumento);
 }
