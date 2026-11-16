@@ -6,10 +6,15 @@ Decididas por Pablo (líder técnico) el 13/11/2026. Si algo cambia, se agrega u
 | DEC-01 | Estructura | Hecho (Fase 0) |
 | DEC-02 | RN-01 frente a multi-tenant | Hecho (Fase 0) |
 | DEC-03 | Roles y permisos | Hecho (v3-base): `CodigoRol`, `Permiso`, `AutorizacionService`; aplicado a CU-03 |
-| DEC-04 | Catálogo CIE-10 de demostración | CSV hecho (v3-base); cargador y validación pendientes (M-4) |
+| DEC-04 | Catálogo CIE-10 de demostración | CSV hecho (v3-base); cargador y validación pendientes (M-4, contrato en `CatalogoCie10Service`) |
 | DEC-05 | Representante legal fuera de v4 | Documentado |
-| DEC-06 | Auditoría mínima desde v3 | Hecho (v3-base) en CU-03; falta CU-05, CU-06, CU-08 |
+| DEC-06 | Auditoría mínima desde v3 | Hecho en CU-03, CU-05 y CU-06; falta CU-08 (M-2) |
 | DEC-07 | Versión de Spring Boot y Java | Hecho (Fase 0) |
+| DEC-08 | RF-07 solo con datos de demostración | Hecho (semilla `DatosDemoClinicos`); M-3 opcional |
+| DEC-09 | Atención cerrada, enmienda en texto libre y quién modifica | Hecho (v3, `AtencionService`) |
+| DEC-10 | Pantallas por rol y tablero con gráficos del Administrador del hospital | Documentado; menú por rol hecho (`MenuService`); tablero pendiente (v5, si hay tiempo) |
+| DEC-11 | Panel "Hospitales" del Administrador de plataforma | Documentado; pendiente (v5, si hay tiempo) |
+| DEC-12 | Usuarios y datos de demostración por rol | Hecho (v3) |
 
 ## DEC-01: Ubicación y estructura
 La raíz del proyecto es `hce-saas/`. `CLAUDE.md`, `PROMPTS.md`, `PLAN_CALENDARIO.md`, `FICHAS_TAREAS.md`, `ONBOARDING_MATTIAS.md`, `GIT_SETUP.md`, `README.md`, `.gitignore` y `docs/` viven en la raíz, junto con `pom.xml`, `mvnw` y `src/`. El contenido de `hce-kit-v2/` se movió con `git mv` (historial conservado). La semilla original queda como **referencia** en `referencia/semilla-v2/` hasta terminar la migración; no es parte del build.
@@ -39,3 +44,23 @@ Fuera de v4: v4 implementa solo al paciente titular. Se conserva la tabla `repre
 
 ## DEC-07: Versión de Spring Boot y Java
 Se verificó el `pom.xml` de la semilla: `spring-boot-starter-parent 3.3.5` y `java.version=17`. En la Fase 0 se migró a **Spring Boot 4.1.2** (última estable en Maven Central a la fecha; 4.2.0 sigue en RC) con `maven.compiler.release=21`. La migración compiló sin cambios de código. Plan B (3.5.x) no fue necesario.
+
+## DEC-08: RF-07 (antecedentes y alergias) solo con datos de demostración
+El flujo de registro de RF-07 no está especificado en `docs/casos_de_uso.md` (solo se muestran en CU-06). En el prototipo **no se construye pantalla ni servicio de alta**: los antecedentes y alergias se cargan como datos ficticios al arrancar (`DatosDemoClinicos`) y se muestran en la cabecera de la historia. La tarea M-3 queda **opcional**; solo se retoma si sobra tiempo y Pablo define el alcance por escrito. Las entidades `Antecedente` y `Alergia` y sus repositorios ya existen.
+
+## DEC-09: Atención cerrada, enmienda en texto libre y quién puede modificar (RN-02, RN-03, RN-11)
+- Una atención nace `ABIERTA` y pasa a `CERRADA`; cerrada no se modifica ni se elimina (RN-03). Se exige **al menos un diagnóstico** para cerrar.
+- La corrección es una **enmienda en texto libre** (`motivo` y `contenido_corregido`), con autor y fecha puestos por el servidor. Solo se enmienda una atención **cerrada**.
+- Una atención admite **varios diagnósticos** (`PRINCIPAL` o `SECUNDARIO`). La descripción sale del catálogo CIE-10, no del cliente (RN-10).
+- Solo el **médico que registró** la atención agrega diagnósticos y tratamientos y la cierra (RN-11, precondición de CU-08). Cualquier **médico del hospital** puede registrar una enmienda; queda su autor (la tabla `enmienda` guarda su propio profesional).
+- Una atención de otro hospital se trata como inexistente (404); una historia de otro hospital responde 403 con el mensaje de RN-06.
+- Los valores `ABIERTA`/`CERRADA` y `PRINCIPAL`/`SECUNDARIO` **no estaban en los documentos**: se adoptan aquí como decisión. Contrato en `docs/contratos/atencion_historia.md`.
+
+## DEC-10: Pantallas por rol y tablero con gráficos del Administrador del hospital (RF-19)
+Se aprueba el mapa de pantallas por rol de `docs/diseno_ui.md`, con el menú decidido por el servidor. Se agrega: **Inicio por rol**, **Mi perfil** (todos), **Registrar paciente** como pantalla aparte y, en v5 si hay tiempo, un **tablero con gráficos** para el Administrador del hospital (atenciones por día, pacientes nuevos por semana, 5 diagnósticos más frecuentes, atenciones abiertas frente a cerradas, últimos accesos). Cubre RF-19 como tablero en lugar de pantalla de reportes. Reglas: cifras reales con filtro por hospital, SVG propio sin librerías, estado vacío claro. Apoyo al diagnóstico (A-05) queda fuera por no tener caso de uso.
+
+## DEC-11: Panel "Hospitales" del Administrador de plataforma (RF-20)
+Una tarjeta por hospital con plan, estado, n.° de usuarios y n.° de pacientes. Es la **única vista que cruza hospitales a propósito** y por eso se decide de forma explícita: **muestra solo totales, nunca datos clínicos ni identificadores de pacientes**. El usuario `plataforma` no pertenece a ningún hospital (`id_establecimiento` nulo) y no tiene permisos clínicos. Es la mejor demostración del SaaS multi-hospital. Pendiente en v5, si hay tiempo.
+
+## DEC-12: Usuarios y datos de demostración por rol
+Usuarios (clave `demo123`): `admision.a/b`, `medico.a/b`, `enfermera.a/b`, `admin.a` (ADMIN_HOSPITAL, hospital A) y `plataforma` (ADMIN_PLATAFORMA). Datos clínicos **ficticios** ("Paciente de prueba") sembrados por `DatosDemoClinicos`: 4 pacientes y 8 atenciones en el hospital A y 2 pacientes y 2 atenciones en el B, para que las pantallas y tableros tengan contenido. Se desactivan con `hce.demo-datos=false` (los tests lo tienen apagado) y no se duplican al reiniciar. Nunca datos reales.

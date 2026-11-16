@@ -39,8 +39,8 @@ Los pasos salen de los casos de uso especificados. El guion oficial es la tarea 
 |---|---|---|
 | F0-1 Instalación del entorno | F0-1 (abajo) | Pendiente de Alexander y Mattias |
 | F0-2 Leer el contexto | F0-2 (abajo) | Pendiente |
-| F0-3 Base del proyecto (Pablo) | F0-3 | **Hecha**, en la rama `fase0/base`, pendiente de tu confirmación y merge |
-| F1-1 Backend CU-06, 05, 08 (Pablo) | F1-1 | Pendiente (v3) |
+| F0-3 Base del proyecto (Pablo) | F0-3 | **Hecha** y fusionada en `main` (PR #1) |
+| F1-1 Backend CU-06, 05, 08 (Pablo) | F1-1 | **Hecha** para CU-06 y CU-05 (PR #3, #4 y #5, ya en `main`). CU-08 es la tarea M-2 de Mattias |
 | F1-2 Login con el nuevo diseño | — | **Hecha por Pablo** en la Fase 0 (`static/login/`, `static/css/estilo.css`). Alexander la pule dentro de A-1 |
 | F1-3 Tests de RN-01 y validaciones | — | **Hecha por Pablo** (`RegistroPacienteServiceTest`, 5 tests, incluye DEC-02). Mattias continúa con M-1 |
 | F1-4 Pantallas P-02 y P-04 | A-2 y A-4 | Pendiente |
@@ -82,17 +82,17 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 
 ### A-2 · P-02 Buscar paciente, con el endpoint que ya existe (antes parte de F1-4)
 - **Contrato (ya existe, no cambia):** `GET /api/historias` devuelve la lista de `HistoriaResumen` del hospital del usuario: `idHistoriaClinica, nroHc, tipoDocumento, nroDocumento, paciente, fechaApertura, establecimiento, estado` (ver `presentacion/HistoriaResumen.java`). `POST /api/pacientes` responde 201 (se abrió la historia), 200 (ya existía en tu hospital) o 409 (está en otro establecimiento, DEC-02).
-- **Qué hace:** en `pacientes/`, la tabla gana un buscador por DNI o nombre (filtro en el navegador sobre la lista recibida), paginación, y chips de estado. El formulario de registro se mueve a su propia pantalla `pacientes/registrar.html` (menú de Admisión: Pacientes, Registrar paciente). Los 3 estados del `POST` se muestran con mensajes distintos.
+- **Qué hace:** en `pacientes/`, la tabla gana un buscador por DNI o nombre (filtro en el navegador sobre la lista recibida), paginación, y chips de estado. El formulario de registro se mueve a su propia pantalla `pacientes/nuevo.html` (es la `ruta` que ya entrega el menú) (menú de Admisión: Pacientes, Registrar paciente). Los 3 estados del `POST` se muestran con mensajes distintos.
 - **Limitación a respetar:** el filtro es de cliente, sobre las historias de **su propio hospital**. La búsqueda en el servidor (RF-02) la hace Pablo en v3; entonces solo se cambia de dónde sale la lista.
-- **Archivos exactos:** `static/pacientes/index.html`, `static/pacientes/pacientes.js`, `static/pacientes/registrar.html` (nuevo), `static/pacientes/registrar.js` (nuevo).
+- **Archivos exactos:** `static/pacientes/index.html`, `static/pacientes/pacientes.js`, `static/pacientes/nuevo.html` (nuevo), `static/pacientes/nuevo.js` (nuevo).
 - **Demo:** D-2, D-3 (mensajes de 200 y 409). **Criterio:** buscar por DNI parcial y por apellido; pantalla vacía con mensaje claro; sin datos de otro hospital jamás.
 - **Plan B (Pablo):** deja la pantalla actual (tabla y formulario juntos), que ya funciona.
 - **Control 48 h:** buscador funcionando con datos de prueba en una rama subida.
 - **Preguntas:** ¿por qué el filtro de cliente no rompe RN-06? ¿Qué pasaría si dos hospitales tuvieran el mismo paciente? ¿Qué muestra la pantalla si el servidor responde 409?
 
 ### A-3 · P-03 Registrar atención y tratamiento (CU-05, CU-08)
-- **Depende de:** F1-1 (Pablo). No empieza hasta que Pablo avise que el contrato está en el repo.
-- **Contrato (lo deja Pablo en `docs/contratos/atencion.md` + código):** endpoints de crear atención, cerrar atención y registrar tratamiento; DTO de entrada y salida (motivo, anamnesis, examen físico, diagnóstico con código CIE-10, tratamiento: indicación, medicamento, dosis, duración); códigos de error (403 sin permiso, 404 historia de otro hospital, 409 atención cerrada). Las rutas exactas las fija Pablo al dejar el contrato. Junto al contrato, un JSON de ejemplo para trabajar sin esperar al backend.
+- **Depende de:** F1-1 (Pablo): **ya está en `main`**. Puedes empezar.
+- **Contrato (ya en `main`, no cambia): `docs/contratos/atencion_historia.md`.** Endpoints: `POST /api/atenciones` (crear), `POST /api/atenciones/{id}/diagnosticos` (uno o varios, con código CIE-10), `POST /api/atenciones/{id}/cierre`, `POST /api/atenciones/{id}/enmiendas` (texto libre, solo sobre una atención cerrada) y `POST /api/atenciones/{id}/tratamientos` (lo termina Mattias en M-2). Errores: 403 sin permiso, 404 atención de otro hospital, 409 atención cerrada, 400 datos inválidos o código fuera del catálogo. El JSON de ejemplo del contrato sirve para trabajar sin esperar al backend. Hasta que Mattias termine M-4, agregar un diagnóstico responde 500 en la app real.
 - **Archivos exactos:** `static/atencion/index.html`, `static/atencion/atencion.js` (nuevos).
 - **Demo:** D-5, D-6. **Criterio:** formulario en tarjetas; el botón "Cerrar atención" pide confirmación (modal); tras cerrar, los campos quedan solo lectura y no hay botón de editar (RN-03); errores del servidor se muestran en español.
 - **Plan B (Pablo):** formulario mínimo de una sola tarjeta sin modal, con `confirm()` del navegador.
@@ -100,7 +100,7 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 - **Preguntas:** ¿cómo evitas que el usuario edite una atención cerrada, y por qué eso no basta como seguridad? ¿Dónde se valida el CIE-10, en el JS o en el servidor? ¿Qué pasa si se cae la red al cerrar?
 
 ### A-4 · P-04 Historia clínica (CU-06)
-- **Depende de:** F1-1. Mismo mecanismo de contrato (`docs/contratos/historia.md`: cabecera del paciente, atenciones con estado, antecedentes y alergias).
+- **Depende de:** F1-1: **ya está en `main`**. Contrato: `GET /api/historias/{id}` en `docs/contratos/atencion_historia.md` (cabecera del paciente, alergias, antecedentes y atenciones con diagnósticos, tratamientos y enmiendas). Hay datos de prueba: entra con `medico.a` y abre cualquier historia.
 - **Archivos exactos:** `static/historia/index.html`, `static/historia/historia.js` (nuevos; ya existe la carpeta con `.gitkeep`).
 - **Demo:** D-4, D-7, D-8. **Criterio:** cabecera con iniciales en círculo, DNI, edad, alergias como chips rojos; línea de tiempo de atenciones (cerrada = candado y sin botón de editar); si el servidor niega el acceso (otro hospital), mensaje claro y ningún dato.
 - **Plan B (Pablo):** tabla simple de atenciones sin línea de tiempo.
@@ -108,12 +108,30 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 - **Preguntas:** ¿de dónde sale la edad y por qué no se guarda? ¿Qué debe ver el usuario si pide la historia de otro hospital? ¿Por qué la pantalla no decide qué roles pueden ver qué?
 
 ### A-5 · Menú por rol (`diseno_ui.md`)
-- **Contrato:** `GET /api/sesion` ya devuelve `usuario, rol, establecimiento`. Pablo le agrega el **código de rol** (`MEDICO`, `ADMISION`, etc., DEC-03) cuando esté la `AutorizacionService`; hasta entonces el nombre actual ("Personal administrativo") se trata como Admisión.
+- **Contrato (ya en `main`):** `GET /api/sesion` y `POST /api/login` devuelven `usuario, rol, rolCodigo, establecimiento, ultimoAcceso` y **`menu`**: la lista de opciones de ese rol (`clave`, `titulo`, `ruta`). **El servidor decide el menú; tú solo lo dibujas** y marcas la opción activa. No hay lógica de roles en el JS. Usuarios de prueba (clave `demo123`): `admision.a`, `medico.a`, `enfermera.a`, `admin.a`, `plataforma`.
 - **Archivos exactos:** `static/js/comun.js` (solo la función del menú, **excepción acordada** a la regla de dueños), y una página de inicio por rol: `static/inicio/index.html`, `static/inicio/inicio.js`.
 - **Demo:** D-1 y D-2 en adelante (cada rol ve su menú). **Criterio:** Admisión ve Inicio, Pacientes, Registrar paciente; Médico y Enfermería ven Inicio, Pacientes, Historia clínica, Registrar atención (solo Médico); Paciente ve Mi historial y Consentimiento. **Solo aparece lo que existe**; nada de calendario, citas, chat, facturación. Las cifras del Inicio salen de la base de datos real; si el endpoint aún no existe, la tarjeta no se muestra.
 - **Plan B (Pablo):** menú fijo, el actual.
 - **Control 48 h:** menú por rol funcionando con un rol simulado.
 - **Preguntas:** ¿por qué ocultar un enlace no es seguridad? ¿Qué pasa si un Admisión escribe la URL de Registrar atención?
+
+### A-9 · Mi perfil (todos los roles, DEC-10)
+- **Contrato (ya en `main`):** `GET /api/sesion` (`usuario`, `rol`, `establecimiento`, `ultimoAcceso`). No hay endpoint nuevo.
+- **Archivos exactos:** `static/perfil/index.html`, `static/perfil/perfil.js` (nuevos).
+- **Demo:** refuerza D-8 (cada usuario ve su hospital). **Criterio:** tarjeta con iniciales, usuario, rol, hospital y último acceso; sin datos clínicos; usuario sin hospital (plataforma) muestra "Plataforma".
+- **Plan B (Pablo):** el nombre y el hospital en la barra superior.
+- **Preguntas:** ¿por qué el hospital sale del servidor y no de algo que el usuario pueda cambiar?
+
+### A-10 · Tablero con gráficos del Administrador del hospital (DEC-10) — solo si sobra tiempo
+- **Depende de:** F3-6 (Pablo: endpoints de indicadores, v5). No se empieza antes.
+- **Archivos exactos:** `static/inicio/admin.js` y, si hace falta, `static/js/graficos.js` (SVG propio, sin librerías).
+- **Criterio:** reglas de tableros de `docs/diseno_ui.md`: cifras reales, estado vacío claro, ningún gráfico de más. Las cinco vistas están en DEC-10.
+- **Plan B:** tarjetas con números sin gráficos. Se recorta junto con Reportes.
+
+### A-11 · Panel "Hospitales" del Administrador de plataforma (DEC-11) — solo si sobra tiempo
+- **Depende de:** F3-6 (Pablo). Solo totales por hospital (plan, estado, n.° de usuarios y de pacientes); **nunca datos clínicos**.
+- **Archivos exactos:** `static/hospitales/index.html`, `static/hospitales/hospitales.js`.
+- **Plan B:** no hay; se recorta.
 
 ### A-6 · P-05 Mi historial, solo lectura (CU-10, antes F2-2)
 - **Depende de:** F2-1 (Pablo, v4). Contrato en `docs/contratos/portal_paciente.md`.
@@ -152,16 +170,16 @@ Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion
 - **Preguntas:** ¿por qué el mensaje de login es el mismo si falla el usuario o la clave? ¿Qué diferencia hay entre un test que valida `PacienteRequest` y uno que prueba `RegistroPacienteService`? ¿Qué pasaría con el test si el correo es válido pero la fecha es de hoy (`@Past`)?
 
 ### M-2 · Backend CU-08 Tratamiento e indicaciones
-- **Depende de:** F1-1 (Pablo deja la entidad `Atencion`, `AtencionService` y las reglas de cierre).
-- **Contrato (Pablo, antes de empezar):** interfaz `TratamientoService`, DTO `TratamientoRequest` y `TratamientoResponse`, y los tests **que fallan**: CP-14 (atención cerrada rechaza el tratamiento) y CP-15 (se vincula a la atención abierta propia).
-- **Archivos exactos:** `dominio/Tratamiento.java`, `persistencia/TratamientoRepository.java`, `aplicacion/TratamientoService.java`, `presentacion/TratamientoController.java`, `presentacion/TratamientoRequest.java`, `presentacion/TratamientoResponse.java`, y el test del contrato. Las tablas siguen `docs/modelo_datos.md` (`tratamiento`: indicación, medicamento, dosis, duración).
+- **Depende de:** F1-1 (Pablo): **ya está en `main`**: `Atencion`, `Tratamiento`, `TratamientoRepository`, `TratamientoRequest`, el handler de errores y el esqueleto de `TratamientoService` con su test `@Disabled`. Puedes empezar.
+- **Contrato (ya en `main`):** firma `TratamientoService.agregar(usuario, idAtencion, indicacion, medicamento, dosis, duracion, ip)`, que está documentada con sus errores (403 sin permiso, 404 atención de otro hospital o inexistente, 409 atención cerrada, 400 campos vacíos, auditoría `REGISTRAR_TRATAMIENTO`). Tests en `TratamientoServiceTest` (`@Disabled`): quítales el `@Disabled` y hazlos pasar. Para ver cómo se hace, mira `AtencionService` y `AtencionServiceTest`: usan `atencionPropia` (solo el médico que registró la atención, RN-11), `exigirAbierta` y `AuditoriaService`.
+- **Archivos exactos:** `aplicacion/TratamientoService.java` (solo el cuerpo del método), `presentacion/TratamientoController.java` (nuevo: `POST /api/atenciones/{idAtencion}/tratamientos`, responde 201 con `HistoriaDetalleResponse.tratamiento(...)`), `src/test/java/pe/edu/ucv/hce/aplicacion/TratamientoServiceTest.java`. **No tocas** `ManejadorErrores`, `Permiso`, `DatosIniciales` ni los DTO: si falta algo, se lo pides a Pablo. Contrato del endpoint: sección 6 de `docs/contratos/atencion_historia.md`.
 - **Reglas:** RN-02, RN-03, RN-11; el controlador solo llama al servicio; auditoría vía `AuditoriaService` (DEC-06).
 - **Demo:** D-6. **Plan B (Pablo):** tratamiento como texto libre dentro de la atención.
 - **Control 48 h:** CP-15 en verde.
 - **Preguntas:** ¿por qué se rechaza el tratamiento en una atención cerrada y quién lo comprueba (¿el JS o el servicio?)? ¿Qué impide que el médico B registre tratamiento en una atención del médico A? ¿Dónde se aplica el filtro por hospital?
 
 ### M-3 · RF-07 Antecedentes y alergias
-- **Pregunta abierta antes de empezar:** el flujo de registro de RF-07 **no está especificado** en `docs/casos_de_uso.md` (solo se muestran en CU-06). Pablo define el alcance mínimo y lo deja por escrito en el contrato; hasta entonces esta ficha no se inicia. Roles según `docs/roles_permisos.md`: `MEDICO` y `ENFERMERIA`.
+- **OPCIONAL (DEC-08):** el flujo de registro de RF-07 no está especificado y se decidió **no construirlo**: los antecedentes y alergias ya se cargan como datos de demostración (`DatosDemoClinicos`). Esta ficha solo se retoma si sobra tiempo y Pablo define el alcance por escrito. Roles según `docs/roles_permisos.md`: `MEDICO` y `ENFERMERIA`.
 - **Contrato (Pablo):** DTO de alta de antecedente y de alergia, interfaz del servicio y tests que fallan (rol sin permiso rechazado; historia de otro hospital rechazada).
 - **Archivos exactos:** `dominio/Antecedente.java`, `dominio/Alergia.java`, `persistencia/AntecedenteRepository.java`, `persistencia/AlergiaRepository.java`, `aplicacion/AntecedenteAlergiaService.java`, `presentacion/AntecedenteAlergiaController.java` y sus DTO.
 - **Demo:** alimenta D-4 (chips de alergias en la cabecera). **Plan B (Pablo):** datos de ejemplo cargados al arrancar para que la cabecera tenga qué mostrar.
@@ -169,9 +187,9 @@ Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion
 - **Preguntas:** ¿por qué `registro_auditoria` no necesita FK pero estas tablas sí? ¿Qué rol puede registrar una alergia y de dónde sale esa regla?
 
 ### M-4 · Módulo CIE-10 (RN-10, DEC-04)
-- **Contrato (Pablo):** `cie10_demo.csv` (**lo entrega Pablo**, con solo códigos reales y verificados; nadie lo amplía con códigos "de memoria" ni con la IA) y la interfaz `CatalogoCie10Service` (`esValido(String codigo)`, `descripcion(String codigo)`); tests que fallan: formato (letra, 2 dígitos, opcional punto y 1 o 2 dígitos), código inexistente, vacío (CP-13).
+- **Contrato (ya en `main`):** `cie10_demo.csv` (lo entregó Pablo, con solo códigos reales y verificados; **nadie lo amplía con códigos "de memoria" ni con la IA**) y las firmas de `CatalogoCie10Service`: `buscar(String texto)` (por código o por texto de la descripción, sin distinguir mayúsculas ni tildes, máximo 20 resultados, lista vacía si el texto está en blanco) y `porCodigo(String codigo)` (`Optional<Cie10>`, sin distinguir mayúsculas). Los tests describen cada caso en `CatalogoCie10ServiceTest` (`@Disabled`): quítales el `@Disabled` y hazlos pasar. Además valida el formato (letra, 2 dígitos, opcional punto y 1 o 2 dígitos) y que el código vacío o inexistente devuelva vacío (CP-13). **Importante:** `AtencionService.agregarDiagnostico` ya llama a `porCodigo`; hasta que lo termines, agregar un diagnóstico responde 500 en la app real.
 - **Qué haces tú:** implementar el cargador del CSV y la validación de formato, y hacer pasar los tests.
-- **Archivos exactos:** `aplicacion/CatalogoCie10Service.java`, `src/main/resources/cie10_demo.csv` (solo lectura para ti), `src/test/java/.../Cie10Test.java`.
+- **Archivos exactos:** `aplicacion/CatalogoCie10Service.java` (solo los cuerpos de los métodos), `src/test/java/pe/edu/ucv/hce/aplicacion/CatalogoCie10ServiceTest.java`. El CSV es de solo lectura para ti. Un endpoint `GET /api/cie10?q=` (sección 7 del contrato) lo agrega Pablo o se acuerda aparte.
 - **El archivo debe decir en su cabecera:** "subconjunto de demostración, NO el catálogo oficial completo; verificar contra la fuente oficial".
 - **Demo:** D-5. **Plan B (Pablo):** validar solo el formato, sin catálogo.
 - **Control 48 h:** validación de formato con tests en verde.
@@ -198,13 +216,16 @@ Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion
 
 ## PABLO · Backend crítico y cierre
 
-### F1-1 · Backend CU-06, CU-05 (v3)
+### F1-1 · Backend CU-06, CU-05 (v3) — HECHA (PR #3, #4 y #5)
 - Ver prompt 2 de `PROMPTS.md`. IDs: RN-02, 03, 06, 07, 10, 11; DEC-03, 04, 06.
 - **Antes de que Alexander y Mattias empiecen A-3, A-4, M-2, M-3, M-4:** dejar en el repo los contratos (`docs/contratos/`), los DTO, las interfaces y los tests que fallan. Esa es la condición para que trabajen en paralelo.
 - Incluye `AutorizacionService` con constantes de permiso (DEC-03), `AuditoriaService` mínimo (DEC-06) y los usuarios demo `medico.a` y `medico.b`.
 
 ### F2-1 · Backend CU-10 (v4)
 - Portal del paciente y usuarios `PACIENTE` demo. RN-04; RN-05 queda documentada como no implementada (DEC-05).
+
+### F3-6 · Indicadores para el Inicio y los tableros (v5, DEC-10 y DEC-11)
+- Endpoints con cifras reales y filtro por hospital: tarjetas del Inicio (pacientes registrados, historias abiertas, atenciones de hoy y abiertas pendientes) y, si hay tiempo, los datos del tablero del Administrador del hospital y los totales por hospital del panel de plataforma (solo totales, nunca datos clínicos). Habilita A-10 y A-11.
 
 ### F3-1 · Auditoría completa, roles y BCrypt (v5)
 - Completa `AuditoriaService` y migra los permisos a `rol_permiso`. BCrypt y bloqueo por intentos se recortan primero si el tiempo se aprieta.
