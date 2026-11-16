@@ -14,6 +14,7 @@ import pe.edu.ucv.hce.dominio.Diagnostico;
 import pe.edu.ucv.hce.dominio.Establecimiento;
 import pe.edu.ucv.hce.dominio.HistoriaClinica;
 import pe.edu.ucv.hce.dominio.Paciente;
+import pe.edu.ucv.hce.dominio.CodigoRol;
 import pe.edu.ucv.hce.dominio.ProfesionalSalud;
 import pe.edu.ucv.hce.dominio.Tratamiento;
 
@@ -38,12 +39,14 @@ public class DatosDemoClinicos implements CommandLineRunner {
     private final TratamientoRepository tratamientos;
     private final AlergiaRepository alergias;
     private final AntecedenteRepository antecedentes;
+    private final RolRepository roles;
 
     public DatosDemoClinicos(EstablecimientoRepository establecimientos, UsuarioRepository usuarios,
                              ProfesionalSaludRepository profesionales, PacienteRepository pacientes,
                              HistoriaClinicaRepository historias, AtencionRepository atenciones,
                              DiagnosticoRepository diagnosticos, TratamientoRepository tratamientos,
-                             AlergiaRepository alergias, AntecedenteRepository antecedentes) {
+                             AlergiaRepository alergias, AntecedenteRepository antecedentes,
+                             RolRepository roles) {
         this.establecimientos = establecimientos;
         this.usuarios = usuarios;
         this.profesionales = profesionales;
@@ -54,6 +57,7 @@ public class DatosDemoClinicos implements CommandLineRunner {
         this.tratamientos = tratamientos;
         this.alergias = alergias;
         this.antecedentes = antecedentes;
+        this.roles = roles;
     }
 
     @Override
@@ -105,6 +109,25 @@ public class DatosDemoClinicos implements CommandLineRunner {
         if (h6 != null) {
             atencion(h6, medicoB, b, 1, "Falta de aire", "J45.9", "Asma, no especificada", true);
         }
+
+        // Portal del paciente (CU-10): cuentas sin hospital (el paciente es global, DEC-02), ligadas a un paciente.
+        cuentaPaciente("paciente.a", "90000001");
+        cuentaPaciente("paciente.b", "90000005");
+    }
+
+    /** Crea la cuenta del portal y la liga al paciente por DNI, si aun no existe. Clave demo123. */
+    private void cuentaPaciente(String nombre, String dni) {
+        var rol = roles.findByNombre(CodigoRol.PACIENTE.name()).orElse(null);
+        if (rol == null || usuarios.findByUsuario(nombre).isPresent()) {
+            return;
+        }
+        var paciente = pacientes.findByTipoDocumentoAndNroDocumento("DNI", dni).orElse(null);
+        if (paciente == null || paciente.getUsuario() != null) {
+            return;
+        }
+        paciente.vincularUsuario(usuarios.save(new pe.edu.ucv.hce.dominio.Usuario(null, rol, nombre,
+            pe.edu.ucv.hce.aplicacion.ClaveUtil.sha256("demo123"), "ACTIVO")));
+        pacientes.save(paciente);
     }
 
     private ProfesionalSalud profesionalDe(String usuario) {

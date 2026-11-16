@@ -15,6 +15,7 @@ Decididas por Pablo (líder técnico) el 13/11/2026. Si algo cambia, se agrega u
 | DEC-10 | Pantallas por rol y tablero con gráficos del Administrador del hospital | Documentado; menú por rol hecho (`MenuService`); tablero pendiente (v5, si hay tiempo) |
 | DEC-11 | Panel "Hospitales" del Administrador de plataforma | Documentado; pendiente (v5, si hay tiempo) |
 | DEC-12 | Usuarios y datos de demostración por rol | Hecho (v3) |
+| DEC-13 | Portal del paciente: solo atenciones cerradas, cuenta sin hospital y consentimiento ACTIVO/REVOCADO | CU-10 hecho (v4); CU-11 contrato listo, implementa Mattias (M-5) |
 
 ## DEC-01: Ubicación y estructura
 La raíz del proyecto es `hce-saas/`. `CLAUDE.md`, `PROMPTS.md`, `PLAN_CALENDARIO.md`, `FICHAS_TAREAS.md`, `ONBOARDING_MATTIAS.md`, `GIT_SETUP.md`, `README.md`, `.gitignore` y `docs/` viven en la raíz, junto con `pom.xml`, `mvnw` y `src/`. El contenido de `hce-kit-v2/` se movió con `git mv` (historial conservado). La semilla original queda como **referencia** en `referencia/semilla-v2/` hasta terminar la migración; no es parte del build.
@@ -64,3 +65,10 @@ Una tarjeta por hospital con plan, estado, n.° de usuarios y n.° de pacientes.
 
 ## DEC-12: Usuarios y datos de demostración por rol
 Usuarios (clave `demo123`): `admision.a/b`, `medico.a/b`, `enfermera.a/b`, `admin.a` (ADMIN_HOSPITAL, hospital A) y `plataforma` (ADMIN_PLATAFORMA). Datos clínicos **ficticios** ("Paciente de prueba") sembrados por `DatosDemoClinicos`: 4 pacientes y 8 atenciones en el hospital A y 2 pacientes y 2 atenciones en el B, para que las pantallas y tableros tengan contenido. Se desactivan con `hce.demo-datos=false` (los tests lo tienen apagado) y no se duplican al reiniciar. Nunca datos reales.
+
+## DEC-13: Portal del paciente (CU-10, CU-11; RN-04, RN-09)
+- La cuenta `PACIENTE` **no pertenece a ningún hospital** (el paciente es global, DEC-02) y se liga a su paciente por `paciente.id_usuario`. El portal **no recibe ningún id**: la historia sale siempre de la cuenta en sesión (RN-04). Es solo lectura: el controlador solo tiene `GET`.
+- El paciente ve **solo atenciones cerradas**: las abiertas son borradores del médico. Esto no está en los documentos: se adopta aquí. Cada consulta se audita (RN-07).
+- Resumen (RF-16): JSON que la pantalla muestra e imprime (`GET /api/mi-historial/resumen`).
+- RN-05 (representante legal) sigue sin implementarse (DEC-05).
+- Consentimiento (CU-11): estados `ACTIVO` y `REVOCADO` (no estaban en los documentos). Revocar guarda la fecha; revocar dos veces es un error. Cuentas demo: `paciente.a` (Hospital A, DNI 90000001) y `paciente.b` (Hospital B, DNI 90000005), clave `demo123`.
