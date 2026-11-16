@@ -23,6 +23,12 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 5. Con `admision.a`: `GET /api/historias/1` da 403 (RN-02).
 6. Agregar diagnóstico necesita el catálogo CIE-10 (tarea M-4); hasta entonces responde 500.
 
+## Cómo probar (v3: usuarios demo, menú por rol y datos de prueba)
+1. `./mvnw test`: se suman `MenuServiceTest` (7) y `DatosDemoClinicosTest` (2).
+2. Al arrancar la app se cargan datos **ficticios** ("Paciente de prueba"): 4 pacientes y 8 atenciones en el Hospital A, 2 pacientes y 2 atenciones en el B. Se desactivan con `hce.demo-datos=false` y no se duplican al reiniciar.
+3. Usuarios (clave `demo123`): `admision.a/b`, `medico.a/b`, `enfermera.a/b`, `admin.a` y `plataforma`.
+4. `POST /api/login` y `GET /api/sesion` devuelven `menu` (lista de `clave`, `titulo`, `ruta`) según el rol, más `ultimoAcceso`. Entrar con `medico.a`: `GET /api/historias` muestra 4 historias; con `medico.b`, 2 (RN-06).
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---

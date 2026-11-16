@@ -1,6 +1,7 @@
 package pe.edu.ucv.hce.persistencia;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.ucv.hce.aplicacion.ClaveUtil;
@@ -13,9 +14,11 @@ import pe.edu.ucv.hce.dominio.Usuario;
 /**
  * Datos ficticios de la demostracion (DEC-03). Es idempotente: cada registro se crea solo si falta,
  * asi una base ya existente en ./data recibe lo nuevo sin perder lo anterior.
- * Usuarios: admision.a, admision.b (ADMISION) y medico.a, medico.b (MEDICO). Clave: demo123.
+ * Usuarios (clave demo123): admision.a/b (ADMISION), medico.a/b (MEDICO), enfermera.a/b (ENFERMERIA),
+ * admin.a (ADMIN_HOSPITAL, hospital A) y plataforma (ADMIN_PLATAFORMA, sin hospital).
  */
 @Component
+@Order(1)
 public class DatosIniciales implements CommandLineRunner {
 
     private static final String CLAVE_DEMO = "demo123";
@@ -49,6 +52,11 @@ public class DatosIniciales implements CommandLineRunner {
         usuario(b, admision, "admision.b");
         Usuario medicoA = usuario(a, medico, "medico.a");
         Usuario medicoB = usuario(b, medico, "medico.b");
+
+        usuario(a, rol(CodigoRol.ENFERMERIA), "enfermera.a");
+        usuario(b, rol(CodigoRol.ENFERMERIA), "enfermera.b");
+        usuario(a, rol(CodigoRol.ADMIN_HOSPITAL), "admin.a");
+        usuario(null, rol(CodigoRol.ADMIN_PLATAFORMA), "plataforma"); // RF-20: no pertenece a un hospital
 
         profesional(medicoA, "Médico de prueba", "Hospital A", "DEMO-0001");
         profesional(medicoB, "Médico de prueba", "Hospital B", "DEMO-0002");

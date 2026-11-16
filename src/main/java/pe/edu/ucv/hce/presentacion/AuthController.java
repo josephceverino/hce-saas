@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.ucv.hce.aplicacion.AutenticacionService;
+import pe.edu.ucv.hce.aplicacion.MenuService;
 import pe.edu.ucv.hce.dominio.Usuario;
 
 @RestController
@@ -17,10 +18,12 @@ public class AuthController {
 
     private final AutenticacionService autenticacion;
     private final SesionActual sesionActual;
+    private final MenuService menu;
 
-    public AuthController(AutenticacionService autenticacion, SesionActual sesionActual) {
+    public AuthController(AutenticacionService autenticacion, SesionActual sesionActual, MenuService menu) {
         this.autenticacion = autenticacion;
         this.sesionActual = sesionActual;
+        this.menu = menu;
     }
 
     @PostMapping("/login")
@@ -32,7 +35,7 @@ public class AuthController {
         }
         HttpSession sesion = peticion.getSession(true);
         sesion.setAttribute(SesionActual.ATRIBUTO, usuario.getId());
-        return SesionResponse.de(usuario);
+        return SesionResponse.de(usuario, menu.menuPara(usuario));
     }
 
     @PostMapping("/logout")
@@ -42,6 +45,7 @@ public class AuthController {
 
     @GetMapping("/sesion")
     public SesionResponse sesion(HttpSession sesion) {
-        return SesionResponse.de(sesionActual.requerir(sesion));
+        Usuario usuario = sesionActual.requerir(sesion);
+        return SesionResponse.de(usuario, menu.menuPara(usuario));
     }
 }
