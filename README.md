@@ -43,6 +43,13 @@ Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la dem
 4. Guía para quien recibe el zip: `GUIA_INSTALACION.md`. Prueba pendiente antes del 5 de diciembre: copiar el zip a **otra PC Windows** y abrirlo con doble clic.
 En desarrollo (`./mvnw spring-boot:run` o el IDE) no se abre el navegador solo: eso lo activa únicamente el lanzador (`hce.abrir-navegador=true`).
 
+## Cómo probar (v5: auditoría e indicadores)
+1. `./mvnw test`: se suman `AuditoriaConsultaTest` (10) e `IndicadoresServiceTest` (9) y `ArranqueLocalTest` (4).
+2. Entrar con `admin.a` / `demo123` (Administrador del hospital A). Por API: `GET /api/auditoria` (con filtros `usuario`, `accion`, `nroHc`, `desde`, `hasta`, `pagina`, `tamano`) y `GET /api/indicadores/tablero`. Entrar con `medico.a`: ambos dan 403.
+3. Inicio por rol: `GET /api/indicadores/inicio` con `admision.a`, `medico.a`, `enfermera.a` o `admin.a` (cada uno ve sus tarjetas, con cifras del Hospital Demo A).
+4. Entrar con `plataforma`: `GET /api/indicadores/hospitales` devuelve solo totales por hospital.
+5. Cada inicio de sesión, intento fallido y cierre de sesión queda en la auditoría. Contrato: `docs/contratos/auditoria_indicadores.md`.
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---

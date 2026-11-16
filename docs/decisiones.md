@@ -15,6 +15,7 @@ Decididas por Pablo (líder técnico) el 13/11/2026. Si algo cambia, se agrega u
 | DEC-10 | Pantallas por rol y tablero con gráficos del Administrador del hospital | Documentado; menú por rol hecho (`MenuService`); tablero pendiente (v5, si hay tiempo) |
 | DEC-11 | Panel "Hospitales" del Administrador de plataforma | Documentado; pendiente (v5, si hay tiempo) |
 | DEC-12 | Usuarios y datos de demostración por rol | Hecho (v3) |
+| DEC-14 | Auditoría del admin del hospital, indicadores y límites | Hecho (v5): `AuditoriaService.consultar`, `IndicadoresService` |
 | DEC-13 | Portal del paciente: solo atenciones cerradas, cuenta sin hospital y consentimiento ACTIVO/REVOCADO | CU-10 hecho (v4); CU-11 contrato listo, implementa Mattias (M-5) |
 
 ## DEC-01: Ubicación y estructura
@@ -72,3 +73,9 @@ Usuarios (clave `demo123`): `admision.a/b`, `medico.a/b`, `enfermera.a/b`, `admi
 - Resumen (RF-16): JSON que la pantalla muestra e imprime (`GET /api/mi-historial/resumen`).
 - RN-05 (representante legal) sigue sin implementarse (DEC-05).
 - Consentimiento (CU-11): estados `ACTIVO` y `REVOCADO` (no estaban en los documentos). Revocar guarda la fecha; revocar dos veces es un error. Cuentas demo: `paciente.a` (Hospital A, DNI 90000001) y `paciente.b` (Hospital B, DNI 90000005), clave `demo123`.
+
+## DEC-14: Auditoría del administrador del hospital e indicadores (RF-13, RF-19, RF-20; RN-06, RN-07)
+- **Quién y qué ve:** solo el `ADMIN_HOSPITAL` consulta `GET /api/auditoria`, y solo lo de su hospital: lo hecho por usuarios de su hospital **o** lo que toque historias de su hospital (así aparece cuando un paciente consulta la suya). La auditoría es de solo lectura.
+- **Qué se registra además:** inicio de sesión, intento fallido (solo de usuarios que existen, porque `registro_auditoria.id_usuario` es obligatorio) y cierre de sesión.
+- **Límite conocido:** los accesos **denegados** (403) todavía no se registran. Hace falta guardarlos en una transacción aparte y conocer el usuario y la IP en el punto del rechazo; se deja como mejora.
+- **Indicadores:** toda cifra sale de la base y se filtra por hospital. El Inicio por rol, el tablero del admin y el panel de plataforma están en `docs/contratos/auditoria_indicadores.md`. El panel de plataforma da **solo totales**; no trae el plan porque `suscripcion` no tiene entidad todavía.
