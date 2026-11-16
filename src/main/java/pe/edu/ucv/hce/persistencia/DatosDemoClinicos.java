@@ -126,7 +126,7 @@ public class DatosDemoClinicos implements CommandLineRunner {
             return;
         }
         paciente.vincularUsuario(usuarios.save(new pe.edu.ucv.hce.dominio.Usuario(null, rol, nombre,
-            pe.edu.ucv.hce.aplicacion.ClaveUtil.sha256("demo123"), "ACTIVO")));
+            pe.edu.ucv.hce.aplicacion.ClaveUtil.bcrypt("demo123"), "ACTIVO")));
         pacientes.save(paciente);
     }
 

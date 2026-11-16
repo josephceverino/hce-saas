@@ -50,6 +50,12 @@ En desarrollo (`./mvnw spring-boot:run` o el IDE) no se abre el navegador solo: 
 4. Entrar con `plataforma`: `GET /api/indicadores/hospitales` devuelve solo totales por hospital.
 5. Cada inicio de sesión, intento fallido y cierre de sesión queda en la auditoría. Contrato: `docs/contratos/auditoria_indicadores.md`.
 
+## Cómo probar (v5: BCrypt y bloqueo por intentos)
+1. `./mvnw test`: se suman `BloqueoLoginTest` (11) y `ClaveBcryptTest` (4).
+2. Entrar con `enfermera.a` y una clave mala 5 veces: cada vez responde 401 con el mismo mensaje. A la sexta, **aunque pongas `demo123`**, dice "La cuenta está bloqueada... Intenta de nuevo en 15 minutos". Otros usuarios (`enfermera.b`) no se afectan. El bloqueo se levanta solo a los 15 minutos.
+3. Los usuarios demo están guardados con BCrypt. Una base anterior (con SHA-256) se actualiza sola al arrancar.
+4. Los intentos fallidos y bloqueados quedan en la auditoría (`LOGIN_FALLIDO`, `LOGIN_BLOQUEADO`).
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---

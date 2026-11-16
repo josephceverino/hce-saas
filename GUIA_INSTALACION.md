@@ -26,6 +26,7 @@ Cierra la ventana negra (o pulsa `Ctrl + C` en ella). Los datos quedan guardados
 - **El navegador no se abre solo:** mira la ventana negra; dice la dirección ("HCE-Demo lista en http://localhost:XXXX"). Escríbela en el navegador.
 - **El puerto 8090 está ocupado** (otro programa lo usa): no hace falta hacer nada. La demo prueba el siguiente puerto libre (8091, 8092…) y abre el navegador en el correcto. La dirección exacta se ve en la ventana negra.
 - **La ventana negra se cierra sola al abrir:** abre una consola (`cmd`) en la carpeta `HCE-Demo` y ejecuta `HCE-Demo.exe` para leer el mensaje de error. Revisa que la carpeta no esté en un lugar de solo lectura (por ejemplo dentro del zip sin extraer).
+- **"La cuenta está bloqueada":** se equivocó 5 veces seguidas con ese usuario. Espera 15 minutos o entra con otro usuario de la tabla. Si es urgente: cierra el programa y borra la carpeta `data` (se recrea con los datos de prueba).
 - **Dos copias a la vez** usan la misma carpeta `data` si están en el mismo lugar: abre solo una.
 
 ## 5. Cómo comprobar que no usa el Java de la PC (para el ensayo)
