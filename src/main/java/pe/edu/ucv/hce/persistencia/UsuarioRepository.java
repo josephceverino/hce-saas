@@ -16,6 +16,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     /** CU-17 (RN-06, RN-16): el personal de un hospital, por nombre de usuario. */
     java.util.List<Usuario> findAllByEstablecimientoIdOrderByUsuarioAsc(Integer idEstablecimiento);
 
+    /** CU-26: el administrador de un hospital. */
+    Optional<Usuario> findFirstByEstablecimientoIdAndRolNombreOrderByIdAsc(Integer idEstablecimiento, String nombreRol);
+
     /** CU-17 (RN-16): un usuario solo si es de ese hospital. */
     Optional<Usuario> findByIdAndEstablecimientoId(Integer id, Integer idEstablecimiento);
 }

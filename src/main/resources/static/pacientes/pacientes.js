@@ -84,6 +84,12 @@ function dibujar() {
       b.addEventListener('click', () => admitir(h));
       grupo.append(b);
     }
+    if (puedeAdmitir) {
+      const r = HCE.el('button', 'hce-boton claro pequeno', 'Restablecer clave');
+      r.type = 'button';
+      r.addEventListener('click', () => HCE.restablecerClave('/api/restablecimientos/pacientes/' + h.idHistoriaClinica, h.paciente, $('mensaje')));
+      grupo.append(r);
+    }
     if (puedeVerHistoria) {
       const enlace = HCE.el('a', 'hce-boton claro pequeno', 'Ver historia');
       enlace.href = '/historia/?id=' + encodeURIComponent(h.idHistoriaClinica);

@@ -27,7 +27,12 @@ async function cargar() {
     cab.append(titulo, chips);
     const cifras = HCE.el('div', 'cifras');
     cifras.append(cifra('Usuarios', h.usuarios), cifra('Pacientes', h.pacientes), cifra('Atenciones', h.atenciones));
-    tarjeta.append(cab, cifras);
+    const pie = HCE.el('div', 'hce-acciones no-imprimir');
+    const restablecer = HCE.el('button', 'hce-boton claro pequeno', 'Restablecer clave del administrador');
+    restablecer.type = 'button';
+    restablecer.addEventListener('click', () => HCE.restablecerClave('/api/restablecimientos/hospitales/' + h.id, 'el administrador de ' + h.nombre, $('error')));
+    pie.append(restablecer);
+    tarjeta.append(cab, cifras, pie);
     lista.append(tarjeta);
   });
 }

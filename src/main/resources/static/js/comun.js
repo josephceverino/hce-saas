@@ -163,6 +163,41 @@ const HCE = (() => {
     });
   }
 
+  /** CU-26: restablece una clave (POST) tras confirmar y muestra la clave temporal UNA sola vez en un modal. */
+  async function restablecerClave(ruta, nombre, caja) {
+    const ok = await confirmar('¿Restablecer la clave de ' + nombre + '?',
+      'Se generará una clave temporal. La clave actual dejará de servir y deberá cambiarla en su próximo ingreso.',
+      'Sí, restablecer');
+    if (!ok) return;
+    const r = await api(ruta, { method: 'POST' });
+    if (!r.ok) { mostrar(caja, (r.cuerpo && r.cuerpo.mensaje) || 'No se pudo restablecer la clave.', 'error'); return; }
+    await new Promise(resolver => {
+      const fondo = el('div', 'hce-modal-fondo');
+      const modal = el('div', 'hce-modal');
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      const cerrar = el('button', 'hce-boton primario', 'Listo');
+      cerrar.type = 'button';
+      cerrar.addEventListener('click', () => { fondo.remove(); resolver(); });
+      const acciones = el('div', 'hce-acciones');
+      acciones.append(cerrar);
+      const datos = el('div', 'hce-constancia-datos');
+      const dato = (etiqueta, valor, clase) => {
+        const d = el('div', 'hce-dato');
+        d.append(el('div', 'etiqueta', etiqueta), el('div', 'valor ' + (clase || ''), valor));
+        datos.append(d);
+      };
+      dato('Usuario', r.cuerpo.usuario, 'hce-monoespacio');
+      dato('Clave temporal', r.cuerpo.claveTemporal, 'hce-monoespacio hce-clave');
+      modal.append(el('h2', null, 'Clave restablecida'), datos,
+        el('div', 'hce-aviso-alerta', 'Esta clave se muestra una sola vez. Entrégala a la persona: deberá cambiarla en su primer ingreso.'),
+        acciones);
+      fondo.append(modal);
+      document.body.append(fondo);
+      cerrar.focus();
+    });
+  }
+
   /** Modal para elegir una opcion. opciones: [{valor, texto, descripcion, clase}]. Devuelve el valor o null. */
   function elegir(titulo, texto, opciones) {
     return new Promise(resolver => {
@@ -231,5 +266,5 @@ const HCE = (() => {
     window.print();
   }
 
-  return { api, mostrar, el, imprimir, elegir, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, detalleAtencion };
+  return { api, mostrar, el, imprimir, elegir, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, restablecerClave, detalleAtencion };
 })();

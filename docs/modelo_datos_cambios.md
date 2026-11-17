@@ -13,7 +13,7 @@ Estado: **PROPUESTA**. Claude Code debe revisar contra el código actual (que ya
 ## Columnas nuevas en tablas existentes
 | Tabla | Columnas |
 |---|---|
-| `usuario` | `debe_cambiar_clave` (RN-14), `activo`, `intentos_fallidos`, `bloqueado_hasta` (RN-12), `numero_colegiatura` (personal clínico) |
+| `usuario` | `debe_cambiar_clave` (RN-14), `activo`, `intentos_fallidos`, `bloqueado_hasta` (RN-12), `numero_colegiatura` (personal clínico), `clave_restablecida_en` (CU-26: levanta el bloqueo) |
 | `paciente` | `lugar_nacimiento`, `procedencia`, `estado_civil`, `grado_instruccion`, `ocupacion`, `religion`, `contacto_emergencia_nombre`, `contacto_emergencia_parentesco`, `contacto_emergencia_telefono` |
 | `atencion` | `id_admision`, `enfermedad_actual`, `funciones_biologicas`, `examen_fisico_sistemas` (texto por sistema, puede ser JSON o columnas) |
 | `antecedente` | `tipo` (PERSONAL, QUIRURGICO, VACUNA, HABITO, FAMILIAR) |

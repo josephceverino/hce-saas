@@ -26,7 +26,15 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] 2.3 CU-21: `SignosVitales` con rangos de demostración (no clínicos), registro solo con la admisión en enfermería, "listo" exige signos vitales; antecedentes por tipo y alergias; P-04 rehecha según la referencia 02; 6 tests. Commit `8888e41`.
 - [x] 2.4 `npm run recorrido -- 5` recorre los pasos 1 a 5 con 15 verificaciones, sin errores de consola, y deja sus capturas (paso1_ a paso5_) en `docs/capturas/`. Commit `b572352`.
 
-## Resumen al parar (checklist completo, 0 ítems bloqueados)
+## R3 (aprobado el 17 nov: restablecer clave sí, tramo B recortado, `docs/` se actualiza)
+- [x] R3a. CU-26 restablecer clave: administrador del hospital → su personal, plataforma → administrador de hospital, admisión → pacientes de su hospital; clave temporal una vez, cambio obligatorio, levanta el bloqueo; botones en P-07, P-08 y P-02; 6 tests (202 en total). Decisión D-39.
+- [ ] R3b.1 Iniciar atención desde la cola y atención ampliada (CU-05)
+- [ ] R3b.2 Pedido de exámenes (CU-22)
+- [ ] R3b.3 Resultados (CU-23)
+- [ ] R3b.4 Cierre de la atención
+- [ ] R3b.5 Recorrido Playwright pasos 6 a 8 y regenerar `script_sqlserver.sql`
+
+## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 
 **Qué quedó hecho.** Los 17 ítems del checklist. La rama `integracion` contiene todo y está subida.
 - R0: sin cuentas de demostración; un único administrador de plataforma inicial (`admin` / `Temporal2026`, configurable); cambio de clave obligatorio en el primer ingreso (RN-14, aplicado en el servidor); menú e Inicio propio para los 7 roles; nueva estructura visual (referencias 01 y 04).

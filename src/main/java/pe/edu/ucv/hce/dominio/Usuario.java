@@ -48,6 +48,10 @@ public class Usuario {
     @Column(name = "correo", length = 100)
     private String correo;
 
+    /** CU-26: cuando un tercero restablecio la clave. Los intentos fallidos anteriores ya no bloquean la cuenta. */
+    @Column(name = "clave_restablecida_en")
+    private LocalDateTime claveRestablecidaEn;
+
     protected Usuario() { }
 
     public Usuario(Establecimiento establecimiento, Rol rol, String usuario,
@@ -83,6 +87,13 @@ public class Usuario {
         this.nombreCompleto = nombreCompleto;
         this.documento = documento;
         this.correo = correo;
+    }
+    public LocalDateTime getClaveRestablecidaEn() { return claveRestablecidaEn; }
+    /** CU-26, RN-14: nueva clave temporal puesta por un tercero; obliga a cambiarla y levanta el bloqueo por intentos. */
+    public void restablecerClave(String nuevoHash, LocalDateTime cuando) {
+        this.contrasenaHash = nuevoHash;
+        this.debeCambiarClave = true;
+        this.claveRestablecidaEn = cuando;
     }
     public void setEstado(String estado) { this.estado = estado; }
     public boolean isDebeCambiarClave() { return debeCambiarClave; }

@@ -12,7 +12,8 @@ Los RN existentes son RN-01 a RN-12; los nuevos empiezan en RN-13. Antes de fusi
 | RF-27 | Crear la cuenta del portal del paciente al registrarlo (usuario = documento, clave temporal) | A-04 | Alta | M-04 | A |
 | RF-28 | Cambiar la contraseña temporal en el primer ingreso | Todos | Alta | M-01 | A |
 | RF-26 | Registrar notas de evolución por fecha | A-02 | Media | M-03 | B |
-| RF-29 | Registrar el consentimiento informado de la atención | A-02 | Media | M-03 | B |
+| RF-29 | Registrar el consentimiento informado de la atención | A-02 | Media | M-03 | B (recortado, ver `PLAN_V3.md`) |
+| RF-30 | Restablecer la clave de una cuenta con una clave temporal (CU-26; D-39) | A-06, A-07, A-04 | Media | M-01 | A |
 | RF-30 | Registrar procedimientos y seguimiento (próximo control) | A-02 | Media | M-03 | B |
 (RF-24 queda reservado y sin uso para no renumerar si el grupo agrega otro.)
 

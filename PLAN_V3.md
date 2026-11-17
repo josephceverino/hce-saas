@@ -23,5 +23,10 @@ Pablo genera un paquete `jpackage` **cada viernes** (20 y 27 de noviembre) y lo 
 Es **viable pero sin holgura**. Dos semanas y media para ocho incrementos con tres personas en horarios distintos. Si un incremento se atrasa más de 1 día, se recorta; no se corre.
 Orden de recorte: 1) reportes, 2) tramo B completo (evolución, consentimiento informado, procedimientos), 3) pedido de exámenes simplificado (un campo de texto), 4) pantalla de auditoría reducida a una lista. **No se recorta:** el recorrido de los pasos 1 a 8, el portal del paciente, RN-01, RN-03 y RN-06, ni el paquete portable.
 
+## Decisiones del 17 de noviembre
+- **Tramo B recortado desde ya** (CU-24 evolución, RF-29 consentimiento informado, procedimientos): no se implementa.
+- **Se agrega** "restablecer clave" (CU-26, RF-30, D-39) a R3.
+- Se actualiza `docs/` con cada incremento, incluido el script de SQL Server (regenerar al final de R3).
+
 ## Copia de seguridad de la demo
 Tras el ensayo final, copiar la carpeta `data/` a `data_ensayo/`. Si falla algo en vivo, se cierra el programa, se restaura esa copia y se reabre: el sistema aparece ya poblado.

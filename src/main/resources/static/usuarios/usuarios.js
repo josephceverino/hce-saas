@@ -64,7 +64,15 @@ function accion(u) {
     if (!r.ok) { HCE.mostrar($('error'), (r.cuerpo && r.cuerpo.mensaje) || 'No se pudo cambiar el estado.', 'error'); return; }
     await cargar();
   });
-  return b;
+  const r = HCE.el('button', 'hce-boton claro pequeno', 'Restablecer clave');
+  r.type = 'button';
+  r.addEventListener('click', async () => {
+    await HCE.restablecerClave('/api/restablecimientos/personal/' + u.id, u.usuario, $('error'));
+    await cargar();
+  });
+  const grupo = HCE.el('div', 'hce-acciones-fila');
+  grupo.append(r, b);
+  return grupo;
 }
 
 function dibujarTabla() {

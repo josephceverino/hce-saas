@@ -97,5 +97,16 @@ Precondición general: sesión iniciada (CU-01), salvo CU-18.
 - **Flujo principal:** A-06 filtra el registro de accesos por usuario, fecha o paciente; y ve el reporte de atenciones por día.
 - **Alternativo**: solo ve registros de su hospital.
 
+### CU-26: Restablecer la clave de una cuenta
+- **Actores**: Administrador del hospital (A-06), Administrador de plataforma (A-07), Admisión (A-04).
+- **Requisitos**: RF-30. **Reglas**: RN-14, RN-16, RN-06, RN-07, RN-12.
+- **Flujo principal:**
+  1. El actor elige "Restablecer clave" sobre una cuenta que le corresponde: A-06 al personal de su hospital; A-07 al administrador de un hospital; A-04 a un paciente de su hospital.
+  2. El sistema pide confirmación, genera una clave temporal y guarda solo su hash.
+  3. Muestra la clave **una sola vez**, deja la cuenta con cambio obligatorio en el primer ingreso (RN-14) y levanta el bloqueo por intentos fallidos (RN-12).
+  4. Registra la acción `RESTABLECER_CLAVE` en la auditoría (RN-07).
+- **Alternativo**: una cuenta de otro hospital se trata como inexistente (RN-06, RN-16); nadie restablece su propia clave por esta vía (la cambia con CU-18); A-06 no restablece claves de administradores.
+- Decisión D-39 (no estaba en los documentos originales).
+
 ## Trazabilidad CU nuevo → pasos del recorrido
-CU-16: paso 1 · CU-17, CU-18: paso 2 · CU-19: paso 3 · CU-20: paso 4 · CU-21: paso 5 · CU-05, CU-22: paso 6 · CU-23: paso 7 · CU-05 (cierre), CU-24: paso 8 · CU-10, CU-11, CU-18: paso 9 · CU-25: transversal.
+CU-16: paso 1 · CU-17, CU-18: paso 2 · CU-19: paso 3 · CU-20: paso 4 · CU-21: paso 5 · CU-05, CU-22: paso 6 · CU-23: paso 7 · CU-05 (cierre), CU-24: paso 8 · CU-10, CU-11, CU-18: paso 9 · CU-25: transversal · CU-26: transversal (cuentas).
