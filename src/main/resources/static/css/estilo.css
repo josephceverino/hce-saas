@@ -76,16 +76,20 @@ h2 { font-size: 17px; margin: 0 0 16px; }
 .hce-vacio { color: var(--hce-texto-suave); padding: 16px 10px; }
 
 /* ---- Login a dos columnas ---- */
-.hce-login { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
-.hce-login-marca { background: linear-gradient(160deg, var(--hce-primario-oscuro), #06312f); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
-.hce-login-marca img { width: 72px; height: 72px; }
-.hce-login-marca h1 { font-size: 32px; }
+.hce-login { min-height: 100vh; display: grid; grid-template-columns: minmax(300px, 0.42fr) minmax(0, 1fr); }
+.hce-login-marca { background: linear-gradient(165deg, #0f8f87, var(--hce-primario-oscuro) 60%, #06312f); color: #fff; padding: 48px 40px; display: flex; flex-direction: column; justify-content: flex-start; gap: 20px; position: relative; overflow: hidden; }
+.hce-login-marca::after { content: ""; position: absolute; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.06); left: -90px; bottom: -90px; }
+.hce-login-marca .hce-marca-login { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; }
+.hce-login-marca .hce-marca-login img { width: 40px; height: 40px; }
+.hce-login-marca h1 { font-size: 30px; margin-top: 24px; }
 .hce-login-marca p { margin: 0; opacity: .92; max-width: 48ch; font-size: 16px; }
 .hce-login-marca ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
 .hce-login-marca li { display: flex; gap: 12px; align-items: flex-start; }
 .hce-login-marca li span { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--hce-primario); display: grid; place-items: center; font-weight: 700; }
 .hce-login-acceso { display: grid; place-items: center; padding: 32px; }
-.hce-login-caja { width: 100%; max-width: 400px; }
+.hce-login-caja { width: 100%; max-width: 440px; padding: 28px; }
+.hce-login-caja h2 { font-size: 26px; margin-bottom: 4px; }
+.hce-login-pie { margin-top: 18px; text-align: center; font-size: 13px; color: var(--hce-texto-suave); }
 .hce-login-caja form { display: grid; gap: 14px; margin-top: 18px; }
 .hce-demo { margin-top: 18px; background: var(--hce-primario-claro); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; }
 .hce-demo button { all: unset; cursor: pointer; color: var(--hce-primario-oscuro); text-decoration: underline; font-weight: 600; }

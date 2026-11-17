@@ -15,3 +15,6 @@ Decisiones tomadas durante el trabajo autónomo del plan v3. Cada una es la opci
 | # | Ítem | Decisión | Por qué |
 |---|---|---|---|
 | D-1 | A2 | `PROGRESO.md` y `DECISIONES_PENDIENTES.md` van en la raíz del repo, junto a `PLAN_V3.md` | Así no se toca `docs/` |
+| D-2 | 0.1 | Las cuentas de prueba (`admision.a`, `medico.a`, ... clave `demo123`) siguen existiendo **solo en los tests** (`hce.demo-usuarios=true` en `src/test/resources`). En la aplicación quedan apagadas, igual que los pacientes ficticios (`hce.demo-datos=false`) | Los 119 tests dependen de esas cuentas; reescribirlos no aporta a la demo |
+| D-3 | 0.1 | Playwright como `playwright-core` en `e2e/` (dependencia de desarrollo de Node, fuera de Maven y del paquete), usando el Chrome instalado (`channel: chrome`) para no descargar navegadores | Única dependencia nueva; no entra en el `.exe` |
+| D-4 | 0.1 | Login: panel izquierdo con marca, título y una frase; tarjeta "Bienvenido" con pie "Prototipo académico con datos ficticios" (referencia 04) | Más cercano a la referencia sin agregar opciones fuera de alcance (sin "olvidé mi clave", sin redes sociales) |

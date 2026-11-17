@@ -5,7 +5,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 
 ## A. Preparación
 - [x] A1. Las 7 ramas encadenadas (v5 → M-2 → pantallas-1 → pantallas-2 → consentimiento → pantallas-3 → pantallas-4) ya estaban fusionadas en `main` por los PR #8 a #14. Se creó `integracion` desde `docs/plan-v3` (que contiene a todas) y se fusionó `origin/main` sin conflictos. 119 tests en verde, la app arranca. Commit `a7cd750`.
-- [ ] A2. Crear PROGRESO.md y DECISIONES_PENDIENTES.md.
+- [x] A2. Creados `PROGRESO.md` y `DECISIONES_PENDIENTES.md` en la raíz. Commit `a7db149`.
 
 ## R0 Base
 - [ ] 0.1 Quitar cuentas demo sembradas, recuadro de cuentas del login y lista numerada.

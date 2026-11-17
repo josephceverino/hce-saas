@@ -1,5 +1,6 @@
 package pe.edu.ucv.hce.persistencia;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -12,10 +13,10 @@ import pe.edu.ucv.hce.dominio.Rol;
 import pe.edu.ucv.hce.dominio.Usuario;
 
 /**
- * Datos ficticios de la demostracion (DEC-03). Es idempotente: cada registro se crea solo si falta,
- * asi una base ya existente en ./data recibe lo nuevo sin perder lo anterior.
- * Usuarios (clave demo123): admision.a/b (ADMISION), medico.a/b (MEDICO), enfermera.a/b (ENFERMERIA),
- * admin.a (ADMIN_HOSPITAL, hospital A) y plataforma (ADMIN_PLATAFORMA, sin hospital).
+ * Datos iniciales (DEC-03). Siempre crea los 7 roles. Es idempotente: cada registro se crea solo si falta.
+ * Plan v3, item 0.1: las cuentas de demostracion ya NO se siembran en la aplicacion. Solo se crean si
+ * hce.demo-usuarios=true, que activan los tests como datos de prueba (src/test/resources/application.properties).
+ * Cuentas de prueba (clave demo123): admision.a/b, medico.a/b, enfermera.a/b, admin.a y plataforma.
  */
 @Component
 @Order(1)
@@ -27,9 +28,12 @@ public class DatosIniciales implements CommandLineRunner {
     private final RolRepository roles;
     private final UsuarioRepository usuarios;
     private final ProfesionalSaludRepository profesionales;
+    private final boolean usuariosDePrueba;
 
     public DatosIniciales(EstablecimientoRepository establecimientos, RolRepository roles,
-                          UsuarioRepository usuarios, ProfesionalSaludRepository profesionales) {
+                          UsuarioRepository usuarios, ProfesionalSaludRepository profesionales,
+                          @Value("${hce.demo-usuarios:false}") boolean usuariosDePrueba) {
+        this.usuariosDePrueba = usuariosDePrueba;
         this.establecimientos = establecimientos;
         this.roles = roles;
         this.usuarios = usuarios;
@@ -39,12 +43,18 @@ public class DatosIniciales implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        Establecimiento a = hospital("Hospital Demo A", "0000001");
-        Establecimiento b = hospital("Hospital Demo B", "0000002");
-
         for (CodigoRol codigo : CodigoRol.values()) {
             rol(codigo);
         }
+        if (usuariosDePrueba) {
+            sembrarUsuariosDePrueba();
+        }
+    }
+
+    /** Solo para tests: dos hospitales y una cuenta de cada rol. Nunca en el paquete de la demo. */
+    private void sembrarUsuariosDePrueba() {
+        Establecimiento a = hospital("Hospital Demo A", "0000001");
+        Establecimiento b = hospital("Hospital Demo B", "0000002");
         Rol admision = rol(CodigoRol.ADMISION);
         Rol medico = rol(CodigoRol.MEDICO);
 

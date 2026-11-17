@@ -1,0 +1,9 @@
+{
+  "name": "hce-e2e",
+  "private": true,
+  "description": "Recorridos de interfaz con Playwright (solo desarrollo, no va en el paquete). Usa el Chrome instalado.",
+  "type": "module",
+  "devDependencies": {
+    "playwright-core": "1.48.2"
+  }
+}
