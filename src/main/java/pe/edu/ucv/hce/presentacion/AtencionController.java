@@ -48,9 +48,25 @@ public class AtencionController {
     public ResponseEntity<HistoriaDetalleResponse.AtencionDto> crear(@Valid @RequestBody AtencionRequest datos,
             HttpSession sesion, HttpServletRequest peticion) {
         Usuario usuario = sesionActual.requerir(sesion);
-        var detalle = atencion.crear(usuario, datos.idHistoriaClinica(), datos.motivo(), datos.anamnesis(),
-            datos.examenFisico(), peticion.getRemoteAddr());
+        if (datos.idAdmision() == null && datos.idHistoriaClinica() == null) {
+            throw new IllegalArgumentException("Elige la historia clínica o la admisión.");
+        }
+        var detalle = datos.idAdmision() != null
+            ? atencion.crearDesdeAdmision(usuario, datos.idAdmision(), datos.motivo(), datos.anamnesis(),
+                datos.examenFisico(), new AtencionService.Ampliacion(datos.enfermedadActual(),
+                    datos.funcionesBiologicas(), datos.examenSistemas()), peticion.getRemoteAddr())
+            : atencion.crear(usuario, datos.idHistoriaClinica(), datos.motivo(), datos.anamnesis(),
+                datos.examenFisico(), peticion.getRemoteAddr());
         return ResponseEntity.status(HttpStatus.CREATED).body(HistoriaDetalleResponse.atencion(detalle));
+    }
+
+    /** CU-05 ampliado: la atencion de una admision de la cola (404 si todavia no se inicio). */
+    @GetMapping("/admisiones/{idAdmision}/atencion")
+    public java.util.Map<String, Integer> deAdmision(@PathVariable Integer idAdmision, HttpSession sesion) {
+        Usuario usuario = sesionActual.requerir(sesion);
+        Integer id = atencion.idDeAdmision(usuario, idAdmision).orElseThrow(() ->
+            new pe.edu.ucv.hce.dominio.RecursoNoEncontradoException("Esa admisión todavía no tiene una atención iniciada."));
+        return java.util.Map.of("idAtencion", id);
     }
 
     @GetMapping("/atenciones/{idAtencion}")

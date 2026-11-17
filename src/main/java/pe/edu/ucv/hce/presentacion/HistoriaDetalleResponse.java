@@ -44,7 +44,8 @@ public record HistoriaDetalleResponse(
     public record AtencionDto(Integer id, LocalDateTime fechaHora, String motivo, String anamnesis,
                               String examenFisico, String estado, boolean cerrada, String profesional,
                               List<DiagnosticoDto> diagnosticos, List<TratamientoDto> tratamientos,
-                              List<EnmiendaDto> enmiendas) { }
+                              List<EnmiendaDto> enmiendas, String enfermedadActual, String funcionesBiologicas,
+                              String examenSistemas) { }
 
     public static HistoriaDetalleResponse de(HistorialClinico h) {
         HistoriaClinica hc = h.historia();
@@ -67,7 +68,8 @@ public record HistoriaDetalleResponse(
             a.getProfesional().getApellidos() + ", " + a.getProfesional().getNombres(),
             d.diagnosticos().stream().map(HistoriaDetalleResponse::diagnostico).toList(),
             d.tratamientos().stream().map(HistoriaDetalleResponse::tratamiento).toList(),
-            d.enmiendas().stream().map(HistoriaDetalleResponse::enmienda).toList());
+            d.enmiendas().stream().map(HistoriaDetalleResponse::enmienda).toList(),
+            a.getEnfermedadActual(), a.getFuncionesBiologicas(), a.getExamenSistemas());
     }
 
     public static DiagnosticoDto diagnostico(Diagnostico x) {

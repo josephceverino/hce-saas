@@ -28,7 +28,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 
 ## R3 (aprobado el 17 nov: restablecer clave sí, tramo B recortado, `docs/` se actualiza)
 - [x] R3a. CU-26 restablecer clave: administrador del hospital → su personal, plataforma → administrador de hospital, admisión → pacientes de su hospital; clave temporal una vez, cambio obligatorio, levanta el bloqueo; botones en P-07, P-08 y P-02; 6 tests (202 en total). Decisión D-39.
-- [ ] R3b.1 Iniciar atención desde la cola y atención ampliada (CU-05)
+- [x] R3b.1 El médico inicia la atención desde la cola (LISTO → EN_ATENCION), atención ampliada (enfermedad actual, funciones biológicas, examen por sistemas) y el cierre de la atención cierra la admisión (RN-13); 5 tests (207 en total). Decisión D-40.
 - [ ] R3b.2 Pedido de exámenes (CU-22)
 - [ ] R3b.3 Resultados (CU-23)
 - [ ] R3b.4 Cierre de la atención

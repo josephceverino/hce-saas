@@ -37,8 +37,11 @@
       <p class="hce-subtitulo" id="paciente"></p>
       <form id="formNueva" class="hce-formulario">
         <label class="hce-campo ancho">Motivo de consulta <input id="motivo" required maxlength="300"></label>
+        <label class="hce-campo ancho" id="campoEnfermedad" hidden>Enfermedad actual <textarea id="enfermedadActual"></textarea></label>
         <label class="hce-campo ancho">Anamnesis <textarea id="anamnesis" required></textarea></label>
+        <label class="hce-campo ancho" id="campoFunciones" hidden>Funciones biológicas (apetito, sed, sueño, orina, deposiciones) <textarea id="funcionesBiologicas"></textarea></label>
         <label class="hce-campo ancho">Examen físico <textarea id="examenFisico" required></textarea></label>
+        <label class="hce-campo ancho" id="campoSistemas" hidden>Examen por sistemas <textarea id="examenSistemas"></textarea></label>
         <button class="hce-boton primario" type="submit">Abrir atención</button>
       </form>
       <div id="mensajeNueva" class="hce-mensaje" role="status"></div>

@@ -38,17 +38,22 @@ async function elegirHistoria() {
 }
 
 /* ---- Modo 2: abrir atencion en una historia ---- */
-async function nuevaAtencion(idHistoria) {
+async function nuevaAtencion(idHistoria, idAdmision) {
   $('nueva').hidden = false;
+  if (idAdmision) ['campoEnfermedad', 'campoFunciones', 'campoSistemas'].forEach(c => { $(c).hidden = false; });
   const h = await HCE.api('/api/historias/' + encodeURIComponent(idHistoria));
   if (!h.ok) { $('nueva').hidden = true; error($('error'), h, 'No se pudo abrir la historia clínica.'); return; }
   const p = h.cuerpo.paciente;
   $('paciente').textContent = p.apellidos + ', ' + p.nombres + ' · ' + p.tipoDocumento + ' ' + p.nroDocumento + ' · ' + h.cuerpo.nroHc;
   $('formNueva').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const r = await HCE.api('/api/atenciones', { method: 'POST', cuerpo: {
-      idHistoriaClinica: Number(idHistoria), motivo: $('motivo').value, anamnesis: $('anamnesis').value,
-      examenFisico: $('examenFisico').value } });
+    const cuerpo = { idHistoriaClinica: Number(idHistoria), motivo: $('motivo').value, anamnesis: $('anamnesis').value,
+      examenFisico: $('examenFisico').value };
+    if (idAdmision) {
+      Object.assign(cuerpo, { idAdmision: Number(idAdmision), enfermedadActual: $('enfermedadActual').value,
+        funcionesBiologicas: $('funcionesBiologicas').value, examenSistemas: $('examenSistemas').value });
+    }
+    const r = await HCE.api('/api/atenciones', { method: 'POST', cuerpo });
     if (r.status === 201) {
       window.location.href = '/atencion/?id=' + encodeURIComponent(r.cuerpo.id);
     } else {
@@ -121,6 +126,18 @@ function conectarModo3() {
 (async () => {
   const sesion = await HCE.iniciarPantalla();
   if (!sesion) return;
+  const idAdmision = params.get('admision');
+  if (idAdmision && !idAtencion) {
+    // Desde la cola: si la atencion ya se inicio se continua; si no, se abre el formulario ampliado.
+    const existente = await HCE.api('/api/admisiones/' + encodeURIComponent(idAdmision) + '/atencion');
+    if (existente.ok) { idAtencion = String(existente.cuerpo.idAtencion); }
+    else {
+      const adm = await HCE.api('/api/admisiones/' + encodeURIComponent(idAdmision));
+      if (!adm.ok) { error($('error'), adm, 'No se pudo abrir la admisión.'); return; }
+      await nuevaAtencion(adm.cuerpo.idHistoriaClinica, idAdmision);
+      return;
+    }
+  }
   if (idAtencion) { conectarModo3(); await cargarAtencion(); }
   else if (params.get('historia')) { await nuevaAtencion(params.get('historia')); }
   else { await elegirHistoria(); }

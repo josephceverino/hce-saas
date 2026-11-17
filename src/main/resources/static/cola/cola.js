@@ -60,8 +60,12 @@ function accionesDe(a) {
       a.paciente + ' pasó a enfermería.', () => { window.location.href = historia; })));
   } else if (rol === 'ENFERMERIA' && a.estado === 'EN_ENFERMERIA') {
     g.append(enlace('Signos vitales', 'primario', historia));
-  } else if (rol === 'MEDICO' && (a.estado === 'LISTO_PARA_ATENCION' || a.estado === 'EN_ATENCION')) {
-    g.append(enlace('Ver historia', 'primario', historia));
+  } else if (rol === 'MEDICO' && a.estado === 'LISTO_PARA_ATENCION') {
+    g.append(enlace('Iniciar atención', 'primario', '/atencion/?admision=' + encodeURIComponent(a.id)),
+      enlace('Ver historia', 'claro', historia));
+  } else if (rol === 'MEDICO' && a.estado === 'EN_ATENCION') {
+    g.append(enlace('Continuar atención', 'primario', '/atencion/?admision=' + encodeURIComponent(a.id)),
+      enlace('Ver historia', 'claro', historia));
   } else if (rol === 'ADMISION' && a.estado === 'ADMITIDO') {
     g.append(boton('Cancelar', 'claro', async () => {
       const ok = await HCE.confirmar('¿Cancelar la admisión de ' + a.paciente + '?',

@@ -236,8 +236,11 @@ const HCE = (() => {
       caja.append(bloque);
     };
     dato('Motivo de consulta', a.motivo);
+    if (a.enfermedadActual) dato('Enfermedad actual', a.enfermedadActual);
     dato('Anamnesis', a.anamnesis);
+    if (a.funcionesBiologicas) dato('Funciones biológicas', a.funcionesBiologicas);
     dato('Examen físico', a.examenFisico);
+    if (a.examenSistemas) dato('Examen por sistemas', a.examenSistemas);
     const lista = (titulo, items, texto) => {
       const bloque = el('div', 'hce-dato');
       bloque.append(el('div', 'etiqueta', titulo));
