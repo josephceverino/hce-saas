@@ -10,7 +10,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 ## R0 Base
 - [x] 0.1 Sin cuentas ni pacientes demo sembrados en la aplicación (solo en tests); login sin recuadro de cuentas ni lista, rediseñado según la referencia 04; Playwright en `e2e/`. Commit `f18a6c7`.
 - [x] 0.2 `AdministradorInicial` crea un único administrador de plataforma (`admin` / `Temporal2026`, configurables) con `debe_cambiar_clave`; documentado en el README. Commit `9a9f532`.
-- [ ] 0.3 CU-18: cambio de clave en el primer ingreso (RN-14, RN-12), P-13 y tests.
+- [x] 0.3 CU-18: `POST /api/sesion/clave`, RN-14 aplicada en el servidor (403 a todo lo demás), pantalla P-13 con guía de requisitos, 5 tests y `e2e/primer-ingreso.mjs`. Commit `7d81067`.
 - [ ] 0.4 Los 7 roles con menú e inicio propio; indicadores de la base de datos.
 
 ## R1 Cuentas

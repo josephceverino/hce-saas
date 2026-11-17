@@ -51,6 +51,7 @@ public class MenuService {
         if (usuario.tieneRol(CodigoRol.ADMIN_PLATAFORMA)) {
             return List.of(HOSPITALES);
         }
-        return List.of(); // APOYO_DIAGNOSTICO (A-05) no tiene casos de uso en el alcance: solo "Mi perfil"
+        // APOYO_DIAGNOSTICO (A-05): plan v3, inicio propio con los examenes solicitados (CU-23 llega en R3)
+        return List.of(INICIO);
     }
 }

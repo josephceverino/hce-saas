@@ -74,31 +74,45 @@ const HCE = (() => {
     const logo = el('img'); logo.src = '/logo.svg'; logo.alt = '';
     marca.append(logo, el('span', null, 'Plataforma HCE'));
     const menu = el('nav', 'hce-menu');
+    menu.setAttribute('aria-label', 'Menú principal');
+    menu.append(el('div', 'hce-menu-titulo', 'Menú principal'));
     (sesion.menu || []).forEach(opcion => {
       const enlace = el('a', esRutaActual(opcion.ruta) ? 'activo' : '');
       enlace.href = opcion.ruta;
-      if (ICONOS[opcion.clave]) enlace.insertAdjacentHTML('afterbegin', ICONOS[opcion.clave]);
-      enlace.append(document.createTextNode(opcion.titulo));
+      const icono = el('span', 'icono');
+      if (ICONOS[opcion.clave]) icono.insertAdjacentHTML('afterbegin', ICONOS[opcion.clave]);
+      enlace.append(icono, document.createTextNode(opcion.titulo));
       menu.append(enlace);
     });
     const perfil = el('div', 'hce-perfil');
-    perfil.append(el('div', 'nombre', sesion.usuario), el('div', 'rol', sesion.rol));
-    const salir = el('button', 'hce-boton secundario', 'Cerrar sesión');
+    const avatar = el('span', 'hce-avatar-mini', sesion.usuario.slice(0, 2).toUpperCase());
+    const datos = el('div', 'datos');
+    datos.append(el('div', 'nombre', sesion.usuario), el('div', 'rol', sesion.rol));
+    const salir = el('button', 'hce-boton-icono');
     salir.type = 'button';
+    salir.title = 'Cerrar sesión';
+    salir.setAttribute('aria-label', 'Cerrar sesión');
+    salir.insertAdjacentHTML('afterbegin', SVG('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>'));
     salir.addEventListener('click', async () => {
       await api('/api/logout', { method: 'POST', sinRedireccion: true });
       window.location.href = '/login/index.html';
     });
-    perfil.append(salir);
+    perfil.append(avatar, datos, salir);
     sidebar.append(marca, menu, perfil);
 
     const barra = el('header', 'hce-barra');
+    const contexto = el('div', 'contexto');
     // El paciente y el administrador de plataforma no pertenecen a un hospital: el servidor manda una etiqueta, no un hospital.
     if (sesion.rolCodigo === 'PACIENTE' || sesion.rolCodigo === 'ADMIN_PLATAFORMA') {
-      barra.append(el('span', 'hce-chip', sesion.establecimiento));
+      contexto.append(el('span', 'hce-chip', sesion.establecimiento));
     } else {
-      barra.append(el('span', 'hce-chip', 'Hospital activo'), el('span', 'hce-hospital', sesion.establecimiento));
+      contexto.append(el('span', 'hce-chip', 'Hospital activo'), el('span', 'hce-hospital', sesion.establecimiento));
     }
+    const usuarioBarra = el('div', 'hce-usuario-barra');
+    const textoUsuario = el('div', 'datos');
+    textoUsuario.append(el('div', 'nombre', sesion.usuario), el('div', 'rol', sesion.rol));
+    usuarioBarra.append(el('span', 'hce-avatar-mini', sesion.usuario.slice(0, 2).toUpperCase()), textoUsuario);
+    barra.append(contexto, usuarioBarra);
 
     app.prepend(sidebar);
     app.insertBefore(barra, document.getElementById('contenido'));

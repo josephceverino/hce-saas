@@ -10,12 +10,27 @@
 <body>
 <div class="hce-app" id="app">
   <main class="hce-contenido" id="contenido">
-    <div>
-      <h1>Inicio</h1>
-      <p class="hce-subtitulo" id="subtitulo">Resumen de tu hospital.</p>
+    <div class="hce-encabezado">
+      <div>
+        <h1>Inicio</h1>
+        <p class="hce-subtitulo" id="subtitulo">Resumen de tu hospital.</p>
+      </div>
+      <div class="hce-acciones" id="accionesRol"></div>
     </div>
-    <section class="hce-indicadores" id="tarjetas" aria-live="polite"></section>
-    <div id="vacio" class="hce-vacio" hidden>No hay indicadores para mostrar.</div>
+
+    <section class="hce-inicio-grid">
+      <article class="hce-tarjeta hce-hero">
+        <div class="hce-antetitulo" id="antetitulo">Resumen de hoy</div>
+        <h2 id="saludo">Hola</h2>
+        <p class="hce-subtitulo" id="descripcionRol"></p>
+        <div class="hce-indicadores" id="tarjetas" aria-live="polite"></div>
+        <div id="vacio" class="hce-vacio-caja" hidden></div>
+      </article>
+      <aside class="hce-tarjeta hce-accesos">
+        <h2>Accesos rápidos</h2>
+        <div id="accesos" class="hce-lista-accesos"></div>
+      </aside>
+    </section>
 
     <!-- Tablero del administrador del hospital (A-10): lo llena inicio/admin.js -->
     <div id="tablero" class="hce-tablero" hidden>
