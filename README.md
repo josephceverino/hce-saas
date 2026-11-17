@@ -47,6 +47,12 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. **Registrar atención:** elige un paciente, abre la atención, agrega un diagnóstico (busca por código o nombre CIE-10) y un tratamiento, y ciérrala con el modal de confirmación. Al cerrar desaparecen los formularios de edición (RN-03).
 4. Entra con `medico.b` y abre la historia 1: se muestra el mensaje de otro establecimiento y ningún dato (RN-06). Con `enfermera.a` se ve la historia sin el botón de registrar atención.
 
+## Cómo probar (bloque 3: consentimiento, CU-11 y P-06)
+1. `./mvnw spring-boot:run`, abrir `http://localhost:8090` y entrar con `paciente.a` (clave `demo123`). El primer destino, Mi historial, aún no existe (bloque 4): usa **Consentimiento** del menú.
+2. Otorga un consentimiento a "Hospital Demo B" con su alcance: aparece activo con fecha (CP-19).
+3. Apaga el interruptor: confirma en el modal y queda "Revocado" con la fecha de revocación, sin posibilidad de reactivarlo (CP-20).
+4. Con `medico.a` el endpoint responde 403 y sin sesión 401. `paciente.b` no ve los consentimientos de `paciente.a` (RN-04).
+
 ## Cómo probar (v5: paquete portable)
 Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
 1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).

@@ -133,6 +133,22 @@ a.hce-boton { text-decoration: none; display: inline-block; }
 .hce-tarjeta > .hce-subtitulo { margin-bottom: 14px; }
 .hce-modal p { margin: 0 0 8px; }
 
+/* ---- Consentimiento (P-06) ---- */
+.hce-autorizaciones { display: grid; gap: 12px; }
+.hce-autorizacion { display: flex; align-items: center; gap: 14px; border: 1px solid var(--hce-borde); border-radius: 10px; padding: 14px 16px; background: #fff; flex-wrap: wrap; }
+.hce-autorizacion.revocada { background: var(--hce-fondo); }
+.hce-autorizacion .texto { flex: 1; min-width: 220px; display: grid; gap: 2px; }
+.hce-autorizacion .titulo { font-weight: 700; }
+.hce-autorizacion .meta { font-size: 13px; color: var(--hce-texto-suave); }
+.hce-interruptor { position: relative; display: inline-block; width: 46px; height: 26px; flex: none; }
+.hce-interruptor input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.hce-interruptor input:disabled { cursor: default; }
+.hce-interruptor .pista { position: absolute; inset: 0; background: #b9c7ca; border-radius: 999px; transition: background .15s; }
+.hce-interruptor .pista::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.hce-interruptor input:checked + .pista { background: var(--hce-primario); }
+.hce-interruptor input:checked + .pista::after { transform: translateX(20px); }
+.hce-interruptor input:focus-visible + .pista { outline: 2px solid var(--hce-primario-oscuro); outline-offset: 2px; }
+
 @media (max-width: 800px) {
   .hce-login { grid-template-columns: 1fr; }
   .hce-login-marca { padding: 28px; }

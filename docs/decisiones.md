@@ -17,7 +17,7 @@ Decididas por Pablo (líder técnico) el 13/11/2026. Si algo cambia, se agrega u
 | DEC-12 | Usuarios y datos de demostración por rol | Hecho (v3) |
 | DEC-15 | BCrypt y bloqueo por intentos fallidos (RN-12) | Hecho (v5): `ClaveUtil`, `AutenticacionService` |
 | DEC-14 | Auditoría del admin del hospital, indicadores y límites | Hecho (v5): `AuditoriaService.consultar`, `IndicadoresService` |
-| DEC-13 | Portal del paciente: solo atenciones cerradas, cuenta sin hospital y consentimiento ACTIVO/REVOCADO | CU-10 hecho (v4); CU-11 contrato listo, implementa Mattias (M-5) |
+| DEC-13 | Portal del paciente: solo atenciones cerradas, cuenta sin hospital y consentimiento ACTIVO/REVOCADO | CU-10 hecho (v4); CU-11 hecho (`feat/consentimiento`) |
 
 ## DEC-01: Ubicación y estructura
 La raíz del proyecto es `hce-saas/`. `CLAUDE.md`, `PROMPTS.md`, `PLAN_CALENDARIO.md`, `FICHAS_TAREAS.md`, `ONBOARDING_MATTIAS.md`, `GIT_SETUP.md`, `README.md`, `.gitignore` y `docs/` viven en la raíz, junto con `pom.xml`, `mvnw` y `src/`. El contenido de `hce-kit-v2/` se movió con `git mv` (historial conservado). La semilla original queda como **referencia** en `referencia/semilla-v2/` hasta terminar la migración; no es parte del build.
