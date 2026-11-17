@@ -24,7 +24,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] 2.1 CU-20: entidad `Admision` y `EstadoAdmision` (RN-13 en el dominio), `/api/admisiones`, diálogo Admitir en P-02; `EstadoAdmisionTest` (5 transiciones permitidas y 31 prohibidas) y `AdmisionServiceTest` (7). Commit `c603782`.
 - [x] 2.2 P-09 `/cola/` por rol (admisión ve todo el día; enfermería, admitidos y en enfermería; médico, listos y en atención), emergencia primero, tiempo de espera y acciones por rol; la cola también en el Inicio de esos roles. Commit `eb1b6d8`.
 - [x] 2.3 CU-21: `SignosVitales` con rangos de demostración (no clínicos), registro solo con la admisión en enfermería, "listo" exige signos vitales; antecedentes por tipo y alergias; P-04 rehecha según la referencia 02; 6 tests. Commit `8888e41`.
-- [x] 2.4 `npm run recorrido -- 5` recorre los pasos 1 a 5 con 15 verificaciones, sin errores de consola, y deja sus capturas (paso1_ a paso5_) en `docs/capturas/`. Commit: ver el siguiente en `git log` (este archivo va en ese mismo commit).
+- [x] 2.4 `npm run recorrido -- 5` recorre los pasos 1 a 5 con 15 verificaciones, sin errores de consola, y deja sus capturas (paso1_ a paso5_) en `docs/capturas/`. Commit `b572352`.
 
 ## Resumen al parar (checklist completo, 0 ítems bloqueados)
 
