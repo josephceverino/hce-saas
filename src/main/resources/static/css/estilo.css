@@ -293,3 +293,16 @@ a.hce-boton { text-decoration: none; display: inline-block; }
   body.imprimiendo .hce-constancia { border: 1px solid #000; }
 }
 .hce-acciones-fila { display: inline-flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.hce-fila-emergencia { background: #fff6f5; }
+.hce-fila-emergencia td:first-child { box-shadow: inset 4px 0 0 var(--hce-error); }
+.hce-orden { font-weight: 700; color: var(--hce-texto-suave); width: 60px; }
+.hce-vacio-tabla { margin: 16px 18px 18px; }
+.hce-cola-mini { display: grid; gap: 8px; }
+.hce-cola-fila { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border: 1px solid var(--hce-borde); border-radius: 12px; text-decoration: none; color: var(--hce-texto); }
+.hce-cola-fila:hover { border-color: var(--hce-primario); background: var(--hce-primario-claro); }
+.hce-cola-fila.emergencia { border-left: 4px solid var(--hce-error); }
+.hce-cola-fila .texto { flex: 1; }
+.hce-cola-fila .nombre { font-weight: 600; }
+.hce-cola-fila .nota { font-size: 12.5px; color: var(--hce-texto-suave); }
+.hce-cola-fila .hce-orden { width: auto; }
+.hce-nowrap, .hce-tabla-limpia .hce-boton { white-space: nowrap; }

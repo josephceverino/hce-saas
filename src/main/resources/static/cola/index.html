@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cola de pacientes · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div class="hce-encabezado">
+      <div>
+        <h1 id="titulo">Cola de pacientes</h1>
+        <p class="hce-subtitulo" id="subtitulo">Pacientes admitidos hoy en tu hospital. La emergencia va primero.</p>
+      </div>
+      <div class="hce-acciones">
+        <span class="hce-subtitulo" id="actualizado"></span>
+        <button class="hce-boton claro" type="button" id="actualizar">Actualizar</button>
+      </div>
+    </div>
+    <div id="mensaje" class="hce-mensaje" role="status"></div>
+
+    <section class="hce-cifras-estado" id="cifras" aria-live="polite"></section>
+
+    <section class="hce-tarjeta hce-tarjeta-tabla">
+      <div class="hce-barra-tabla">
+        <div class="hce-pestanas" role="tablist" id="pestanas"></div>
+        <input id="buscar" class="hce-buscar" type="search" placeholder="Buscar por nombre, documento o historia" aria-label="Buscar en la cola" autocomplete="off">
+      </div>
+      <div class="hce-tabla-contenedor">
+        <table class="hce-tabla hce-tabla-limpia">
+          <thead><tr><th>Orden</th><th>Paciente</th><th>Tipo</th><th>Estado</th><th>Llegada</th><th>Esperando</th><th class="derecha">Acciones</th></tr></thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+        <div id="vacio" class="hce-vacio-caja hce-vacio-tabla" hidden></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="cola.js"></script>
+</body>
+</html>

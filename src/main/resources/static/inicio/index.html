@@ -32,6 +32,16 @@
       </aside>
     </section>
 
+    <!-- RF-22: la cola de hoy en el Inicio de admision, enfermeria y medico -->
+    <section class="hce-tarjeta" id="colaTarjeta" hidden>
+      <div class="hce-evento-cabecera">
+        <h2 id="colaTitulo">Cola de hoy</h2>
+        <a class="hce-boton claro pequeno" href="/cola/">Ver la cola completa</a>
+      </div>
+      <div id="colaLista" class="hce-cola-mini"></div>
+      <div id="colaVacia" class="hce-vacio-caja" hidden>No hay pacientes esperando en este momento.</div>
+    </section>
+
     <!-- Tablero del administrador del hospital (A-10): lo llena inicio/admin.js -->
     <div id="tablero" class="hce-tablero" hidden>
       <section class="hce-tarjeta"><h2>Atenciones por día <span class="hce-subtitulo">· últimos 14 días</span></h2><div id="graficoAtenciones"></div></section>

@@ -34,12 +34,12 @@ class MenuServiceTest {
 
     @Test
     void admisionRegistraYBuscaPacientes() {
-        assertEquals(List.of("inicio", "pacientes", "registrar-paciente", "perfil"), claves("admision.a"));
+        assertEquals(List.of("inicio", "cola", "pacientes", "registrar-paciente", "perfil"), claves("admision.a"));
     }
 
     @Test
     void medicoAtiendeYVeHistorias() {
-        assertEquals(List.of("inicio", "pacientes", "historia", "atencion", "perfil"), claves("medico.a"));
+        assertEquals(List.of("inicio", "cola", "pacientes", "historia", "atencion", "perfil"), claves("medico.a"));
     }
 
     /** RN-02: enfermeria ve historias pero no tiene "Registrar atencion". */

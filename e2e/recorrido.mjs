@@ -143,6 +143,22 @@ const pasos = {
     const texto = await page.textContent('#cuerpo');
     verificar(texto.includes('Admitido'), 'los pacientes figuran como admitidos hoy');
     verificar(texto.includes('Emergencia'), 'la emergencia se distingue en la lista');
+    await page.goto(BASE + '/cola/');
+    await page.waitForLoadState('networkidle');
+    await captura(page, 'paso4_P-09_pacientes_del_dia', false);
+  },
+
+  /** Paso 5 (RF-22, CU-21): enfermeria ve la cola con la emergencia primero y toma al paciente. */
+  async 5(page) {
+    const e = datos.personal.ENFERMERIA;
+    await entrarConTemporal(page, e.usuario, e.clave, 'Enfermeria2026');
+    await captura(page, 'paso5_inicio_enfermeria', false);
+    await page.goto(BASE + '/cola/');
+    await page.waitForLoadState('networkidle');
+    await captura(page, 'paso5_P-09_cola_enfermeria', false);
+    const primera = await page.textContent('#cuerpo tr:first-child');
+    verificar(primera.includes('Vargas León') && primera.includes('Emergencia'), 'la emergencia va primero en la cola aunque llegó después');
+    if (pasos.signosVitales) await pasos.signosVitales(page);
   }
 };
 
