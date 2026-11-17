@@ -80,7 +80,7 @@ public class AtencionController {
     public ResponseEntity<HistoriaDetalleResponse.DiagnosticoDto> diagnostico(@PathVariable Integer idAtencion,
             @Valid @RequestBody DiagnosticoRequest datos, HttpSession sesion, HttpServletRequest peticion) {
         Usuario usuario = sesionActual.requerir(sesion);
-        var d = atencion.agregarDiagnostico(usuario, idAtencion, datos.codigoCie10(), datos.tipo(),
+        var d = atencion.agregarDiagnostico(usuario, idAtencion, datos.codigoCie10(), datos.tipo(), datos.certeza(),
             peticion.getRemoteAddr());
         return ResponseEntity.status(HttpStatus.CREATED).body(HistoriaDetalleResponse.diagnostico(d));
     }

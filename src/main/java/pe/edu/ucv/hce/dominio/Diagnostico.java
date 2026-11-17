@@ -9,6 +9,9 @@ public class Diagnostico {
 
     public static final String PRINCIPAL = "PRINCIPAL";
     public static final String SECUNDARIO = "SECUNDARIO";
+    /** Certeza del diagnostico (docs/historia_clinica_contenido.md, seccion 4; D-43). */
+    public static final String PRESUNTIVO = "PRESUNTIVO";
+    public static final String DEFINITIVO = "DEFINITIVO";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +31,11 @@ public class Diagnostico {
     @Column(name = "tipo", nullable = false, length = 20)
     private String tipo;
 
+    /** Presuntivo o definitivo. Los diagnosticos anteriores a este campo quedan como definitivos. */
+    @Column(name = "certeza", nullable = false, length = 15,
+            columnDefinition = "varchar(15) default 'DEFINITIVO' not null")
+    private String certeza = DEFINITIVO;
+
     protected Diagnostico() { }
 
     public Diagnostico(Atencion atencion, String codigoCie10, String descripcion, String tipo) {
@@ -37,9 +45,15 @@ public class Diagnostico {
         this.tipo = tipo;
     }
 
+    public Diagnostico(Atencion atencion, String codigoCie10, String descripcion, String tipo, String certeza) {
+        this(atencion, codigoCie10, descripcion, tipo);
+        this.certeza = certeza;
+    }
+
     public Integer getId() { return id; }
     public Atencion getAtencion() { return atencion; }
     public String getCodigoCie10() { return codigoCie10; }
     public String getDescripcion() { return descripcion; }
     public String getTipo() { return tipo; }
+    public String getCerteza() { return certeza; }
 }

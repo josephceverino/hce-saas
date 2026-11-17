@@ -213,11 +213,11 @@ const pasos = {
     await page.click('#cuerpo tr:first-child a:has-text("Iniciar atención")');
     await page.waitForSelector('#nueva:not([hidden])');
     verificar(await page.isVisible('#enfermedadActual'), 'desde la cola aparecen los campos ampliados de la atención');
-    await page.fill('#motivo', 'Dolor torácico opresivo de 2 horas');
-    await page.fill('#enfermedadActual', 'Dolor retroesternal que se irradia al brazo izquierdo, con sudoración');
-    await page.fill('#anamnesis', 'Paciente con hipertensión arterial; refiere dolor desde hace 2 horas.');
-    await page.fill('#funcionesBiologicas', 'Apetito conservado, sueño alterado, orina normal');
-    await page.fill('#examenFisico', 'Ansioso, sudoroso, ruidos cardíacos rítmicos');
+    await page.fill('#motivo', 'Dolor de garganta y fiebre de 2 días');
+    await page.fill('#enfermedadActual', 'Dolor al tragar que empeora en la noche, con fiebre de 38 grados');
+    await page.fill('#anamnesis', 'Paciente con hipertensión arterial; refiere dolor de garganta desde hace 2 días.');
+    await page.fill('#funcionesBiologicas', 'Apetito disminuido, sueño conservado, orina normal');
+    await page.fill('#examenFisico', 'Faringe enrojecida con placas, ganglios cervicales dolorosos');
     await page.fill('#examenSistemas', 'Cardiovascular: sin soplos. Respiratorio: murmullo vesicular conservado.');
     await captura(page, 'paso6_P-03_atencion_ampliada', true);
     await page.click('#formNueva button[type=submit]');
@@ -225,6 +225,7 @@ const pasos = {
     await page.waitForSelector('#atencion:not([hidden])');
     datos.atencionUrl = page.url();
     await page.fill('#cie10', 'J02.9');
+    await page.selectOption('#certezaDiagnostico', 'PRESUNTIVO');
     await page.click('#formDiagnostico button[type=submit]');
     await page.waitForSelector('#mensajeDiagnostico.ok');
     await page.fill('#medicamento', 'Paracetamol');
@@ -310,7 +311,7 @@ const pasos = {
     await paciente.waitForLoadState('networkidle');
     await paciente.waitForSelector('#atenciones .hce-evento, #atenciones > *');
     const historial = await paciente.textContent('#contenido');
-    verificar(historial.includes('Dolor torácico') && historial.includes('Enfermedad actual'), 'el paciente ve su atención cerrada con los datos ampliados');
+    verificar(historial.includes('Dolor de garganta') && historial.includes('Enfermedad actual'), 'el paciente ve su atención cerrada con los datos ampliados');
     verificar(historial.includes('Hemograma completo') && historial.includes('Hemoglobina 13,2'), 'el paciente ve su examen con el resultado');
     verificar(!/signos vitales|saturaci/i.test(historial), 'el portal no muestra signos vitales');
     await captura(paciente, 'paso9_P-05_mi_historial', true);

@@ -40,8 +40,8 @@ Resume `DECISIONES_PENDIENTES.md`. Para cada una hay una **recomendación** mía
 | D-11 | Las capturas de Inicio por rol de entonces usaron cuentas de prueba; hoy salen del recorrido sin ellas |
 | D-33 | El botón "Iniciar atención" desde la cola ya existe (R3b.1) |
 
-## Pendiente heredado (no se hizo, decídelo)
-| # | Qué | Estado | Recomendación |
-|---|---|---|---|
-| P-2, P-3, P-4 | La enfermedad actual, las funciones biológicas y el examen por sistemas **estructurados** (campos por sistema) | Se implementaron como **texto libre** (D-40) | Dejar en texto libre para la demo; anotar en el informe que la estructura por sistema es mejora futura |
-| P-5 | Diagnóstico **presuntivo o definitivo** | **No se aplicó**: el sistema sigue con principal o secundario | Decidir: aplicarlo (1–2 h mías) o documentarlo como diferencia respecto a `historia_clinica_contenido.md`. Mi recomendación: aplicarlo si el docente revisa ese documento |
+## Pendiente heredado
+| # | Qué | Estado | Recomendación | Tu respuesta |
+|---|---|---|---|---|
+| P-2, P-3, P-4 | Enfermedad actual, funciones biológicas y examen por sistemas **estructurados** (campos por sistema) | Se implementaron como **texto libre** (D-40) | Dejar en texto libre para la demo; anotar en el informe que la estructura por sistema es mejora futura | |
+| P-5 / D-43 | Diagnóstico **presuntivo o definitivo** | **Aplicado**: campo `certeza` junto a principal o secundario | Mantener | |

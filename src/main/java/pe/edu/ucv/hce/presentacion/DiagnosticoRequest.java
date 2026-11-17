@@ -7,5 +7,6 @@ import jakarta.validation.constraints.Pattern;
 public record DiagnosticoRequest(
         @NotBlank(message = "Elige el diagnostico CIE-10.") String codigoCie10,
         @NotBlank(message = "Indica si el diagnostico es principal o secundario.")
-        @Pattern(regexp = "PRINCIPAL|SECUNDARIO", message = "El tipo debe ser PRINCIPAL o SECUNDARIO.") String tipo) {
+        @Pattern(regexp = "PRINCIPAL|SECUNDARIO", message = "El tipo debe ser PRINCIPAL o SECUNDARIO.") String tipo,
+        @Pattern(regexp = "PRESUNTIVO|DEFINITIVO", message = "El diagnóstico debe ser presuntivo o definitivo.") String certeza) {
 }

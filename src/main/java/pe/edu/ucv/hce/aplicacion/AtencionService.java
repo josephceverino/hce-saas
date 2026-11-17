@@ -127,16 +127,27 @@ public class AtencionService {
     @Transactional
     public Diagnostico agregarDiagnostico(Usuario usuario, Integer idAtencion, String codigoCie10,
                                           String tipo, String ip) {
+        return agregarDiagnostico(usuario, idAtencion, codigoCie10, tipo, Diagnostico.DEFINITIVO, ip);
+    }
+
+    /** Con certeza (presuntivo o definitivo, D-43). Sin certeza se toma como definitivo. */
+    @Transactional
+    public Diagnostico agregarDiagnostico(Usuario usuario, Integer idAtencion, String codigoCie10,
+                                          String tipo, String certeza, String ip) {
         autorizacion.exigir(usuario, Permiso.REGISTRAR_ATENCION);
         Atencion atencion = atencionPropia(usuario, idAtencion);
         exigirAbierta(atencion);
         if (!Diagnostico.PRINCIPAL.equals(tipo) && !Diagnostico.SECUNDARIO.equals(tipo)) {
             throw new IllegalArgumentException("El tipo de diagnóstico debe ser PRINCIPAL o SECUNDARIO.");
         }
+        String certezaFinal = certeza == null || certeza.isBlank() ? Diagnostico.DEFINITIVO : certeza.trim();
+        if (!Diagnostico.PRESUNTIVO.equals(certezaFinal) && !Diagnostico.DEFINITIVO.equals(certezaFinal)) {
+            throw new IllegalArgumentException("El diagnóstico debe ser presuntivo o definitivo.");
+        }
         Cie10 entrada = catalogo.porCodigo(codigoCie10.trim())
             .orElseThrow(() -> new DiagnosticoInvalidoException(
                 "El código " + codigoCie10.trim() + " no está en el catálogo CIE-10."));
-        Diagnostico d = diagnosticos.save(new Diagnostico(atencion, entrada.codigo(), entrada.descripcion(), tipo));
+        Diagnostico d = diagnosticos.save(new Diagnostico(atencion, entrada.codigo(), entrada.descripcion(), tipo, certezaFinal));
         auditoria.registrar(usuario, ACCION_DIAGNOSTICO, "diagnostico", d.getId(), atencion.getHistoriaClinica(), ip);
         return d;
     }
