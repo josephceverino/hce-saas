@@ -23,5 +23,26 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 ## R2 Recepción
 - [x] 2.1 CU-20: entidad `Admision` y `EstadoAdmision` (RN-13 en el dominio), `/api/admisiones`, diálogo Admitir en P-02; `EstadoAdmisionTest` (5 transiciones permitidas y 31 prohibidas) y `AdmisionServiceTest` (7). Commit `c603782`.
 - [x] 2.2 P-09 `/cola/` por rol (admisión ve todo el día; enfermería, admitidos y en enfermería; médico, listos y en atención), emergencia primero, tiempo de espera y acciones por rol; la cola también en el Inicio de esos roles. Commit `eb1b6d8`.
-- [ ] 2.3 Signos vitales (CU-21, RN-17) y antecedentes por tipo dentro de P-04.
-- [ ] 2.4 Script Playwright de los pasos 1 a 5.
+- [x] 2.3 CU-21: `SignosVitales` con rangos de demostración (no clínicos), registro solo con la admisión en enfermería, "listo" exige signos vitales; antecedentes por tipo y alergias; P-04 rehecha según la referencia 02; 6 tests. Commit `8888e41`.
+- [x] 2.4 `npm run recorrido -- 5` recorre los pasos 1 a 5 con 15 verificaciones, sin errores de consola, y deja sus capturas (paso1_ a paso5_) en `docs/capturas/`. Commit: ver el siguiente en `git log` (este archivo va en ese mismo commit).
+
+## Resumen al parar (checklist completo, 0 ítems bloqueados)
+
+**Qué quedó hecho.** Los 17 ítems del checklist. La rama `integracion` contiene todo y está subida.
+- R0: sin cuentas de demostración; un único administrador de plataforma inicial (`admin` / `Temporal2026`, configurable); cambio de clave obligatorio en el primer ingreso (RN-14, aplicado en el servidor); menú e Inicio propio para los 7 roles; nueva estructura visual (referencias 01 y 04).
+- R1: alta de hospital con su administrador (CU-16, RN-16); usuarios del hospital (CU-17, RN-16); filiación completa; cuenta del portal del paciente al registrarlo con constancia imprimible (CU-19, RN-15).
+- R2: admisión del día con los estados de RN-13 en el dominio (36 transiciones probadas); cola por rol con la emergencia primero (RF-22); signos vitales con rangos de demostración y antecedentes por tipo dentro de la historia (CU-21, RN-17).
+- Tests: de 119 a **196**, todos en verde. La app arranca. Recorrido automático de los pasos 1 a 5 sin errores.
+
+**Qué quedó bloqueado.** Nada.
+
+**Decisiones tomadas.** 38 en `DECISIONES_PENDIENTES.md`. Las que más conviene revisar:
+- D-34: los rangos de signos vitales (de demostración, no clínicos).
+- D-14 y D-15: datos de la persona en `usuario` y el nombre de usuario del personal escrito por quien lo crea.
+- D-21 y D-22: qué datos de filiación son obligatorios y las listas cerradas (estado civil, instrucción, parentesco).
+- D-27: qué rol mueve cada estado de la admisión.
+- D-2: las cuentas `admision.a`, `medico.a`... siguen existiendo solo en los tests.
+
+**Cómo probarlo.** Sección "Cómo probar el recorrido" del `README.md` (a mano) y `e2e/LEEME.md` (automático).
+
+**Qué sigue (fuera de este checklist).** R3: el médico inicia la atención desde la cola (LISTO → EN_ATENCION), atención ampliada (enfermedad actual, funciones biológicas, examen por sistemas), pedido de exámenes (CU-22), resultados (CU-23) y cierre que pasa la admisión a ATENCION_CERRADA. El script `docs/script_sqlserver.sql` quedó desfasado respecto de las tablas nuevas (`admision`, `signos_vitales`, columnas de `usuario` y `paciente`).

@@ -13,6 +13,15 @@ La aplicación ya **no trae cuentas ni pacientes de demostración**. Al arrancar
 - Las cuentas `admision.a`, `medico.a`, etc. (clave `demo123`) que mencionan las secciones antiguas de este README **solo existen en los tests** (`hce.demo-usuarios=true` en `src/test/resources`).
 - Avance del plan v3: `PROGRESO.md`. Decisiones por revisar: `DECISIONES_PENDIENTES.md`.
 
+## Cómo probar el recorrido (plan v3, pasos 1 a 5 de `docs/recorrido.md`)
+1. Borra `data/` (con la app cerrada) y arranca: `.\mvnw.cmd spring-boot:run`. Abre `http://localhost:8090`.
+2. **Paso 1:** entra con `admin` / `Temporal2026`, cambia la clave y en **Hospitales** da de alta un hospital con su administrador. Anota la clave temporal de la constancia (se muestra una sola vez).
+3. **Paso 2:** entra con el administrador del hospital, cambia su clave y en **Usuarios** crea a admisión, enfermería, médico (con colegiatura) y apoyo al diagnóstico.
+4. **Paso 3:** entra con admisión y en **Registrar paciente** completa la filiación. Se abre la historia y sale la constancia del portal (usuario = documento).
+5. **Paso 4:** en **Pacientes**, botón **Admitir**: consulta externa o emergencia. **Pacientes del día** muestra la cola completa.
+6. **Paso 5:** entra con enfermería: en **Cola de pacientes** la emergencia va primero. **Tomar paciente** abre la historia con la sección de enfermería: registra signos vitales (un valor imposible se rechaza), antecedentes y alergias, y confirma "listo para atención". El médico lo ve en su cola.
+- Automático: `cd e2e`, `npm install` y `npm run recorrido -- 5` con la app en el puerto 8191 y base nueva (ver `e2e/LEEME.md`). Capturas en `docs/capturas/`.
+
 ## Cómo probar (Fase 0)
 Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene incluido (`mvnw`). La primera vez necesita internet para bajar dependencias.
 1. `./mvnw test` (en Windows también `mvnw.cmd test`): deben pasar todos los tests (los `@Disabled` de M-1 salen como omitidos).

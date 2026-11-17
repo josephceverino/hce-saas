@@ -195,10 +195,14 @@ const pasos = {
     await page.waitForFunction(() => document.getElementById('enfermeriaEstado').textContent.includes('Listo'), null, { timeout: 10000 }).catch(() => {});
     verificar((await page.textContent('#enfermeriaEstado')).includes('Listo para atención'), 'la admisión pasó a listo para atención');
     await captura(page, 'paso5_P-04_listo_para_atencion', false);
-  },
+    // Cierre del paso 5: el medico ve al paciente listo en su cola (el paso 6 empieza aqui)
+    const medico = await nuevaPagina();
+    await colaDelMedico(medico);
+    await medico.context().close();
+  }
+};
 
-  /** Cierre del paso 5: el medico ve al paciente listo en su cola (inicio del paso 6). */
-  async 6(page) {
+async function colaDelMedico(page) {
     const m = datos.personal.MEDICO;
     await entrarConTemporal(page, m.usuario, m.clave, 'Medico2026');
     await page.goto(BASE + '/cola/');
@@ -207,8 +211,7 @@ const pasos = {
     const texto = await page.textContent('#cuerpo');
     verificar(texto.includes('Vargas León') && texto.includes('Listo para atención'), 'el médico ve al paciente listo en su cola');
     verificar(!texto.includes('Gutiérrez Salas'), 'el médico no ve a quien aún no pasa por enfermería');
-  }
-};
+}
 
 async function entrarConClave(page, usuario, clave) {
   await page.goto(BASE + '/login/index.html');

@@ -16,7 +16,9 @@ export async function navegador() {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 }, locale: 'es-PE' });
     const page = await ctx.newPage();
     page.on('pageerror', e => errores.push('Error JS: ' + e.message));
-    page.on('console', m => { if (m.type() === 'error' && !/401|favicon/.test(m.text())) errores.push('Consola: ' + m.text()); });
+    // Los rechazos de validacion (400, 401, 403, 404, 409) son respuestas esperadas que la pantalla muestra; un 500 o un
+    // error de JavaScript si es una falla.
+    page.on('console', m => { if (m.type() === 'error' && !/status of 4\d\d|favicon/.test(m.text())) errores.push('Consola: ' + m.text()); });
     return page;
   };
   return { browser, nuevaPagina, errores };
