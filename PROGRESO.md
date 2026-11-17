@@ -36,7 +36,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 
 ## R4 (aprobado el 17 nov: solo atenciones cerradas, sin signos vitales en el portal, sin cerrar sesiones al restablecer)
 - [x] R4.1 Portal verificado con la historia nueva: el paciente ve solo atenciones cerradas, con enfermedad actual, funciones biológicas, examen por sistemas y exámenes con su resultado; no ve atenciones abiertas ni signos vitales; no ve lo de otro paciente (RN-04). No hizo falta cambiar código; 4 tests nuevos (217 en total).
-- [ ] R4.2 Resultado de examen claro en `Mi historial` y en el resumen descargable (si falta)
+- [x] R4.2 El resumen descargable (`/api/mi-historial/resumen`) lista los exámenes con resultado de las atenciones cerradas; `Mi historial` ya los mostraba dentro de cada atención. Contrato `docs/contratos/portal_paciente.md` actualizado; 1 test nuevo (218 en total).
 - [ ] R4.3 Consentimiento (CU-11): tests y verificación
 - [ ] R4.4 Auditoría CU-25 con las acciones nuevas
 - [ ] R4.5 Recorrido Playwright paso 9 y documentación

@@ -69,10 +69,13 @@ public class PortalPacienteService {
                 distintos.putIfAbsent(d.getCodigoCie10(), d);
             }
         }
+        List<pe.edu.ucv.hce.dominio.SolicitudExamen> conResultado = cerradas.stream()
+            .flatMap(a -> a.examenes().stream())
+            .filter(x -> x.getResultado() != null).toList();
         LocalDateTime ultima = cerradas.isEmpty() ? null : cerradas.get(0).atencion().getFechaHora();
         auditoria.registrar(usuario, ACCION_MI_RESUMEN, "historia_clinica", historia.getId(), historia, ip);
         return new ResumenHistorial(historia, completo.alergias(), completo.antecedentes(), cerradas.size(),
-            ultima, new ArrayList<>(distintos.values()), LocalDateTime.now());
+            ultima, new ArrayList<>(distintos.values()), conResultado, LocalDateTime.now());
     }
 
     /** RN-04: la historia del paciente dueño de esta cuenta. Si no es un paciente o no tiene historia, se rechaza. */

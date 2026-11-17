@@ -104,6 +104,22 @@ class PortalHistoriaNuevaTest {
         assertEquals("Hemoglobina 13 g/dL", a.examenes().get(0).resultado());
     }
 
+    /** R4.2: el resumen descargable lista solo los exámenes con resultado de atenciones cerradas. */
+    @Test
+    void elResumenListaLosExamenesConResultado() {
+        Integer id = atencionDesdeCola(historiaX, "Dolor");
+        var con = examenes.solicitar(medicoA, id, "Hemograma completo", null, IP);
+        examenes.solicitar(medicoA, id, "Glucosa", null, IP); // sin resultado: no aparece
+        examenes.registrarResultado(apoyoA, con.getId(), "Hemoglobina 13 g/dL", IP);
+        assertTrue(portal.miResumen(cuentaX, IP).examenes().isEmpty(), "Con la atención abierta no se muestra");
+        atenciones.cerrar(medicoA, id, IP);
+        var resumen = pe.edu.ucv.hce.presentacion.ResumenHistorialResponse.de(portal.miResumen(cuentaX, IP));
+        assertEquals(1, resumen.examenes().size());
+        assertEquals("Hemograma completo", resumen.examenes().get(0).tipoExamen());
+        assertEquals("Hemoglobina 13 g/dL", resumen.examenes().get(0).resultado());
+        assertTrue(portal.miResumen(cuentaY, IP).examenes().isEmpty(), "RN-04");
+    }
+
     /** Decisión del 17-nov: una atención abierta (y sus exámenes pendientes) no se muestra al paciente. */
     @Test
     void laAtencionAbiertaNoSeMuestra() {
