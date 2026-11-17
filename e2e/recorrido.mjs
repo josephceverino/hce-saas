@@ -1,8 +1,10 @@
-// Recorrido del paciente (docs/recorrido.md) con Playwright. Uso: node recorrido.mjs [ultimoPaso]
+// Recorrido del paciente (docs/recorrido.md) con Playwright. Uso: node recorrido.mjs [ultimoPaso] [primerPaso]
+// El paso 9 solo usa claves fijas de los pasos 1 a 8, asi que puede correr solo: node recorrido.mjs 9 9
 // Requiere la app recien creada (sin cuentas): solo existe admin / Temporal2026. Guarda capturas en docs/capturas/.
 import { navegador, captura, BASE } from './lib.mjs';
 
 const ultimo = Number(process.argv[2] || 9);
+const primero = Number(process.argv[3] || 1);
 
 /** Verificacion explicita: si falla, el recorrido se detiene con el motivo (sirve como prueba de aceptacion). */
 function verificar(condicion, mensaje) {
@@ -282,6 +284,74 @@ const pasos = {
     await page.goto(BASE + '/cola/');
     await page.waitForLoadState('networkidle');
     verificar(!(await page.textContent('#cuerpo')).includes('Vargas León'), 'el paciente sale de la cola del médico al cerrar');
+  },
+
+  /** Paso 9 (CU-26, CU-10, CU-11, CU-25): admision restablece la clave del paciente; el paciente ve su historia cerrada,
+      su resumen y gestiona su consentimiento; el administrador del hospital ve la auditoria. */
+  async 9(page) {
+    // Admision restablece la clave de Vargas Leon desde la lista de pacientes (la clave temporal se ve una sola vez)
+    await entrarConClave(page, 'carlos.rios', 'Admision2026');
+    await page.goto(BASE + '/pacientes/');
+    await page.waitForLoadState('networkidle');
+    await page.fill('#buscar', '73456729');
+    await page.click('#cuerpo tr:first-child button:has-text("Restablecer clave")');
+    await page.click('.hce-modal .primario');
+    await page.waitForSelector('.hce-modal .hce-clave');
+    const temporal = (await page.textContent('.hce-modal .hce-clave')).trim();
+    verificar(/^[A-Za-z0-9]{10}$/.test(temporal), 'admisión restablece la clave del paciente y ve una clave temporal de 10 caracteres');
+    await captura(page, 'paso9_P-02_restablecer_clave_paciente', false);
+    await page.click('.hce-modal .primario');
+    await page.context().close();
+
+    // El paciente entra con la temporal, la cambia y ve su historial (solo atenciones cerradas, sin signos vitales)
+    const paciente = await nuevaPagina();
+    await entrarConTemporal(paciente, '73456729', temporal, 'Paciente2026', 'paso9');
+    await paciente.goto(BASE + '/mi-historial/');
+    await paciente.waitForLoadState('networkidle');
+    await paciente.waitForSelector('#atenciones .hce-evento, #atenciones > *');
+    const historial = await paciente.textContent('#contenido');
+    verificar(historial.includes('Dolor torácico') && historial.includes('Enfermedad actual'), 'el paciente ve su atención cerrada con los datos ampliados');
+    verificar(historial.includes('Hemograma completo') && historial.includes('Hemoglobina 13,2'), 'el paciente ve su examen con el resultado');
+    verificar(!/signos vitales|saturaci/i.test(historial), 'el portal no muestra signos vitales');
+    await captura(paciente, 'paso9_P-05_mi_historial', true);
+    await paciente.click('#verResumen');
+    await paciente.waitForSelector('#resumen:not([hidden])');
+    verificar((await paciente.textContent('#resumenContenido')).includes('Hemoglobina 13,2'), 'el resumen descargable lista el examen con resultado');
+    await captura(paciente, 'paso9_P-05_resumen', true);
+
+    // Consentimiento: otorga y revoca
+    await paciente.goto(BASE + '/consentimiento/');
+    await paciente.waitForLoadState('networkidle');
+    await paciente.fill('#otorgadoA', 'Hospital Regional de Chiclayo');
+    await paciente.fill('#alcance', 'Lectura de mi historial para una interconsulta');
+    await paciente.click('#formulario button[type=submit]');
+    await paciente.waitForSelector('#mensaje.ok');
+    verificar((await paciente.textContent('#lista')).includes('Hospital Regional de Chiclayo'), 'el consentimiento otorgado aparece en la lista');
+    await captura(paciente, 'paso9_P-06_consentimiento_otorgado', false);
+    await paciente.click('#lista input[type=checkbox]');
+    await paciente.click('.hce-modal .primario');
+    await paciente.waitForSelector('#mensajeLista.ok');
+    verificar(await paciente.locator('#lista .hce-autorizacion.revocada').count() === 1, 'al apagar el interruptor el consentimiento queda revocado');
+    await captura(paciente, 'paso9_P-06_consentimiento_revocado', false);
+    await paciente.context().close();
+
+    // El administrador del hospital ve la auditoria de todo lo anterior
+    const admin = await nuevaPagina();
+    await entrarConClave(admin, 'admin.trujillo', 'Hospital2026');
+    await admin.goto(BASE + '/auditoria/');
+    await admin.waitForLoadState('networkidle');
+    await admin.waitForSelector('#cuerpo tr');
+    await admin.selectOption('#accion', 'RESTABLECER_CLAVE');
+    await admin.click('#filtros button[type=submit]');
+    await admin.waitForFunction(() => document.getElementById('cuerpo').textContent.includes('RESTABLECER_CLAVE'));
+    verificar((await admin.textContent('#cuerpo')).includes('carlos.rios'), 'la auditoría muestra quién restableció la clave');
+    await captura(admin, 'paso9_P-14_auditoria_restablecer', false);
+    await admin.selectOption('#accion', 'SOLICITAR_EXAMEN');
+    await admin.click('#filtros button[type=submit]');
+    await admin.waitForFunction(() => document.getElementById('cuerpo').textContent.includes('SOLICITAR_EXAMEN'));
+    verificar((await admin.textContent('#cuerpo')).includes('jorge.paz'), 'la auditoría muestra al médico que pidió el examen');
+    await captura(admin, 'paso9_P-14_auditoria_examen', false);
+    await admin.context().close();
   }
 };
 
@@ -318,7 +388,7 @@ async function admitirDesdeLista(page, documento, tipo, capturaDialogo) {
 
 let fallo = null;
 try {
-  for (let n = 1; n <= ultimo; n++) {
+  for (let n = primero; n <= ultimo; n++) {
     if (!pasos[n]) break;
     const page = await nuevaPagina();
     console.log('--- paso', n);

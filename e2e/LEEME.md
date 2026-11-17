@@ -20,5 +20,6 @@ Cada paso imprime `ok:` por cada comprobación. Si una falla, se detiene con el 
 - Paso 6: el médico inicia la atención desde la cola (campos ampliados), agrega diagnóstico y tratamiento y pide un examen; la admisión queda "en atención".
 - Paso 7: apoyo al diagnóstico ve el examen pendiente de su hospital y registra el resultado.
 - Paso 8: el médico ve el resultado, cierra la atención (sin formularios de edición, solo enmienda) y el paciente sale de su cola.
+- Paso 9: admisión restablece la clave del paciente; el paciente entra, ve su historial cerrado y su resumen y otorga y revoca un consentimiento; el administrador del hospital ve la auditoría. Corre solo con `node recorrido.mjs 9 9` (usa las claves fijas de los pasos 1 a 8).
 
-Recorrido completo actual: `npm run recorrido -- 8` (unos 70 segundos). Cada corrida necesita una base nueva.
+Recorrido completo actual: `npm run recorrido -- 9` (unos 90 segundos). Cada corrida necesita una base nueva.
