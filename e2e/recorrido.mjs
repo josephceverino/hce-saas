@@ -3,6 +3,12 @@
 import { navegador, captura, BASE } from './lib.mjs';
 
 const ultimo = Number(process.argv[2] || 9);
+
+/** Verificacion explicita: si falla, el recorrido se detiene con el motivo (sirve como prueba de aceptacion). */
+function verificar(condicion, mensaje) {
+  if (!condicion) throw new Error('Falla del recorrido: ' + mensaje);
+  console.log('  ok:', mensaje);
+}
 const datos = {}; // lo que un paso le pasa al siguiente (usuarios y claves temporales)
 const { browser, nuevaPagina, errores } = await navegador();
 
@@ -39,6 +45,9 @@ const pasos = {
     await page.click('#formulario button[type=submit]');
     await page.waitForSelector('#constancia:not([hidden])');
     datos.adminHospital = { usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
+    verificar(datos.adminHospital.usuario === 'admin.trujillo', 'la constancia muestra el usuario del administrador');
+    verificar(/^[A-Za-z0-9]{10}$/.test(datos.adminHospital.clave), 'la constancia muestra una clave temporal de 10 caracteres');
+    verificar(await page.locator('.hce-hospital-tarjeta').count() === 1, 'el hospital aparece en la lista');
     await captura(page, 'paso1_P-07_constancia', true);
   },
 
@@ -75,6 +84,8 @@ const pasos = {
       await page.click('#cerrarConstancia');
     }
     await captura(page, 'paso2_P-08_usuarios_lista', false);
+    verificar(await page.locator('#cuerpo tr').count() === 5, 'la lista tiene al administrador y 4 personas');
+    verificar((await page.textContent('#pestanas')).includes('Clave pendiente 4'), 'las 4 cuentas nuevas tienen clave pendiente');
   },
 
   /** Paso 3 (CU-03, CU-19): admision registra al paciente con su filiacion completa; se abre su historia. */
@@ -101,19 +112,28 @@ const pasos = {
     datos.paciente = { documento: valores.nroDocumento,
       usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
     await captura(page, 'paso3_P-16_constancia', false);
+    verificar(datos.paciente.usuario === valores.nroDocumento, 'el usuario del portal es el documento del paciente');
+    verificar(datos.paciente.clave.length === 10, 'la constancia del paciente muestra su clave temporal');
     await page.goto(BASE + '/pacientes/');
     await page.waitForLoadState('networkidle');
     await captura(page, 'paso3_P-02_pacientes', false);
+    verificar((await page.textContent('#cuerpo')).includes('72345618'), 'el paciente aparece en la lista del hospital');
   }
 };
 
-for (let n = 1; n <= ultimo; n++) {
-  if (!pasos[n]) break;
-  const page = await nuevaPagina();
-  console.log('--- paso', n);
-  await pasos[n](page);
-  await page.context().close();
+let fallo = null;
+try {
+  for (let n = 1; n <= ultimo; n++) {
+    if (!pasos[n]) break;
+    const page = await nuevaPagina();
+    console.log('--- paso', n);
+    await pasos[n](page);
+    await page.context().close();
+  }
+} catch (e) {
+  fallo = e;
 }
 await browser.close();
+if (fallo) { console.error(fallo.message); process.exitCode = 1; }
 console.log('datos', JSON.stringify(datos));
 console.log(errores.length ? errores.join('\n') : 'sin errores');
