@@ -16,9 +16,29 @@
     </div>
     <section class="hce-indicadores" id="tarjetas" aria-live="polite"></section>
     <div id="vacio" class="hce-vacio" hidden>No hay indicadores para mostrar.</div>
+
+    <!-- Tablero del administrador del hospital (A-10): lo llena inicio/admin.js -->
+    <div id="tablero" class="hce-tablero" hidden>
+      <section class="hce-tarjeta"><h2>Atenciones por día <span class="hce-subtitulo">· últimos 14 días</span></h2><div id="graficoAtenciones"></div></section>
+      <section class="hce-tarjeta"><h2>Pacientes nuevos por semana <span class="hce-subtitulo">· últimas 8 semanas</span></h2><div id="graficoPacientes"></div></section>
+      <section class="hce-tarjeta"><h2>Diagnósticos más frecuentes <span class="hce-subtitulo">· CIE-10</span></h2><div id="graficoDiagnosticos"></div></section>
+      <section class="hce-tarjeta"><h2>Atenciones abiertas y cerradas</h2><div id="graficoEstado"></div></section>
+      <section class="hce-tarjeta hce-ancho-completo">
+        <h2>Últimos accesos a historias</h2>
+        <div class="hce-tabla-contenedor">
+          <table class="hce-tabla">
+            <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Historia</th></tr></thead>
+            <tbody id="ultimosAccesos"></tbody>
+          </table>
+          <div id="sinAccesos" class="hce-vacio" hidden>Aún no hay accesos registrados.</div>
+        </div>
+      </section>
+    </div>
   </main>
 </div>
 <script src="/js/comun.js"></script>
+<script src="/js/graficos.js"></script>
+<script src="admin.js"></script>
 <script src="inicio.js"></script>
 </body>
 </html>

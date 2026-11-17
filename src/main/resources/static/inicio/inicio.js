@@ -3,6 +3,8 @@
 (async () => {
   const sesion = await HCE.iniciarPantalla();
   if (!sesion) return;
+  // El administrador del hospital ve ademas el tablero con graficos (A-10, DEC-10). El servidor valida el rol (403).
+  if (sesion.rolCodigo === 'ADMIN_HOSPITAL') TableroAdmin.dibujar();
   const r = await HCE.api('/api/indicadores/inicio');
   const contenedor = document.getElementById('tarjetas');
   if (!r.ok || !r.cuerpo || !r.cuerpo.tarjetas || r.cuerpo.tarjetas.length === 0) {

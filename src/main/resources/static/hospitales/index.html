@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hospitales · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div>
+      <h1>Hospitales</h1>
+      <p class="hce-subtitulo">Hospitales suscritos a la plataforma.</p>
+    </div>
+    <div class="hce-aviso">
+      <b>DEC-11:</b> esta es la única vista que cruza hospitales a propósito y muestra <b>solo totales</b>.
+      Nunca muestra datos clínicos ni identificadores de pacientes.
+    </div>
+    <div id="error" class="hce-mensaje" role="alert"></div>
+    <section class="hce-hospitales" id="lista" aria-live="polite"></section>
+    <div id="vacio" class="hce-vacio" hidden>Aún no hay hospitales registrados.</div>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="hospitales.js"></script>
+</body>
+</html>

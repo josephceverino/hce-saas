@@ -60,6 +60,12 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 4. **Mi perfil** está en el menú de todos los roles. `plataforma` muestra "Plataforma" como hospital.
 5. Con esto ya no queda ningún enlace del menú de paciente, médico, enfermería o admisión que dé 404; faltan solo Auditoría y Hospitales.
 
+## Cómo probar (bloque 5: auditoría, tablero y hospitales; A-5, A-10 y A-11)
+1. `./mvnw spring-boot:run`, abrir `http://localhost:8090` y entrar con `admin.a` (clave `demo123`): **Inicio** trae las tarjetas y el tablero con gráficos (atenciones por día, pacientes nuevos por semana, diagnósticos frecuentes, abiertas frente a cerradas y últimos accesos). Todo sale de la base de datos del hospital.
+2. **Auditoría:** filtra por usuario, acción, N.° de historia y fechas; paginación en el servidor. Solo ve su hospital. Es solo lectura.
+3. Entra con `plataforma`: **Hospitales** muestra una tarjeta por hospital con usuarios, pacientes y atenciones, y nunca datos clínicos (DEC-11).
+4. Con esto todos los enlaces de todos los menús tienen pantalla. Los gráficos son SVG propio, sin librerías (`static/js/graficos.js`).
+
 ## Cómo probar (v5: paquete portable)
 Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
 1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).
