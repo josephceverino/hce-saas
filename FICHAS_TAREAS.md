@@ -108,7 +108,7 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 - **Preguntas:** ¿de dónde sale la edad y por qué no se guarda? ¿Qué debe ver el usuario si pide la historia de otro hospital? ¿Por qué la pantalla no decide qué roles pueden ver qué?
 
 ### A-5 · Menú por rol (`diseno_ui.md`)
-- **Contrato (ya en `main`):** `GET /api/sesion` y `POST /api/login` devuelven `usuario, rol, rolCodigo, establecimiento, ultimoAcceso` y **`menu`**: la lista de opciones de ese rol (`clave`, `titulo`, `ruta`). **El servidor decide el menú; tú solo lo dibujas** y marcas la opción activa. No hay lógica de roles en el JS. Usuarios de prueba (clave `demo123`): `admision.a`, `medico.a`, `enfermera.a`, `admin.a`, `plataforma`.
+- **Contrato (ya en `main`):** `GET /api/sesion` y `POST /api/login` devuelven `usuario, rol, rolCodigo, establecimiento, ultimoAcceso` y **`menu`**: la lista de opciones de ese rol (`clave`, `titulo`, `ruta`). **El servidor decide el menú; tú solo lo dibujas** y marcas la opción activa. No hay lógica de roles en el JS. Las tarjetas del **Inicio** salen de `GET /api/indicadores/inicio` (lista `clave`, `titulo`, `valor`, `nota`, según el rol; en `feat/v5`). La pantalla **Auditoría** usa `GET /api/auditoria` con filtros. Usuarios de prueba (clave `demo123`): `admision.a`, `medico.a`, `enfermera.a`, `admin.a`, `plataforma`, `paciente.a`.
 - **Archivos exactos:** `static/js/comun.js` (solo la función del menú, **excepción acordada** a la regla de dueños), y una página de inicio por rol: `static/inicio/index.html`, `static/inicio/inicio.js`.
 - **Demo:** D-1 y D-2 en adelante (cada rol ve su menú). **Criterio:** Admisión ve Inicio, Pacientes, Registrar paciente; Médico y Enfermería ven Inicio, Pacientes, Historia clínica, Registrar atención (solo Médico); Paciente ve Mi historial y Consentimiento. **Solo aparece lo que existe**; nada de calendario, citas, chat, facturación. Las cifras del Inicio salen de la base de datos real; si el endpoint aún no existe, la tarjeta no se muestra.
 - **Plan B (Pablo):** menú fijo, el actual.
@@ -123,13 +123,13 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 - **Preguntas:** ¿por qué el hospital sale del servidor y no de algo que el usuario pueda cambiar?
 
 ### A-10 · Tablero con gráficos del Administrador del hospital (DEC-10) — solo si sobra tiempo
-- **Depende de:** F3-6 (Pablo: endpoints de indicadores, v5). No se empieza antes.
+- **Depende de:** F3-6 (Pablo): **ya está** en la rama `feat/v5`. Contrato: `GET /api/indicadores/tablero` en `docs/contratos/auditoria_indicadores.md`.
 - **Archivos exactos:** `static/inicio/admin.js` y, si hace falta, `static/js/graficos.js` (SVG propio, sin librerías).
 - **Criterio:** reglas de tableros de `docs/diseno_ui.md`: cifras reales, estado vacío claro, ningún gráfico de más. Las cinco vistas están en DEC-10.
 - **Plan B:** tarjetas con números sin gráficos. Se recorta junto con Reportes.
 
 ### A-11 · Panel "Hospitales" del Administrador de plataforma (DEC-11) — solo si sobra tiempo
-- **Depende de:** F3-6 (Pablo). Solo totales por hospital (plan, estado, n.° de usuarios y de pacientes); **nunca datos clínicos**.
+- **Depende de:** F3-6 (Pablo): **ya está** en `feat/v5`. Contrato: `GET /api/indicadores/hospitales` (solo totales por hospital: usuarios, pacientes y atenciones; **nunca datos clínicos**).
 - **Archivos exactos:** `static/hospitales/index.html`, `static/hospitales/hospitales.js`.
 - **Plan B:** no hay; se recorta.
 
@@ -158,6 +158,18 @@ Zona: `src/main/resources/static/`. Regla general: sin CDN, sin frameworks, clas
 
 ## MATTIAS · Backend de apoyo y calidad (empieza el domingo 15/11)
 Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion/`, `persistencia/`, `presentacion/`. No tocar `pom.xml` ni agregar dependencias.
+### Orden de trabajo de Mattias (actualizado el 16/11/2026, parte del repo ya actualizado)
+| # | Tarea | Cuándo | PR |
+|---|---|---|---|
+| 1 | **M-4** catálogo CIE-10 (desbloquea agregar diagnósticos) | Hoy | PR A |
+| 2 | **M-2** tratamiento (CU-08, paso D-6) | Hoy o mañana | PR A |
+| 3 | **M-1** los 9 tests pendientes (`ClaveUtilTest`, `PacienteRequestValidacionTest`, 1 en `AutenticacionServiceTest`) | Mañana | PR B |
+| 4 | **M-5** consentimiento (CU-11, paso D-10) con la pantalla P-06 | 18 al 24 nov | PR C |
+| 5 | **M-7** tests de lo de v5: auditoría (`AuditoriaConsultaTest` como modelo), indicadores y bloqueo por intentos | 30 nov al 3 dic | PR D |
+| 6 | **M-6** casos de prueba de la Sesión 11, con evidencia | 4 al 9 dic | PR E |
+| — | **M-3** antecedentes y alergias (DEC-08) | Opcional, solo si sobra tiempo | — |
+Siempre una rama por PR desde `main` actualizado. No toca `ManejadorErrores`, `Permiso`, `DatosIniciales`, `README` ni `docs/`.
+
 
 ### M-1 · Tests nuevos (empieza aquí)
 - **Contexto:** ya existen `AutenticacionServiceTest` (3 tests) y `RegistroPacienteServiceTest` (5 tests). No se reescriben; se agregan.
@@ -224,7 +236,8 @@ Zona: `src/test/` y los archivos que cada ficha lista en `dominio/`, `aplicacion
 ### F2-1 · Backend CU-10 (v4) — HECHA (rama `feat/v4`)
 - Portal del paciente y usuarios `PACIENTE` demo. RN-04; RN-05 queda documentada como no implementada (DEC-05).
 
-### F3-6 · Indicadores para el Inicio y los tableros (v5, DEC-10 y DEC-11)
+### F3-6 · Indicadores para el Inicio y los tableros (v5, DEC-10 y DEC-11) — HECHA (rama `feat/v5`)
+- **Contrato:** `docs/contratos/auditoria_indicadores.md` (`GET /api/indicadores/inicio`, `/tablero` y `/hospitales`; `GET /api/auditoria`).
 - Endpoints con cifras reales y filtro por hospital: tarjetas del Inicio (pacientes registrados, historias abiertas, atenciones de hoy y abiertas pendientes) y, si hay tiempo, los datos del tablero del Administrador del hospital y los totales por hospital del panel de plataforma (solo totales, nunca datos clínicos). Habilita A-10 y A-11.
 
 ### F3-1 · Auditoría completa, roles y BCrypt (v5)
