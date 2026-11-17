@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registrar atención · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div>
+      <h1>Registrar atención</h1>
+      <p class="hce-subtitulo" id="subtitulo">Atención médica, diagnóstico CIE-10 y tratamiento.</p>
+    </div>
+    <div id="error" class="hce-mensaje" role="alert"></div>
+
+    <!-- Modo 1: elegir la historia -->
+    <section class="hce-tarjeta" id="elegir" hidden>
+      <h2>Elige la historia clínica del paciente</h2>
+      <div class="hce-buscador">
+        <input id="buscar" type="search" placeholder="Buscar por DNI, N.° de historia o nombre" aria-label="Buscar paciente" autocomplete="off">
+      </div>
+      <div class="hce-tabla-contenedor">
+        <table class="hce-tabla">
+          <thead><tr><th>N.° HC</th><th>Documento</th><th>Paciente</th><th></th></tr></thead>
+          <tbody id="lista"></tbody>
+        </table>
+        <div class="hce-vacio" id="listaVacia" hidden>No hay pacientes que coincidan.</div>
+      </div>
+    </section>
+
+    <!-- Modo 2: abrir la atencion -->
+    <section class="hce-tarjeta" id="nueva" hidden>
+      <h2>Nueva atención</h2>
+      <p class="hce-subtitulo" id="paciente"></p>
+      <form id="formNueva" class="hce-formulario">
+        <label class="hce-campo ancho">Motivo de consulta <input id="motivo" required maxlength="300"></label>
+        <label class="hce-campo ancho">Anamnesis <textarea id="anamnesis" required></textarea></label>
+        <label class="hce-campo ancho">Examen físico <textarea id="examenFisico" required></textarea></label>
+        <button class="hce-boton primario" type="submit">Abrir atención</button>
+      </form>
+      <div id="mensajeNueva" class="hce-mensaje" role="status"></div>
+    </section>
+
+    <!-- Modo 3: atencion abierta o cerrada -->
+    <section id="atencion" hidden>
+      <div class="hce-tarjeta">
+        <div class="hce-evento-cabecera">
+          <h2 id="tituloAtencion"></h2>
+          <span class="hce-chip" id="estadoAtencion"></span>
+        </div>
+        <div id="detalle"></div>
+      </div>
+
+      <div id="edicion" hidden>
+        <div class="hce-tarjeta">
+          <h2>Agregar diagnóstico (CIE-10)</h2>
+          <form id="formDiagnostico" class="hce-formulario">
+            <label class="hce-campo">Buscar código o enfermedad
+              <input id="cie10" list="opcionesCie10" required autocomplete="off" placeholder="Ej. J02.9 o faringitis">
+              <datalist id="opcionesCie10"></datalist>
+            </label>
+            <label class="hce-campo">Tipo
+              <select id="tipoDiagnostico" required>
+                <option value="PRINCIPAL">Principal</option>
+                <option value="SECUNDARIO">Secundario</option>
+              </select>
+            </label>
+            <button class="hce-boton primario" type="submit">Agregar diagnóstico</button>
+          </form>
+          <div id="mensajeDiagnostico" class="hce-mensaje" role="status"></div>
+        </div>
+        <div class="hce-tarjeta">
+          <h2>Agregar tratamiento e indicaciones</h2>
+          <form id="formTratamiento" class="hce-formulario">
+            <label class="hce-campo">Medicamento <input id="medicamento" required maxlength="150"></label>
+            <label class="hce-campo">Dosis <input id="dosis" required maxlength="100"></label>
+            <label class="hce-campo">Duración <input id="duracion" required maxlength="100"></label>
+            <label class="hce-campo ancho">Indicaciones <textarea id="indicacion" required></textarea></label>
+            <button class="hce-boton primario" type="submit">Agregar tratamiento</button>
+          </form>
+          <div id="mensajeTratamiento" class="hce-mensaje" role="status"></div>
+        </div>
+        <div class="hce-tarjeta">
+          <h2>Cerrar atención</h2>
+          <p class="hce-subtitulo">Al cerrarla ya no se podrá modificar (RN-03). Las correcciones posteriores se hacen con una enmienda.</p>
+          <div class="hce-acciones"><button class="hce-boton primario" id="cerrar" type="button">Cerrar atención</button></div>
+          <div id="mensajeCierre" class="hce-mensaje" role="status"></div>
+        </div>
+      </div>
+
+      <div class="hce-tarjeta" id="enmienda" hidden>
+        <h2>Agregar enmienda</h2>
+        <p class="hce-subtitulo">La atención está cerrada y no se edita (RN-03). Registra aquí la corrección: queda con tu nombre y la fecha.</p>
+        <form id="formEnmienda" class="hce-formulario">
+          <label class="hce-campo ancho">Motivo de la corrección <input id="motivoEnmienda" required maxlength="200"></label>
+          <label class="hce-campo ancho">Contenido corregido <textarea id="contenidoEnmienda" required></textarea></label>
+          <button class="hce-boton primario" type="submit">Registrar enmienda</button>
+        </form>
+        <div id="mensajeEnmienda" class="hce-mensaje" role="status"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="atencion.js"></script>
+</body>
+</html>

@@ -101,5 +101,79 @@ const HCE = (() => {
     return sesion;
   }
 
-  return { api, mostrar, el, iniciarPantalla, rutaInicial, tieneOpcion };
+  /* ---- Ayudas de presentacion (solo formato; ninguna regla de negocio vive aqui) ---- */
+  function fechaHora(texto) {
+    const d = new Date(texto);
+    return isNaN(d) ? String(texto) : d.toLocaleString('es-PE', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  function edad(fechaNacimiento) {
+    const n = new Date(fechaNacimiento);
+    if (isNaN(n)) return '';
+    const hoy = new Date();
+    let años = hoy.getFullYear() - n.getFullYear();
+    if (hoy.getMonth() < n.getMonth() || (hoy.getMonth() === n.getMonth() && hoy.getDate() < n.getDate())) años--;
+    return años;
+  }
+
+  function iniciales(nombres, apellidos) {
+    return ((nombres || '').trim().charAt(0) + (apellidos || '').trim().charAt(0)).toUpperCase();
+  }
+
+  /** Modal de confirmacion propio. Devuelve una promesa con true (confirma) o false (cancela). */
+  function confirmar(titulo, texto, textoBoton) {
+    return new Promise(resolver => {
+      const fondo = el('div', 'hce-modal-fondo');
+      const caja = el('div', 'hce-modal');
+      caja.setAttribute('role', 'dialog');
+      caja.setAttribute('aria-modal', 'true');
+      const cancelar = el('button', 'hce-boton claro', 'Cancelar');
+      const aceptar = el('button', 'hce-boton primario', textoBoton || 'Confirmar');
+      cancelar.type = aceptar.type = 'button';
+      const cerrar = (valor) => { fondo.remove(); resolver(valor); };
+      cancelar.addEventListener('click', () => cerrar(false));
+      aceptar.addEventListener('click', () => cerrar(true));
+      fondo.addEventListener('click', (e) => { if (e.target === fondo) cerrar(false); });
+      const botones = el('div', 'hce-acciones');
+      botones.append(cancelar, aceptar);
+      caja.append(el('h2', null, titulo), el('p', null, texto), botones);
+      fondo.append(caja);
+      document.body.append(fondo);
+      cancelar.focus();
+    });
+  }
+
+  /** Contenido de solo lectura de una atencion (AtencionDto): texto clinico, diagnosticos, tratamientos y enmiendas. */
+  function detalleAtencion(a) {
+    const caja = el('div', 'hce-atencion-detalle');
+    const dato = (titulo, texto) => {
+      const bloque = el('div', 'hce-dato');
+      bloque.append(el('div', 'etiqueta', titulo), el('div', 'valor', texto));
+      caja.append(bloque);
+    };
+    dato('Motivo de consulta', a.motivo);
+    dato('Anamnesis', a.anamnesis);
+    dato('Examen físico', a.examenFisico);
+    const lista = (titulo, items, texto) => {
+      const bloque = el('div', 'hce-dato');
+      bloque.append(el('div', 'etiqueta', titulo));
+      if (!items || items.length === 0) {
+        bloque.append(el('div', 'valor suave', 'Sin registros.'));
+      } else {
+        const ul = el('ul', 'hce-lista');
+        items.forEach(i => ul.append(el('li', null, texto(i))));
+        bloque.append(ul);
+      }
+      caja.append(bloque);
+    };
+    lista('Diagnósticos (CIE-10)', a.diagnosticos, d => d.codigoCie10 + ' · ' + d.descripcion + ' (' + d.tipo.toLowerCase() + ')');
+    lista('Tratamiento e indicaciones', a.tratamientos,
+      t => t.medicamento + ' ' + t.dosis + ' por ' + t.duracion + '. ' + t.indicacion);
+    if (a.enmiendas && a.enmiendas.length) {
+      lista('Enmiendas', a.enmiendas, e => fechaHora(e.fecha) + ' · ' + e.autor + ': ' + e.motivo + '. ' + e.contenidoCorregido);
+    }
+    return caja;
+  }
+
+  return { api, mostrar, el, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, detalleAtencion };
 })();

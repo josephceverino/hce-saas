@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historia clínica · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div id="sinHistoria" class="hce-tarjeta" hidden>
+      <h1>Historia clínica</h1>
+      <p class="hce-subtitulo">Elige un paciente en la lista para ver su historia clínica.</p>
+      <div class="hce-acciones"><a class="hce-boton primario" href="/pacientes/">Ir a Pacientes</a></div>
+    </div>
+    <div id="error" class="hce-mensaje" role="alert"></div>
+    <section class="hce-tarjeta" id="cabecera" hidden>
+      <div class="hce-cabecera-paciente">
+        <div class="hce-avatar" id="avatar"></div>
+        <div class="datos">
+          <h1 id="nombre"></h1>
+          <div class="hce-subtitulo" id="datosPaciente"></div>
+          <div class="hce-fila-chips" id="alergias"></div>
+        </div>
+        <a class="hce-boton primario" id="nuevaAtencion" href="#" hidden>Registrar atención</a>
+      </div>
+    </section>
+    <section class="hce-tarjeta" id="antecedentesTarjeta" hidden>
+      <h2>Antecedentes</h2>
+      <ul class="hce-lista" id="antecedentes"></ul>
+    </section>
+    <section class="hce-tarjeta" id="atencionesTarjeta" hidden>
+      <h2>Atenciones <span class="hce-chip" id="cuenta">0</span></h2>
+      <div class="hce-linea-tiempo" id="atenciones"></div>
+      <div class="hce-vacio" id="sinAtenciones" hidden>Esta historia aún no tiene atenciones.</div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="historia.js"></script>
+</body>
+</html>
