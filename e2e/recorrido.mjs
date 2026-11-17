@@ -328,10 +328,11 @@ const pasos = {
     await paciente.waitForSelector('#mensaje.ok');
     verificar((await paciente.textContent('#lista')).includes('Hospital Regional de Chiclayo'), 'el consentimiento otorgado aparece en la lista');
     await captura(paciente, 'paso9_P-06_consentimiento_otorgado', false);
-    await paciente.click('#lista input[type=checkbox]');
+    const revocadasAntes = await paciente.locator('#lista .hce-autorizacion.revocada').count();
+    await paciente.click('#lista .hce-autorizacion:not(.revocada) input[type=checkbox]');
     await paciente.click('.hce-modal .primario');
     await paciente.waitForSelector('#mensajeLista.ok');
-    verificar(await paciente.locator('#lista .hce-autorizacion.revocada').count() === 1, 'al apagar el interruptor el consentimiento queda revocado');
+    verificar(await paciente.locator('#lista .hce-autorizacion.revocada').count() === revocadasAntes + 1, 'al apagar el interruptor el consentimiento queda revocado');
     await captura(paciente, 'paso9_P-06_consentimiento_revocado', false);
     await paciente.context().close();
 

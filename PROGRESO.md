@@ -41,6 +41,12 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] R4.4 Auditoría CU-25: comprobado con datos reales (8090) y con 2 tests nuevos (220 en total) que las acciones de admisión, atención desde la cola, exámenes y restablecer clave se registran, se filtran y solo las ve el administrador de su hospital (RN-06, RN-07). Sin cambios de código. Decisión D-42.
 - [x] R4.5 Recorrido paso 9 con 9 verificaciones y sin errores de consola (restablecer clave del paciente, historial cerrado sin signos vitales, resumen, consentimiento otorgado y revocado, auditoría); capturas `paso9_` en `docs/capturas/`. El recorrido acepta un paso inicial: `node recorrido.mjs 9 9`.
 
+## R5 Paquete portable (probado en esta PC)
+- [x] R5.1 `empaquetar.bat` (en una copia limpia, con 220 tests dentro del build) genera `dist\HCE-Demo\HCE-Demo.exe` con Java 25 incluido y `dist\HCE-Demo.zip` (78 MB).
+- [x] R5.2 Probado el `.exe`: con la app de desarrollo ocupando 8090 abrió sola en 8091; los datos se crean en `dist\HCE-Demo\data` junto al programa; el recorrido completo (pasos 1 a 9, 37 verificaciones) pasó contra el `.exe` y sin errores; tras cerrar y reabrir, los usuarios y datos siguen.
+- [x] R5.3 `dist\data_ensayo`: copia de `data` ya poblada por el recorrido para restaurar la demo (usuarios en `GUIA_INSTALACION.md`).
+- [x] R5.4 `GUIA_INSTALACION.md` actualizada: sin cuentas demo, administrador inicial, restaurar `data_ensayo`.
+
 ## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 
 **Qué quedó hecho.** Los 17 ítems del checklist. La rama `integracion` contiene todo y está subida.
