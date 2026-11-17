@@ -1,6 +1,6 @@
 # Contrato de la API: consentimiento de acceso (CU-11)
-Cubre CU-11 (RF-17; RN-04, RN-06, RN-07, RN-09). **Estado: contrato definido; implementa Mattias (tarea M-5)**, junto con la pantalla P-06 (`static/consentimiento/`).
-En el código ya están: `ConsentimientoAcceso` (entidad), `ConsentimientoAccesoRepository`, las firmas de `ConsentimientoService` (con sus errores documentados), `ConsentimientoRequest`, `ConsentimientoResponse` y el test desactivado `ConsentimientoServiceTest`.
+Cubre CU-11 (RF-17; RN-04, RN-06, RN-07, RN-09). **Estado: implementado** (rama `feat/consentimiento`; la hizo Pablo porque Mattias no llegó a M-5), con la pantalla P-06 en `static/consentimiento/`.
+Código: `ConsentimientoAcceso`, `ConsentimientoAccesoRepository`, `ConsentimientoService`, `ConsentimientoController`, `ConsentimientoRequest`, `ConsentimientoResponse` y `ConsentimientoServiceTest` (7 tests, CP-19 y CP-20). Al listar se audita con la entidad `paciente` (la columna `id_entidad_afectada` no admite nulo).
 
 Reglas:
 - Solo el rol `PACIENTE` (otro rol: **403**). Sin sesión: **401**.

@@ -22,8 +22,8 @@ Derivada de las reglas de negocio y los casos de uso. **Todos están en estado '
 | CP-16 | CU-10 | RN-04 | Paciente con sesión en el portal | Consultar su historial | Ve solo lo suyo, en modo lectura | _por definir_ | | Pendiente | | |
 | CP-17 | CU-10 | RN-04 | Paciente A con sesión | Pedir la historia del paciente B por la URL o API | Acceso denegado (403) | _por definir_ | | Pendiente | | |
 | CP-18 | CU-10 | RF-16 | Paciente con sesión | Pedir el resumen | Se muestra o descarga el resumen | _por definir_ | | Pendiente | | |
-| CP-19 | CU-11 | RN-09 | Paciente con sesión | Otorgar acceso a un tercero | Consentimiento registrado con fecha y alcance | _por definir_ | | Pendiente | | |
-| CP-20 | CU-11 | RN-06 | Consentimiento otorgado | Revocarlo y reintentar el acceso del tercero | Acceso cortado de inmediato | _por definir_ | | Pendiente | | |
+| CP-19 | CU-11 | RN-09 | Paciente con sesión | Otorgar acceso a un tercero | Consentimiento registrado con fecha y alcance | auto: `ConsentimientoServiceTest.otorgarRegistraFechaYAlcance` + manual en P-06 | | Pendiente | | |
+| CP-20 | CU-11 | RN-06 | Consentimiento otorgado | Revocarlo y reintentar el acceso del tercero | Acceso cortado de inmediato. Nota: el intercambio entre hospitales (RF-18) no existe (DEC-02); se demuestra con el estado REVOCADO y su fecha | auto: `ConsentimientoServiceTest.revocarCortaElAcceso` + manual en P-06 | | Pendiente | | |
 | CP-21 | Transversal | RNF-06 | Dos hospitales con datos | Recorrer todas las pantallas como usuario del hospital A | 0 accesos a datos del hospital B | auto (solo listado de historias): `RegistroPacienteServiceTest.cadaHospitalVeSoloSusHistorias`; el recorrido completo es manual y depende de v3 | | Pendiente | | |
 | CP-22 | Transversal | RNF-10 | App en ejecución | Abrir en Chrome, Edge, Firefox (y móvil si se puede) | Se ve y funciona; anotar el navegador usado | _por definir_ | | Pendiente | | |
 
