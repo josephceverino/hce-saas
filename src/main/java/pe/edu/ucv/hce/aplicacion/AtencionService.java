@@ -45,6 +45,7 @@ public class AtencionService {
     private final DiagnosticoRepository diagnosticos;
     private final TratamientoRepository tratamientos;
     private final EnmiendaRepository enmiendas;
+    private final pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes;
     private final ProfesionalSaludRepository profesionales;
     private final CatalogoCie10Service catalogo;
     private final AutorizacionService autorizacion;
@@ -53,7 +54,7 @@ public class AtencionService {
 
     public AtencionService(HistoriaClinicaRepository historias, AtencionRepository atenciones,
                            DiagnosticoRepository diagnosticos, TratamientoRepository tratamientos,
-                           EnmiendaRepository enmiendas, ProfesionalSaludRepository profesionales,
+                           EnmiendaRepository enmiendas, pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes, ProfesionalSaludRepository profesionales,
                            CatalogoCie10Service catalogo, AutorizacionService autorizacion,
                            AuditoriaService auditoria, AdmisionService admisiones) {
         this.admisiones = admisiones;
@@ -62,6 +63,7 @@ public class AtencionService {
         this.diagnosticos = diagnosticos;
         this.tratamientos = tratamientos;
         this.enmiendas = enmiendas;
+        this.examenes = examenes;
         this.profesionales = profesionales;
         this.catalogo = catalogo;
         this.autorizacion = autorizacion;
@@ -232,6 +234,7 @@ public class AtencionService {
     private AtencionDetalle armar(Atencion a) {
         return new AtencionDetalle(a, diagnosticos.findAllByAtencionIdOrderByIdAsc(a.getId()),
             tratamientos.findAllByAtencionIdOrderByIdAsc(a.getId()),
-            enmiendas.findAllByAtencionIdOrderByFechaAsc(a.getId()));
+            enmiendas.findAllByAtencionIdOrderByFechaAsc(a.getId()),
+            examenes.findAllByAtencionIdOrderByIdAsc(a.getId()));
     }
 }

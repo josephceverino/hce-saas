@@ -112,6 +112,8 @@ function conectarModo3() {
   $('formTratamiento').addEventListener('submit', (e) => enviar(e, base() + '/tratamientos',
     { indicacion: $('indicacion').value, medicamento: $('medicamento').value, dosis: $('dosis').value, duracion: $('duracion').value },
     $('mensajeTratamiento'), 'Tratamiento agregado.'));
+  $('formExamen').addEventListener('submit', (e) => enviar(e, base() + '/examenes',
+    { tipoExamen: $('tipoExamen').value, indicaciones: $('indicacionesExamen').value }, $('mensajeExamen'), 'Examen solicitado: apoyo al diagnóstico lo verá en su bandeja.'));
   $('formEnmienda').addEventListener('submit', (e) => enviar(e, base() + '/enmiendas',
     { motivo: $('motivoEnmienda').value, contenidoCorregido: $('contenidoEnmienda').value }, $('mensajeEnmienda'), 'Enmienda registrada.'));
   $('cerrar').addEventListener('click', async () => {

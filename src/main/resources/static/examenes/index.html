@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exámenes · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div class="hce-encabezado">
+      <div>
+        <h1>Exámenes</h1>
+        <p class="hce-subtitulo">Exámenes auxiliares pedidos por los médicos de tu hospital. Registra el resultado de cada uno.</p>
+      </div>
+      <div class="hce-acciones">
+        <button class="hce-boton claro" type="button" id="actualizar">Actualizar</button>
+      </div>
+    </div>
+    <div id="mensaje" class="hce-mensaje" role="status"></div>
+
+    <section class="hce-tarjeta hce-tarjeta-tabla">
+      <div class="hce-barra-tabla">
+        <div class="hce-pestanas" role="tablist" id="pestanas"></div>
+      </div>
+      <div class="hce-tabla-contenedor">
+        <table class="hce-tabla">
+          <thead><tr><th>Paciente</th><th>Examen</th><th>Pedido</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+        <div class="hce-vacio" id="vacio" hidden></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="examenes.js"></script>
+</body>
+</html>

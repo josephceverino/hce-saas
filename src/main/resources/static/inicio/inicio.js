@@ -28,6 +28,7 @@ const DESCRIPCION_MENU = {
   hospitales: 'Hospitales suscritos',
   'mi-historial': 'Tu historia clínica',
   consentimiento: 'Quién puede ver tu historia',
+  examenes: 'Solicitudes pendientes y resultados',
   perfil: 'Tu cuenta y tu último acceso'
 };
 

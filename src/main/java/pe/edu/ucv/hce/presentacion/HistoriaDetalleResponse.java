@@ -40,12 +40,17 @@ public record HistoriaDetalleResponse(
     public record EnmiendaDto(Integer id, String motivo, String contenidoCorregido, LocalDateTime fecha,
                               String autor) { }
 
+    /** CU-22, CU-23: un examen pedido y, si ya se registro, su resultado. */
+    public record ExamenDto(Integer id, String tipoExamen, String indicaciones, String estado, LocalDateTime fechaHora,
+                            String solicitadoPor, String resultado, java.time.LocalDate fechaResultado,
+                            String registradoPor) { }
+
     /** estado: ABIERTA o CERRADA. cerrada = true muestra el candado y oculta el boton de editar. */
     public record AtencionDto(Integer id, LocalDateTime fechaHora, String motivo, String anamnesis,
                               String examenFisico, String estado, boolean cerrada, String profesional,
                               List<DiagnosticoDto> diagnosticos, List<TratamientoDto> tratamientos,
                               List<EnmiendaDto> enmiendas, String enfermedadActual, String funcionesBiologicas,
-                              String examenSistemas) { }
+                              String examenSistemas, List<ExamenDto> examenes) { }
 
     public static HistoriaDetalleResponse de(HistorialClinico h) {
         HistoriaClinica hc = h.historia();
@@ -69,7 +74,16 @@ public record HistoriaDetalleResponse(
             d.diagnosticos().stream().map(HistoriaDetalleResponse::diagnostico).toList(),
             d.tratamientos().stream().map(HistoriaDetalleResponse::tratamiento).toList(),
             d.enmiendas().stream().map(HistoriaDetalleResponse::enmienda).toList(),
-            a.getEnfermedadActual(), a.getFuncionesBiologicas(), a.getExamenSistemas());
+            a.getEnfermedadActual(), a.getFuncionesBiologicas(), a.getExamenSistemas(),
+            d.examenes().stream().map(HistoriaDetalleResponse::examen).toList());
+    }
+
+    public static ExamenDto examen(pe.edu.ucv.hce.dominio.SolicitudExamen x) {
+        var r = x.getResultado();
+        return new ExamenDto(x.getId(), x.getTipoExamen(), x.getIndicaciones(), x.getEstado(), x.getFechaHora(),
+            x.getSolicitante().getApellidos() + ", " + x.getSolicitante().getNombres(),
+            r == null ? null : r.getResultado(), r == null ? null : r.getFecha(),
+            r == null ? null : r.getProfesional().getApellidos() + ", " + r.getProfesional().getNombres());
     }
 
     public static DiagnosticoDto diagnostico(Diagnostico x) {

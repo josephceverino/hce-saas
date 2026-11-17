@@ -15,6 +15,7 @@ const HCE = (() => {
     usuarios: SVG('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'),
     auditoria: SVG('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
     hospitales: SVG('<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M12 9v6"/><path d="M9 12h6"/>'),
+    examenes: SVG('<path d="M9 3h6"/><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/><path d="M7.5 15h9"/>'),
     perfil: SVG('<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>')
   };
 
@@ -256,6 +257,10 @@ const HCE = (() => {
     lista('Diagnósticos (CIE-10)', a.diagnosticos, d => d.codigoCie10 + ' · ' + d.descripcion + ' (' + d.tipo.toLowerCase() + ')');
     lista('Tratamiento e indicaciones', a.tratamientos,
       t => t.medicamento + ' ' + t.dosis + ' por ' + t.duracion + '. ' + t.indicacion);
+    if (a.examenes && a.examenes.length) {
+      lista('Exámenes solicitados', a.examenes, x => x.tipoExamen + (x.indicaciones ? ' (' + x.indicaciones + ')' : '') + ' · ' +
+        (x.resultado ? 'Resultado del ' + x.fechaResultado + ': ' + x.resultado : 'pendiente de resultado'));
+    }
     if (a.enmiendas && a.enmiendas.length) {
       lista('Enmiendas', a.enmiendas, e => fechaHora(e.fecha) + ' · ' + e.autor + ': ' + e.motivo + '. ' + e.contenidoCorregido);
     }

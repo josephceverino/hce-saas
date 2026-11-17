@@ -26,6 +26,8 @@ public class MenuService {
     private static final ItemMenu MI_HISTORIAL = new ItemMenu("mi-historial", "Mi historial", "/mi-historial/");
     private static final ItemMenu CONSENTIMIENTO =
         new ItemMenu("consentimiento", "Consentimiento", "/consentimiento/");
+    /** CU-23: bandeja de examenes de apoyo al diagnostico. */
+    private static final ItemMenu EXAMENES = new ItemMenu("examenes", "Exámenes", "/examenes/");
     private static final ItemMenu USUARIOS = new ItemMenu("usuarios", "Usuarios", "/usuarios/");
     private static final ItemMenu AUDITORIA = new ItemMenu("auditoria", "Auditoría", "/auditoria/");
     private static final ItemMenu HOSPITALES = new ItemMenu("hospitales", "Hospitales", "/hospitales/");
@@ -55,7 +57,7 @@ public class MenuService {
         if (usuario.tieneRol(CodigoRol.ADMIN_PLATAFORMA)) {
             return List.of(HOSPITALES);
         }
-        // APOYO_DIAGNOSTICO (A-05): plan v3, inicio propio con los examenes solicitados (CU-23 llega en R3)
-        return List.of(INICIO);
+        // APOYO_DIAGNOSTICO (A-05): Inicio y la bandeja de examenes solicitados (CU-23)
+        return List.of(INICIO, EXAMENES);
     }
 }

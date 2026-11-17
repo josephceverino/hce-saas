@@ -84,6 +84,6 @@ class MenuServiceTest {
     void apoyoAlDiagnosticoTieneInicioPropio() {
         Usuario apoyo = usuarios.save(new Usuario(usuarios.findByUsuario("admin.a").orElseThrow().getEstablecimiento(),
             roles.findByNombre(CodigoRol.APOYO_DIAGNOSTICO.name()).orElseThrow(), "apoyo.menu.test", "hash", "ACTIVO"));
-        assertEquals(List.of("inicio", "perfil"), menu.menuPara(apoyo).stream().map(ItemMenu::clave).toList());
+        assertEquals(List.of("inicio", "examenes", "perfil"), menu.menuPara(apoyo).stream().map(ItemMenu::clave).toList());
     }
 }

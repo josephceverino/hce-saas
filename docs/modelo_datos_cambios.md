@@ -17,7 +17,7 @@ Estado: **PROPUESTA**. Claude Code debe revisar contra el código actual (que ya
 | `paciente` | `lugar_nacimiento`, `procedencia`, `estado_civil`, `grado_instruccion`, `ocupacion`, `religion`, `contacto_emergencia_nombre`, `contacto_emergencia_parentesco`, `contacto_emergencia_telefono` |
 | `atencion` | `id_admision`, `enfermedad_actual`, `funciones_biologicas`, `examen_fisico_sistemas` (texto por sistema, puede ser JSON o columnas) |
 | `antecedente` | `tipo` (PERSONAL, QUIRURGICO, VACUNA, HABITO, FAMILIAR) |
-| `resultado_examen` | `id_solicitud_examen` (RN-18) |
+| `resultado_examen` | `id_solicitud_examen` (RN-18, único); `archivo_adjunto` pasa a opcional (D-41) |
 | `diagnostico` | `tipo` (PRESUNTIVO/DEFINITIVO) (propuesta) |
 | `establecimiento` | `codigo` único (CU-16) |
 

@@ -87,6 +87,15 @@
           <div id="mensajeTratamiento" class="hce-mensaje" role="status"></div>
         </div>
         <div class="hce-tarjeta">
+          <h2>Solicitar examen auxiliar</h2>
+          <form id="formExamen" class="hce-formulario">
+            <label class="hce-campo">Tipo de examen <input id="tipoExamen" required maxlength="100" placeholder="Ej. Hemograma completo"></label>
+            <label class="hce-campo ancho">Indicaciones <textarea id="indicacionesExamen" placeholder="Opcional"></textarea></label>
+            <button class="hce-boton primario" type="submit">Solicitar examen</button>
+          </form>
+          <div id="mensajeExamen" class="hce-mensaje" role="status"></div>
+        </div>
+        <div class="hce-tarjeta">
           <h2>Cerrar atención</h2>
           <p class="hce-subtitulo">Al cerrarla ya no se podrá modificar. Las correcciones posteriores se hacen con una enmienda.</p>
           <div class="hce-acciones"><button class="hce-boton primario" id="cerrar" type="button">Cerrar atención</button></div>

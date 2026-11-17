@@ -33,6 +33,7 @@ public class HistorialService {
     private final DiagnosticoRepository diagnosticos;
     private final TratamientoRepository tratamientos;
     private final EnmiendaRepository enmiendas;
+    private final pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes;
     private final AntecedenteRepository antecedentes;
     private final AlergiaRepository alergias;
     private final AutorizacionService autorizacion;
@@ -40,7 +41,7 @@ public class HistorialService {
 
     public HistorialService(HistoriaClinicaRepository historias, AtencionRepository atenciones,
                             DiagnosticoRepository diagnosticos, TratamientoRepository tratamientos,
-                            EnmiendaRepository enmiendas, AntecedenteRepository antecedentes,
+                            EnmiendaRepository enmiendas, pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes, AntecedenteRepository antecedentes,
                             AlergiaRepository alergias, AutorizacionService autorizacion,
                             AuditoriaService auditoria) {
         this.historias = historias;
@@ -48,6 +49,7 @@ public class HistorialService {
         this.diagnosticos = diagnosticos;
         this.tratamientos = tratamientos;
         this.enmiendas = enmiendas;
+        this.examenes = examenes;
         this.antecedentes = antecedentes;
         this.alergias = alergias;
         this.autorizacion = autorizacion;
@@ -87,6 +89,7 @@ public class HistorialService {
     private AtencionDetalle armar(Atencion a) {
         return new AtencionDetalle(a, diagnosticos.findAllByAtencionIdOrderByIdAsc(a.getId()),
             tratamientos.findAllByAtencionIdOrderByIdAsc(a.getId()),
-            enmiendas.findAllByAtencionIdOrderByFechaAsc(a.getId()));
+            enmiendas.findAllByAtencionIdOrderByFechaAsc(a.getId()),
+            examenes.findAllByAtencionIdOrderByIdAsc(a.getId()));
     }
 }

@@ -75,7 +75,8 @@ Precondición general: sesión iniciada (CU-01), salvo CU-18.
   1. Durante una atención abierta, A-02 elige "Solicitar examen".
   2. Ingresa el tipo de examen y las indicaciones.
   3. El sistema crea la solicitud en estado `SOLICITADO` y la muestra a apoyo al diagnóstico.
-- **Alternativo**: no se puede solicitar sobre una atención cerrada (se usa enmienda, RN-03).
+- **Alternativo**: no se puede solicitar sobre una atención cerrada (se usa enmienda, RN-03), ni sobre una atención ajena o de otro hospital.
+- Implementado como `ExamenService.solicitar` (D-41).
 
 ### CU-23: Registrar resultado de un examen
 - **Actor principal**: Apoyo al diagnóstico (A-05).

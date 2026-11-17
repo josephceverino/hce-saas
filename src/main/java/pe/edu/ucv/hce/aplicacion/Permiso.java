@@ -31,7 +31,8 @@ public enum Permiso {
     // Plan v3 (docs/requisitos_nuevos.md)
     ADMITIR_PACIENTE("RF-21", ADMISION),
     VER_COLA("RF-22", ADMISION, ENFERMERIA, MEDICO),
-    REGISTRAR_SIGNOS_VITALES("RF-23", ENFERMERIA);
+    REGISTRAR_SIGNOS_VITALES("RF-23", ENFERMERIA),
+    SOLICITAR_EXAMEN("RF-25", MEDICO);
 
     private final String requisito;
     private final Set<CodigoRol> roles;

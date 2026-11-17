@@ -53,12 +53,15 @@ public class IndicadoresService {
     private final AutorizacionService autorizacion;
 
     private final SuscripcionRepository suscripciones;
+    private final pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes;
 
     public IndicadoresService(HistoriaClinicaRepository historias, AtencionRepository atenciones,
                               DiagnosticoRepository diagnosticos, UsuarioRepository usuarios,
                               EstablecimientoRepository establecimientos, ProfesionalSaludRepository profesionales,
                               AuditoriaService auditoria, AutorizacionService autorizacion,
-                              SuscripcionRepository suscripciones) {
+                              SuscripcionRepository suscripciones,
+                              pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes) {
+        this.examenes = examenes;
         this.suscripciones = suscripciones;
         this.historias = historias;
         this.atenciones = atenciones;
@@ -99,7 +102,12 @@ public class IndicadoresService {
                 atenciones.countByProfesionalIdAndEstado(idProfesional, Atencion.ABIERTA), "Pendientes de cerrar"));
             tarjetas.add(new Tarjeta("pacientes", "Pacientes del hospital", pacientes, "En tu hospital"));
         } else if (apoyo) {
-            // Sin tarjetas hasta que existan las solicitudes de examen (CU-22, CU-23 en R3): no se inventan cifras.
+            tarjetas.add(new Tarjeta("examenes-pendientes", "Exámenes pendientes",
+                examenes.countByEstablecimientoIdAndEstado(h, pe.edu.ucv.hce.dominio.SolicitudExamen.SOLICITADO),
+                "Esperan su resultado"));
+            tarjetas.add(new Tarjeta("examenes-resueltos", "Resultados registrados",
+                examenes.countByEstablecimientoIdAndEstado(h, pe.edu.ucv.hce.dominio.SolicitudExamen.RESULTADO_REGISTRADO),
+                "En tu hospital"));
         } else if (usuario.tieneRol(CodigoRol.ENFERMERIA)) {
             tarjetas.add(new Tarjeta("pacientes", "Pacientes del hospital", pacientes, "En tu hospital"));
             tarjetas.add(new Tarjeta("historias-abiertas", "Historias abiertas", historiasAbiertas, "En tu hospital"));
