@@ -34,6 +34,13 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] R3b.4 Cierre de la atención: cerrarla pasa la admisión a ATENCION_CERRADA y la atención cerrada no se edita (RN-03); quedó cubierto por los tests de R3b.1 y el paso 8 del recorrido.
 - [x] R3b.5 `npm run recorrido -- 8` recorre los pasos 1 a 8 con 28 verificaciones y sin errores de consola; capturas paso6_ a paso8_ en `docs/capturas/`. `docs/script_sqlserver.sql` actualizado (admision, signos_vitales, solicitud_examen y columnas nuevas; sin probar en SQL Server).
 
+## R4 (aprobado el 17 nov: solo atenciones cerradas, sin signos vitales en el portal, sin cerrar sesiones al restablecer)
+- [x] R4.1 Portal verificado con la historia nueva: el paciente ve solo atenciones cerradas, con enfermedad actual, funciones biológicas, examen por sistemas y exámenes con su resultado; no ve atenciones abiertas ni signos vitales; no ve lo de otro paciente (RN-04). No hizo falta cambiar código; 4 tests nuevos (217 en total).
+- [ ] R4.2 Resultado de examen claro en `Mi historial` y en el resumen descargable (si falta)
+- [ ] R4.3 Consentimiento (CU-11): tests y verificación
+- [ ] R4.4 Auditoría CU-25 con las acciones nuevas
+- [ ] R4.5 Recorrido Playwright paso 9 y documentación
+
 ## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 
 **Qué quedó hecho.** Los 17 ítems del checklist. La rama `integracion` contiene todo y está subida.
