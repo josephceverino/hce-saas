@@ -72,7 +72,7 @@ public class DatosDemoClinicos implements CommandLineRunner {
         }
 
         // Hospital A: 4 pacientes, 8 atenciones (6 cerradas, 2 abiertas), con alergias y antecedentes.
-        HistoriaClinica h1 = paciente(a, "90000001", "Paciente de prueba", "Uno", LocalDate.of(1988, 4, 12), "F");
+        HistoriaClinica h1 = paciente(a, "90000001", "Paciente de prueba", "Uno", LocalDate.of(1988, 4, 12), "F", 30);
         if (h1 != null) {
             alergias.save(new Alergia(h1, "Penicilina", "Urticaria", "ALTA"));
             antecedentes.save(new Antecedente(h1, "Personal", "Asma leve en la infancia", LocalDate.now().minusDays(30)));
@@ -80,20 +80,20 @@ public class DatosDemoClinicos implements CommandLineRunner {
             atencion(h1, medicoA, a, 2, "Tos y malestar general", "J06.9",
                 "Infección aguda de las vías respiratorias superiores, no especificada", true);
         }
-        HistoriaClinica h2 = paciente(a, "90000002", "Paciente de prueba", "Dos", LocalDate.of(1965, 11, 3), "M");
+        HistoriaClinica h2 = paciente(a, "90000002", "Paciente de prueba", "Dos", LocalDate.of(1965, 11, 3), "M", 21);
         if (h2 != null) {
             antecedentes.save(new Antecedente(h2, "Personal", "Hipertensión en control", LocalDate.now().minusDays(60)));
             atencion(h2, medicoA, a, 7, "Control de presión arterial", "I10", "Hipertensión esencial (primaria)", true);
             atencion(h2, medicoA, a, 0, "Dolor de cabeza intenso", "R51", "Cefalea", false);
         }
-        HistoriaClinica h3 = paciente(a, "90000003", "Paciente de prueba", "Tres", LocalDate.of(2001, 8, 25), "F");
+        HistoriaClinica h3 = paciente(a, "90000003", "Paciente de prueba", "Tres", LocalDate.of(2001, 8, 25), "F", 12);
         if (h3 != null) {
             alergias.save(new Alergia(h3, "Polvo", "Rinitis", "LEVE"));
             atencion(h3, medicoA, a, 5, "Diarrea desde ayer", "A09",
                 "Diarrea y gastroenteritis de presunto origen infeccioso", true);
             atencion(h3, medicoA, a, 1, "Fiebre persistente", "R50.9", "Fiebre, no especificada", true);
         }
-        HistoriaClinica h4 = paciente(a, "90000004", "Paciente de prueba", "Cuatro", LocalDate.of(1978, 2, 14), "M");
+        HistoriaClinica h4 = paciente(a, "90000004", "Paciente de prueba", "Cuatro", LocalDate.of(1978, 2, 14), "M", 5);
         if (h4 != null) {
             atencion(h4, medicoA, a, 3, "Dolor lumbar", "M54.5", "Lumbago no especificado", true);
             atencion(h4, medicoA, a, 0, "Ardor al orinar", "N39.0", "Infección de vías urinarias, sitio no especificado",
@@ -101,11 +101,11 @@ public class DatosDemoClinicos implements CommandLineRunner {
         }
 
         // Hospital B: 2 pacientes con una atencion cerrada cada uno (para probar el aislamiento entre hospitales).
-        HistoriaClinica h5 = paciente(b, "90000005", "Paciente de prueba", "Cinco", LocalDate.of(1992, 6, 30), "M");
+        HistoriaClinica h5 = paciente(b, "90000005", "Paciente de prueba", "Cinco", LocalDate.of(1992, 6, 30), "M", 20);
         if (h5 != null) {
             atencion(h5, medicoB, b, 4, "Dolor de estómago", "K29.7", "Gastritis, no especificada", true);
         }
-        HistoriaClinica h6 = paciente(b, "90000006", "Paciente de prueba", "Seis", LocalDate.of(1970, 9, 9), "F");
+        HistoriaClinica h6 = paciente(b, "90000006", "Paciente de prueba", "Seis", LocalDate.of(1970, 9, 9), "F", 3);
         if (h6 != null) {
             atencion(h6, medicoB, b, 1, "Falta de aire", "J45.9", "Asma, no especificada", true);
         }
@@ -126,7 +126,7 @@ public class DatosDemoClinicos implements CommandLineRunner {
             return;
         }
         paciente.vincularUsuario(usuarios.save(new pe.edu.ucv.hce.dominio.Usuario(null, rol, nombre,
-            pe.edu.ucv.hce.aplicacion.ClaveUtil.sha256("demo123"), "ACTIVO")));
+            pe.edu.ucv.hce.aplicacion.ClaveUtil.bcrypt("demo123"), "ACTIVO")));
         pacientes.save(paciente);
     }
 
@@ -137,13 +137,13 @@ public class DatosDemoClinicos implements CommandLineRunner {
 
     /** Crea paciente e historia si el DNI no existe; si ya existe devuelve null (no se vuelve a sembrar). */
     private HistoriaClinica paciente(Establecimiento hospital, String dni, String nombres, String apellidos,
-                                     LocalDate nacimiento, String sexo) {
+                                     LocalDate nacimiento, String sexo, int diasDesdeApertura) {
         if (pacientes.existsByTipoDocumentoAndNroDocumento("DNI", dni)) {
             return null;
         }
         Paciente p = pacientes.save(new Paciente("DNI", dni, nombres, apellidos, nacimiento, sexo,
             "999000000", "demo@example.com", "Dirección ficticia 123"));
-        HistoriaClinica h = historias.save(new HistoriaClinica(p, hospital, "TMP-" + dni, LocalDate.now().minusDays(30),
+        HistoriaClinica h = historias.save(new HistoriaClinica(p, hospital, "TMP-" + dni, LocalDate.now().minusDays(diasDesdeApertura),
             "ABIERTA"));
         h.setNroHc(String.format("HC-%06d", h.getId()));
         return h;

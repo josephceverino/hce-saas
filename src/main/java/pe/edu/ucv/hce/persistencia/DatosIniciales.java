@@ -75,9 +75,13 @@ public class DatosIniciales implements CommandLineRunner {
     /** Crea el usuario si no existe; si existe con otro rol (base de la Fase 0), le asigna el rol correcto. */
     private Usuario usuario(Establecimiento hospital, Rol rol, String nombre) {
         Usuario u = usuarios.findByUsuario(nombre)
-            .orElseGet(() -> usuarios.save(new Usuario(hospital, rol, nombre, ClaveUtil.sha256(CLAVE_DEMO), "ACTIVO")));
+            .orElseGet(() -> usuarios.save(new Usuario(hospital, rol, nombre, ClaveUtil.bcrypt(CLAVE_DEMO), "ACTIVO")));
         if (!rol.getId().equals(u.getRol().getId())) {
             u.setRol(rol);
+        }
+        // RN-12: un usuario demo de una base anterior (SHA-256) pasa a BCrypt al arrancar
+        if (ClaveUtil.necesitaMigrar(u.getContrasenaHash()) && ClaveUtil.coincide(CLAVE_DEMO, u.getContrasenaHash())) {
+            u.actualizarContrasenaHash(ClaveUtil.bcrypt(CLAVE_DEMO));
         }
         return u;
     }

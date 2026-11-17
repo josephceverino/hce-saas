@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.ucv.hce.aplicacion.AutenticacionService;
 import pe.edu.ucv.hce.aplicacion.MenuService;
+import pe.edu.ucv.hce.dominio.NoAutenticadoException;
 import pe.edu.ucv.hce.dominio.Usuario;
 
 @RestController
@@ -28,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public SesionResponse login(@Valid @RequestBody LoginRequest datos, HttpServletRequest peticion) {
-        Usuario usuario = autenticacion.iniciarSesion(datos.usuario().trim(), datos.clave());
+        Usuario usuario = autenticacion.iniciarSesion(datos.usuario().trim(), datos.clave(), peticion.getRemoteAddr());
         HttpSession anterior = peticion.getSession(false);
         if (anterior != null) {
             anterior.invalidate();
@@ -39,7 +40,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpSession sesion) {
+    public void logout(HttpSession sesion, HttpServletRequest peticion) {
+        try {
+            autenticacion.cerrarSesion(sesionActual.requerir(sesion), peticion.getRemoteAddr());
+        } catch (NoAutenticadoException e) {
+            // sin sesion valida: no hay nada que auditar, solo se invalida
+        }
         sesion.invalidate();
     }
 

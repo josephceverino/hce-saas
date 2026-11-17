@@ -56,6 +56,8 @@ public class Usuario {
     }
     public String getUsuario() { return usuario; }
     public String getContrasenaHash() { return contrasenaHash; }
+    /** RN-12: se usa para migrar el hash antiguo (SHA-256) a BCrypt al iniciar sesion. */
+    public void actualizarContrasenaHash(String nuevoHash) { this.contrasenaHash = nuevoHash; }
     public String getEstado() { return estado; }
     public LocalDateTime getUltimoAcceso() { return ultimoAcceso; }
     public void setUltimoAcceso(LocalDateTime ultimoAcceso) { this.ultimoAcceso = ultimoAcceso; }

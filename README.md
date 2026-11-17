@@ -35,6 +35,27 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Con `paciente.a` probar lo que NO debe: `GET /api/historias/1`, `GET /api/historias` y `POST /api/atenciones` responden 403 (RN-04). `paciente.b` ve solo su propia historia (Hospital B).
 4. Contratos: `docs/contratos/portal_paciente.md` y `docs/contratos/consentimiento.md`.
 
+## Cómo probar (v5: paquete portable)
+Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
+1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).
+2. Abrir `dist\HCE-Demo\HCE-Demo.exe` con doble clic: se abre una ventana de consola (el servidor) y el navegador. La base queda en `dist\HCE-Demo\data` (junto al `.exe`).
+3. Si el puerto 8090 está ocupado, la app usa el siguiente libre y abre el navegador en el correcto.
+4. Guía para quien recibe el zip: `GUIA_INSTALACION.md`. Prueba pendiente antes del 5 de diciembre: copiar el zip a **otra PC Windows** y abrirlo con doble clic.
+En desarrollo (`./mvnw spring-boot:run` o el IDE) no se abre el navegador solo: eso lo activa únicamente el lanzador (`hce.abrir-navegador=true`).
+
+## Cómo probar (v5: auditoría e indicadores)
+1. `./mvnw test`: se suman `AuditoriaConsultaTest` (10) e `IndicadoresServiceTest` (9) y `ArranqueLocalTest` (4).
+2. Entrar con `admin.a` / `demo123` (Administrador del hospital A). Por API: `GET /api/auditoria` (con filtros `usuario`, `accion`, `nroHc`, `desde`, `hasta`, `pagina`, `tamano`) y `GET /api/indicadores/tablero`. Entrar con `medico.a`: ambos dan 403.
+3. Inicio por rol: `GET /api/indicadores/inicio` con `admision.a`, `medico.a`, `enfermera.a` o `admin.a` (cada uno ve sus tarjetas, con cifras del Hospital Demo A).
+4. Entrar con `plataforma`: `GET /api/indicadores/hospitales` devuelve solo totales por hospital.
+5. Cada inicio de sesión, intento fallido y cierre de sesión queda en la auditoría. Contrato: `docs/contratos/auditoria_indicadores.md`.
+
+## Cómo probar (v5: BCrypt y bloqueo por intentos)
+1. `./mvnw test`: se suman `BloqueoLoginTest` (11) y `ClaveBcryptTest` (4).
+2. Entrar con `enfermera.a` y una clave mala 5 veces: cada vez responde 401 con el mismo mensaje. A la sexta, **aunque pongas `demo123`**, dice "La cuenta está bloqueada... Intenta de nuevo en 15 minutos". Otros usuarios (`enfermera.b`) no se afectan. El bloqueo se levanta solo a los 15 minutos.
+3. Los usuarios demo están guardados con BCrypt. Una base anterior (con SHA-256) se actualiza sola al arrancar.
+4. Los intentos fallidos y bloqueados quedan en la auditoría (`LOGIN_FALLIDO`, `LOGIN_BLOQUEADO`).
+
 Estructura: `src/` es el proyecto real; `referencia/semilla-v2/` es la semilla original (solo consulta). Decisiones en `docs/decisiones.md`; roles en `docs/roles_permisos.md`.
 
 ---

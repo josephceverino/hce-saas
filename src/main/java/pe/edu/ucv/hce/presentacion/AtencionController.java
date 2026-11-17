@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.ucv.hce.aplicacion.AtencionService;
 import pe.edu.ucv.hce.aplicacion.HistorialService;
+import pe.edu.ucv.hce.aplicacion.TratamientoService;
 import pe.edu.ucv.hce.dominio.Usuario;
 
 /**
- * CU-06 y CU-05 (RF-05, RF-06; RN-02, RN-03, RN-06, RN-07, RN-10). Contrato: docs/contratos/atencion_historia.md.
+ * CU-06, CU-05 y CU-08 (RF-05, RF-06, RF-08; RN-02, RN-03, RN-06, RN-07, RN-10). Contrato: docs/contratos/atencion_historia.md.
  * El controlador solo traduce HTTP: permisos, hospital y reglas los resuelven los servicios.
  */
 @RestController
@@ -25,11 +26,14 @@ public class AtencionController {
 
     private final HistorialService historial;
     private final AtencionService atencion;
+    private final TratamientoService tratamiento;
     private final SesionActual sesionActual;
 
-    public AtencionController(HistorialService historial, AtencionService atencion, SesionActual sesionActual) {
+    public AtencionController(HistorialService historial, AtencionService atencion,
+                              TratamientoService tratamiento, SesionActual sesionActual) {
         this.historial = historial;
         this.atencion = atencion;
+        this.tratamiento = tratamiento;
         this.sesionActual = sesionActual;
     }
 
@@ -79,5 +83,15 @@ public class AtencionController {
         var e = atencion.enmendar(usuario, idAtencion, datos.motivo(), datos.contenidoCorregido(),
             peticion.getRemoteAddr());
         return ResponseEntity.status(HttpStatus.CREATED).body(HistoriaDetalleResponse.enmienda(e));
+    }
+
+    /** CU-08 (RF-08; RN-02, RN-03, RN-06, RN-07, RN-11): tratamiento sobre una atencion abierta propia. */
+    @PostMapping("/atenciones/{idAtencion}/tratamientos")
+    public ResponseEntity<HistoriaDetalleResponse.TratamientoDto> tratamiento(@PathVariable Integer idAtencion,
+            @Valid @RequestBody TratamientoRequest datos, HttpSession sesion, HttpServletRequest peticion) {
+        Usuario usuario = sesionActual.requerir(sesion);
+        var t = tratamiento.agregar(usuario, idAtencion, datos.indicacion(), datos.medicamento(), datos.dosis(),
+            datos.duracion(), peticion.getRemoteAddr());
+        return ResponseEntity.status(HttpStatus.CREATED).body(HistoriaDetalleResponse.tratamiento(t));
     }
 }
