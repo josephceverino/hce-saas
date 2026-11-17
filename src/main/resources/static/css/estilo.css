@@ -149,6 +149,30 @@ a.hce-boton { text-decoration: none; display: inline-block; }
 .hce-interruptor input:checked + .pista::after { transform: translateX(20px); }
 .hce-interruptor input:focus-visible + .pista { outline: 2px solid var(--hce-primario-oscuro); outline-offset: 2px; }
 
+/* ---- Tablero, graficos y hospitales (A-10, A-11) ---- */
+.hce-tablero { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+.hce-ancho-completo { grid-column: 1 / -1; }
+.hce-tablero h2 .hce-subtitulo { font-size: 13px; font-weight: 400; }
+.hce-grafico { width: 100%; height: auto; display: block; }
+.hce-grafico .etiqueta { font-size: 10px; fill: var(--hce-texto-suave); }
+.hce-grafico .valor { font-size: 10px; font-weight: 700; fill: var(--hce-primario-oscuro); }
+.hce-ranking { display: grid; gap: 12px; }
+.hce-ranking .fila { display: grid; grid-template-columns: minmax(120px, 1.4fr) 2fr auto; gap: 10px; align-items: center; }
+.hce-ranking .texto { font-size: 13px; }
+.hce-ranking .pista { background: var(--hce-primario-claro); border-radius: 999px; height: 12px; overflow: hidden; }
+.hce-ranking .barra { background: var(--hce-primario); height: 100%; border-radius: 999px; }
+.hce-ranking .cifra { font-weight: 700; color: var(--hce-primario-oscuro); }
+.hce-dona-caja { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.hce-dona { width: 170px; height: 170px; }
+.hce-dona .total { font-size: 8px; font-weight: 700; fill: var(--hce-texto); }
+.hce-leyenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.hce-leyenda .punto { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+.hce-hospitales { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+.hce-hospital-tarjeta .cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
+.hce-hospital-tarjeta .cifra { background: var(--hce-primario-claro); border-radius: 10px; padding: 12px; text-align: center; }
+.hce-hospital-tarjeta .cifra .valor { font-size: 28px; font-weight: 700; color: var(--hce-primario-oscuro); }
+.hce-hospital-tarjeta .cifra .etiqueta { font-size: 13px; color: var(--hce-texto-suave); }
+
 @media (max-width: 800px) {
   .hce-login { grid-template-columns: 1fr; }
   .hce-login-marca { padding: 28px; }
