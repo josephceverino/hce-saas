@@ -12,30 +12,119 @@
   <main class="hce-contenido" id="contenido">
     <div id="sinHistoria" class="hce-tarjeta" hidden>
       <h1>Historia clínica</h1>
-      <p class="hce-subtitulo">Elige un paciente en la lista para ver su historia clínica.</p>
-      <div class="hce-acciones"><a class="hce-boton primario" href="/pacientes/">Ir a Pacientes</a></div>
+      <p class="hce-subtitulo">Elige un paciente de la cola o de la lista de pacientes para ver su historia clínica.</p>
+      <div class="hce-acciones"><a class="hce-boton primario" href="/cola/">Ir a la cola</a><a class="hce-boton claro" href="/pacientes/">Ir a pacientes</a></div>
     </div>
     <div id="error" class="hce-mensaje" role="alert"></div>
-    <section class="hce-tarjeta" id="cabecera" hidden>
+
+    <!-- Cabecera del paciente (referencia 02) -->
+    <section class="hce-tarjeta hce-hero-paciente" id="cabecera" hidden>
       <div class="hce-cabecera-paciente">
         <div class="hce-avatar" id="avatar"></div>
         <div class="datos">
+          <div class="hce-antetitulo" id="antetitulo">Historia clínica</div>
           <h1 id="nombre"></h1>
           <div class="hce-subtitulo" id="datosPaciente"></div>
           <div class="hce-fila-chips" id="alergias"></div>
         </div>
-        <a class="hce-boton primario" id="nuevaAtencion" href="#" hidden>Registrar atención</a>
+        <div class="hce-acciones">
+          <a class="hce-boton primario" id="nuevaAtencion" href="#" hidden>Registrar atención</a>
+        </div>
       </div>
+      <div class="hce-mini-cifras" id="miniCifras"></div>
     </section>
-    <section class="hce-tarjeta" id="antecedentesTarjeta" hidden>
-      <h2>Antecedentes</h2>
-      <ul class="hce-lista" id="antecedentes"></ul>
+
+    <!-- CU-21: atencion de enfermeria de la admision de hoy (solo si se llego desde la cola) -->
+    <section class="hce-tarjeta hce-tarjeta-destacada" id="enfermeria" hidden>
+      <div class="hce-evento-cabecera">
+        <div>
+          <div class="hce-antetitulo">Admisión de hoy</div>
+          <h2 id="enfermeriaTitulo">Atención de enfermería</h2>
+        </div>
+        <div class="hce-fila-chips" id="enfermeriaEstado"></div>
+      </div>
+      <div id="tomarCaja" hidden>
+        <p class="hce-subtitulo">El paciente está esperando. Tómalo para registrar sus signos vitales.</p>
+        <div class="hce-acciones"><button class="hce-boton primario" type="button" id="tomar">Tomar paciente</button></div>
+      </div>
+      <form id="formSignos" hidden>
+        <div class="hce-formulario hce-formulario-signos">
+          <label class="hce-campo">Presión arterial sistólica <input id="presionSistolica" type="number" inputmode="numeric" required><span class="hce-unidad">milímetros de mercurio</span></label>
+          <label class="hce-campo">Presión arterial diastólica <input id="presionDiastolica" type="number" inputmode="numeric" required><span class="hce-unidad">milímetros de mercurio</span></label>
+          <label class="hce-campo">Frecuencia cardíaca <input id="frecuenciaCardiaca" type="number" inputmode="numeric" required><span class="hce-unidad">latidos por minuto</span></label>
+          <label class="hce-campo">Frecuencia respiratoria <input id="frecuenciaRespiratoria" type="number" inputmode="numeric" required><span class="hce-unidad">respiraciones por minuto</span></label>
+          <label class="hce-campo">Temperatura <input id="temperatura" type="number" step="0.1" inputmode="decimal" required><span class="hce-unidad">grados Celsius</span></label>
+          <label class="hce-campo">Saturación de oxígeno <input id="saturacionOxigeno" type="number" inputmode="numeric" required><span class="hce-unidad">por ciento</span></label>
+        </div>
+        <p class="hce-ayuda">Se rechazan valores imposibles con rangos de demostración, no clínicos.</p>
+        <div class="hce-acciones">
+          <button class="hce-boton primario" type="submit">Registrar signos vitales</button>
+          <button class="hce-boton secundario" type="button" id="listo">Confirmar: listo para atención</button>
+        </div>
+      </form>
+      <div id="mensajeEnfermeria" class="hce-mensaje" role="status"></div>
     </section>
-    <section class="hce-tarjeta" id="atencionesTarjeta" hidden>
-      <h2>Atenciones <span class="hce-chip" id="cuenta">0</span></h2>
-      <div class="hce-linea-tiempo" id="atenciones"></div>
-      <div class="hce-vacio" id="sinAtenciones" hidden>Esta historia aún no tiene atenciones.</div>
-    </section>
+
+    <div class="hce-historia-grid" id="cuerpoHistoria" hidden>
+      <div class="hce-columna">
+        <section class="hce-tarjeta">
+          <h2>Filiación</h2>
+          <div class="hce-datos-grid" id="filiacion"></div>
+        </section>
+
+        <section class="hce-tarjeta">
+          <div class="hce-evento-cabecera"><h2>Antecedentes</h2></div>
+          <div id="antecedentes" class="hce-antecedentes"></div>
+          <form id="formAntecedente" class="hce-form-linea" hidden>
+            <select id="tipoAntecedente" aria-label="Tipo de antecedente" required>
+              <option value="PERSONAL">Personal</option>
+              <option value="QUIRURGICO">Quirúrgico</option>
+              <option value="VACUNA">Vacuna</option>
+              <option value="HABITO">Hábito</option>
+              <option value="FAMILIAR">Familiar</option>
+            </select>
+            <input id="descripcionAntecedente" placeholder="Describe el antecedente" maxlength="500" required aria-label="Descripción del antecedente">
+            <button class="hce-boton secundario pequeno" type="submit">Agregar</button>
+          </form>
+          <div id="mensajeAntecedente" class="hce-mensaje" role="status"></div>
+        </section>
+
+        <section class="hce-tarjeta">
+          <h2>Alergias</h2>
+          <div id="listaAlergias" class="hce-lista-alergias"></div>
+          <form id="formAlergia" class="hce-form-linea" hidden>
+            <input id="agente" placeholder="Alérgico a" maxlength="100" required aria-label="Agente">
+            <input id="reaccion" placeholder="Reacción" maxlength="200" required aria-label="Reacción">
+            <select id="gravedad" aria-label="Gravedad" required>
+              <option value="LEVE">Leve</option>
+              <option value="MODERADA">Moderada</option>
+              <option value="ALTA">Alta</option>
+            </select>
+            <button class="hce-boton secundario pequeno" type="submit">Agregar</button>
+          </form>
+          <div id="mensajeAlergia" class="hce-mensaje" role="status"></div>
+        </section>
+      </div>
+
+      <div class="hce-columna">
+        <section class="hce-tarjeta">
+          <h2>Signos vitales</h2>
+          <div class="hce-signos-ultimos" id="signosUltimos"></div>
+          <div class="hce-tabla-contenedor">
+            <table class="hce-tabla hce-tabla-limpia hce-tabla-compacta" id="tablaSignos" hidden>
+              <thead><tr><th>Fecha</th><th>Presión</th><th>Pulso</th><th>Respiración</th><th>Temperatura</th><th>Saturación</th></tr></thead>
+              <tbody id="signosHistorial"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="hce-tarjeta" id="atencionesTarjeta">
+          <h2>Atenciones <span class="hce-chip" id="cuenta">0</span></h2>
+          <div class="hce-linea-tiempo" id="atenciones"></div>
+          <div class="hce-vacio" id="sinAtenciones" hidden>Esta historia aún no tiene atenciones.</div>
+        </section>
+      </div>
+    </div>
   </main>
 </div>
 <script src="/js/comun.js"></script>

@@ -1,5 +1,31 @@
 # Plataforma HCE (SaaS de historia clínica electrónica)
 
+## Cómo entrar (plan v3: sin cuentas de demostración)
+La aplicación ya **no trae cuentas ni pacientes de demostración**. Al arrancar por primera vez crea un único **administrador de plataforma**:
+
+| Usuario | Clave temporal | Qué pasa al entrar |
+|---|---|---|
+| `admin` | `Temporal2026` | El sistema obliga a cambiar la clave en el primer ingreso (RN-14, CU-18) |
+
+- Se configuran en `src/main/resources/application.properties` con `hce.admin-inicial.usuario` y `hce.admin-inicial.clave` (la clave debe tener al menos 6 caracteres con una letra y un número). En el paquete portable también se pueden pasar al lanzarlo, por ejemplo `--hce.admin-inicial.clave=OtraClave1`.
+- Solo se crea si no existe ningún administrador de plataforma: reiniciar la aplicación nunca pisa una clave ya cambiada.
+- Para empezar de cero, borra la carpeta `data/` con la aplicación cerrada.
+- Las cuentas `admision.a`, `medico.a`, etc. (clave `demo123`) que mencionan las secciones antiguas de este README **solo existen en los tests** (`hce.demo-usuarios=true` en `src/test/resources`).
+- Avance del plan v3: `PROGRESO.md`. Decisiones por revisar: `DECISIONES_PENDIENTES.md`.
+
+## Cómo probar el recorrido (plan v3, pasos 1 a 8 de `docs/recorrido.md`)
+1. Borra `data/` (con la app cerrada) y arranca: `.\mvnw.cmd spring-boot:run`. Abre `http://localhost:8090`.
+2. **Paso 1:** entra con `admin` / `Temporal2026`, cambia la clave y en **Hospitales** da de alta un hospital con su administrador. Anota la clave temporal de la constancia (se muestra una sola vez).
+3. **Paso 2:** entra con el administrador del hospital, cambia su clave y en **Usuarios** crea a admisión, enfermería, médico (con colegiatura) y apoyo al diagnóstico.
+4. **Paso 3:** entra con admisión y en **Registrar paciente** completa la filiación. Se abre la historia y sale la constancia del portal (usuario = documento).
+5. **Paso 4:** en **Pacientes**, botón **Admitir**: consulta externa o emergencia. **Pacientes del día** muestra la cola completa.
+6. **Paso 5:** entra con enfermería: en **Cola de pacientes** la emergencia va primero. **Tomar paciente** abre la historia con la sección de enfermería: registra signos vitales (un valor imposible se rechaza), antecedentes y alergias, y confirma "listo para atención". El médico lo ve en su cola.
+7. **Paso 6:** entra con el médico: en **Cola de pacientes**, **Iniciar atención** sobre el paciente listo. Completa motivo, enfermedad actual, anamnesis, funciones biológicas, examen físico y por sistemas; agrega un diagnóstico CIE-10 (ej. `J02.9`), un tratamiento y **Solicitar examen auxiliar**.
+8. **Paso 7:** entra con apoyo al diagnóstico (cambia su clave): en **Exámenes** ve el pedido pendiente y pulsa **Registrar resultado**.
+9. **Paso 8:** el médico abre la atención, ve el resultado y la cierra: la admisión pasa a "atención cerrada" y ya no se edita (solo enmienda).
+- **Restablecer clave (CU-26):** el administrador del hospital lo hace desde **Usuarios**, la plataforma desde **Hospitales** (al administrador) y la admisión desde **Pacientes** (cuenta del portal). La clave temporal se muestra una sola vez.
+- Automático: `cd e2e`, `npm install` y `npm run recorrido -- 8` con la app en el puerto 8191 y base nueva (ver `e2e/LEEME.md`). Capturas en `docs/capturas/`.
+
 ## Cómo probar (Fase 0)
 Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene incluido (`mvnw`). La primera vez necesita internet para bajar dependencias.
 1. `./mvnw test` (en Windows también `mvnw.cmd test`): deben pasar todos los tests (los `@Disabled` de M-1 salen como omitidos).

@@ -18,6 +18,11 @@ public interface AtencionRepository extends JpaRepository<Atencion, Integer> {
     /** CU-06: atenciones de una historia, la mas reciente primero. */
     List<Atencion> findAllByHistoriaClinicaIdOrderByFechaHoraDesc(Integer idHistoria);
 
+    /** CU-05 ampliado: una admision genera una sola atencion. */
+    boolean existsByAdmisionId(Integer idAdmision);
+
+    Optional<Atencion> findByAdmisionId(Integer idAdmision);
+
     /** RN-06: busca una atencion solo dentro del hospital del usuario. */
     Optional<Atencion> findByIdAndEstablecimientoId(Integer id, Integer idEstablecimiento);
 }

@@ -37,8 +37,11 @@
       <p class="hce-subtitulo" id="paciente"></p>
       <form id="formNueva" class="hce-formulario">
         <label class="hce-campo ancho">Motivo de consulta <input id="motivo" required maxlength="300"></label>
+        <label class="hce-campo ancho" id="campoEnfermedad" hidden>Enfermedad actual <textarea id="enfermedadActual"></textarea></label>
         <label class="hce-campo ancho">Anamnesis <textarea id="anamnesis" required></textarea></label>
+        <label class="hce-campo ancho" id="campoFunciones" hidden>Funciones biológicas (apetito, sed, sueño, orina, deposiciones) <textarea id="funcionesBiologicas"></textarea></label>
         <label class="hce-campo ancho">Examen físico <textarea id="examenFisico" required></textarea></label>
+        <label class="hce-campo ancho" id="campoSistemas" hidden>Examen por sistemas <textarea id="examenSistemas"></textarea></label>
         <button class="hce-boton primario" type="submit">Abrir atención</button>
       </form>
       <div id="mensajeNueva" class="hce-mensaje" role="status"></div>
@@ -84,8 +87,17 @@
           <div id="mensajeTratamiento" class="hce-mensaje" role="status"></div>
         </div>
         <div class="hce-tarjeta">
+          <h2>Solicitar examen auxiliar</h2>
+          <form id="formExamen" class="hce-formulario">
+            <label class="hce-campo">Tipo de examen <input id="tipoExamen" required maxlength="100" placeholder="Ej. Hemograma completo"></label>
+            <label class="hce-campo ancho">Indicaciones <textarea id="indicacionesExamen" placeholder="Opcional"></textarea></label>
+            <button class="hce-boton primario" type="submit">Solicitar examen</button>
+          </form>
+          <div id="mensajeExamen" class="hce-mensaje" role="status"></div>
+        </div>
+        <div class="hce-tarjeta">
           <h2>Cerrar atención</h2>
-          <p class="hce-subtitulo">Al cerrarla ya no se podrá modificar (RN-03). Las correcciones posteriores se hacen con una enmienda.</p>
+          <p class="hce-subtitulo">Al cerrarla ya no se podrá modificar. Las correcciones posteriores se hacen con una enmienda.</p>
           <div class="hce-acciones"><button class="hce-boton primario" id="cerrar" type="button">Cerrar atención</button></div>
           <div id="mensajeCierre" class="hce-mensaje" role="status"></div>
         </div>
@@ -93,7 +105,7 @@
 
       <div class="hce-tarjeta" id="enmienda" hidden>
         <h2>Agregar enmienda</h2>
-        <p class="hce-subtitulo">La atención está cerrada y no se edita (RN-03). Registra aquí la corrección: queda con tu nombre y la fecha.</p>
+        <p class="hce-subtitulo">La atención está cerrada y no se edita. Registra aquí la corrección: queda con tu nombre y la fecha.</p>
         <form id="formEnmienda" class="hce-formulario">
           <label class="hce-campo ancho">Motivo de la corrección <input id="motivoEnmienda" required maxlength="200"></label>
           <label class="hce-campo ancho">Contenido corregido <textarea id="contenidoEnmienda" required></textarea></label>

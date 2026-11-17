@@ -1,5 +1,10 @@
 package pe.edu.ucv.hce.aplicacion;
 
+import pe.edu.ucv.hce.dominio.CodigoRol;
+import pe.edu.ucv.hce.dominio.RegistroDuplicadoException;
+import pe.edu.ucv.hce.persistencia.RolRepository;
+import pe.edu.ucv.hce.persistencia.UsuarioRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -22,18 +27,24 @@ public class RegistroPacienteService {
 
     public static final String MENSAJE_OTRO_ESTABLECIMIENTO =
         "El paciente ya cuenta con una historia clínica en otro establecimiento. "
-        + "Para acceder a ella se requiere un intercambio autorizado por el paciente (RN-06).";
+        + "Para acceder a ella se requiere un intercambio autorizado por el paciente.";
 
     public static final String ACCION_REGISTRAR = "REGISTRAR_PACIENTE_Y_ABRIR_HISTORIA";
     public static final String ACCION_VER_EXISTENTE = "VER_HISTORIA_EXISTENTE";
+    public static final String ACCION_CREAR_CUENTA_PORTAL = "CREAR_CUENTA_PORTAL";
 
     private final PacienteRepository pacientes;
     private final HistoriaClinicaRepository historias;
     private final AutorizacionService autorizacion;
     private final AuditoriaService auditoria;
+    private final UsuarioRepository usuarios;
+    private final RolRepository roles;
 
     public RegistroPacienteService(PacienteRepository pacientes, HistoriaClinicaRepository historias,
-                                   AutorizacionService autorizacion, AuditoriaService auditoria) {
+                                   AutorizacionService autorizacion, AuditoriaService auditoria,
+                                   UsuarioRepository usuarios, RolRepository roles) {
+        this.usuarios = usuarios;
+        this.roles = roles;
         this.pacientes = pacientes;
         this.historias = historias;
         this.autorizacion = autorizacion;
@@ -72,7 +83,38 @@ public class RegistroPacienteService {
         historia.setNroHc(String.format("HC-%06d", historia.getId()));
         // CU-03 paso 6: se registra la auditoria.
         auditoria.registrar(usuario, ACCION_REGISTRAR, "historia_clinica", historia.getId(), historia, ip);
-        return new ResultadoRegistro(historia, false);
+        // CU-19: la cuenta del portal se crea junto con el registro.
+        String clave = crearCuentaPortal(guardado, usuario, ip);
+        return new ResultadoRegistro(historia, false, clave == null ? null : guardado.getUsuario().getUsuario(), clave);
+    }
+
+    /**
+     * CU-19 (RF-27; RN-15, RN-14): cuenta del portal con usuario = documento, sin hospital (el paciente es global,
+     * DEC-02) y clave temporal que debe cambiar. Una sola cuenta por paciente: si ya tiene, no se crea otra.
+     * Devuelve la clave temporal en texto (solo para mostrarla una vez) o null si no se creo cuenta.
+     */
+    private String crearCuentaPortal(Paciente paciente, Usuario admision, String ip) {
+        if (paciente.getUsuario() != null) {
+            return null;
+        }
+        String nombreUsuario = paciente.getNroDocumento().trim();
+        if (usuarios.findByUsuario(nombreUsuario).isPresent()) {
+            throw new RegistroDuplicadoException("Ya existe una cuenta con el usuario " + nombreUsuario
+                + ". Avisa al administrador del hospital.");
+        }
+        String clave = ClaveUtil.generarTemporal();
+        Usuario cuenta = new Usuario(null, roles.findByNombre(CodigoRol.PACIENTE.name()).orElseThrow(),
+            nombreUsuario, ClaveUtil.bcrypt(clave), "ACTIVO");
+        cuenta.setDatosPersona(paciente.getApellidos() + ", " + paciente.getNombres(), paciente.getNroDocumento(),
+            paciente.getCorreo());
+        cuenta.setDebeCambiarClave(true);
+        cuenta = usuarios.save(cuenta);
+        paciente.vincularUsuario(cuenta);
+        pacientes.save(paciente);
+        // Sin historia: es un acto sobre la cuenta, no un acceso a la historia clinica (la auditoria del hospital
+        // igual lo muestra porque lo hizo un usuario de admision del hospital).
+        auditoria.registrar(admision, ACCION_CREAR_CUENTA_PORTAL, "usuario", cuenta.getId(), null, ip);
+        return clave;
     }
 
     /** RF-02 / RN-06: lista solo las historias del hospital del usuario. */

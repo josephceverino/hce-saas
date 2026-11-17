@@ -31,5 +31,5 @@ public final class Indicadores {
 
     /** Panel de plataforma (DEC-11): SOLO totales por hospital; nunca datos clinicos ni de pacientes. */
     public record ResumenHospital(Integer id, String nombre, String codigoIpress, String region, String estado,
-                                  long usuarios, long pacientes, long atenciones) { }
+                                  String plan, long usuarios, long pacientes, long atenciones) { }
 }

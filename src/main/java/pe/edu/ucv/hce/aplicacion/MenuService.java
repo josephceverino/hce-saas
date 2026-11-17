@@ -15,6 +15,9 @@ import pe.edu.ucv.hce.dominio.Usuario;
 public class MenuService {
 
     private static final ItemMenu INICIO = new ItemMenu("inicio", "Inicio", "/inicio/");
+    /** RF-22 (plan v3): cola del dia. Admision la ve como "Pacientes del dia"; enfermeria y medico como su cola. */
+    private static final ItemMenu COLA_ADMISION = new ItemMenu("cola", "Pacientes del día", "/cola/");
+    private static final ItemMenu COLA_CLINICA = new ItemMenu("cola", "Cola de pacientes", "/cola/");
     private static final ItemMenu PACIENTES = new ItemMenu("pacientes", "Pacientes", "/pacientes/");
     private static final ItemMenu REGISTRAR_PACIENTE =
         new ItemMenu("registrar-paciente", "Registrar paciente", "/pacientes/nuevo.html");
@@ -23,6 +26,9 @@ public class MenuService {
     private static final ItemMenu MI_HISTORIAL = new ItemMenu("mi-historial", "Mi historial", "/mi-historial/");
     private static final ItemMenu CONSENTIMIENTO =
         new ItemMenu("consentimiento", "Consentimiento", "/consentimiento/");
+    /** CU-23: bandeja de examenes de apoyo al diagnostico. */
+    private static final ItemMenu EXAMENES = new ItemMenu("examenes", "Exámenes", "/examenes/");
+    private static final ItemMenu USUARIOS = new ItemMenu("usuarios", "Usuarios", "/usuarios/");
     private static final ItemMenu AUDITORIA = new ItemMenu("auditoria", "Auditoría", "/auditoria/");
     private static final ItemMenu HOSPITALES = new ItemMenu("hospitales", "Hospitales", "/hospitales/");
     private static final ItemMenu PERFIL = new ItemMenu("perfil", "Mi perfil", "/perfil/");
@@ -34,23 +40,24 @@ public class MenuService {
 
     private List<ItemMenu> opcionesDe(Usuario usuario) {
         if (usuario.tieneRol(CodigoRol.ADMISION)) {
-            return List.of(INICIO, PACIENTES, REGISTRAR_PACIENTE);
+            return List.of(INICIO, COLA_ADMISION, PACIENTES, REGISTRAR_PACIENTE);
         }
         if (usuario.tieneRol(CodigoRol.MEDICO)) {
-            return List.of(INICIO, PACIENTES, HISTORIA, ATENCION);
+            return List.of(INICIO, COLA_CLINICA, PACIENTES, HISTORIA, ATENCION);
         }
         if (usuario.tieneRol(CodigoRol.ENFERMERIA)) {
-            return List.of(INICIO, PACIENTES, HISTORIA);
+            return List.of(INICIO, COLA_CLINICA, PACIENTES, HISTORIA);
         }
         if (usuario.tieneRol(CodigoRol.PACIENTE)) {
             return List.of(MI_HISTORIAL, CONSENTIMIENTO);
         }
         if (usuario.tieneRol(CodigoRol.ADMIN_HOSPITAL)) {
-            return List.of(INICIO, AUDITORIA);
+            return List.of(INICIO, USUARIOS, AUDITORIA);
         }
         if (usuario.tieneRol(CodigoRol.ADMIN_PLATAFORMA)) {
             return List.of(HOSPITALES);
         }
-        return List.of(); // APOYO_DIAGNOSTICO (A-05) no tiene casos de uso en el alcance: solo "Mi perfil"
+        // APOYO_DIAGNOSTICO (A-05): Inicio y la bandeja de examenes solicitados (CU-23)
+        return List.of(INICIO, EXAMENES);
     }
 }

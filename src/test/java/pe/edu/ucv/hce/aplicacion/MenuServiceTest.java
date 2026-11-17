@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import pe.edu.ucv.hce.dominio.CodigoRol;
 import pe.edu.ucv.hce.dominio.Usuario;
+import pe.edu.ucv.hce.persistencia.RolRepository;
 import pe.edu.ucv.hce.persistencia.UsuarioRepository;
 
 /**
@@ -23,6 +25,7 @@ class MenuServiceTest {
 
     @Autowired MenuService menu;
     @Autowired UsuarioRepository usuarios;
+    @Autowired RolRepository roles;
 
     private List<String> claves(String usuario) {
         Usuario u = usuarios.findByUsuario(usuario).orElseThrow();
@@ -31,12 +34,12 @@ class MenuServiceTest {
 
     @Test
     void admisionRegistraYBuscaPacientes() {
-        assertEquals(List.of("inicio", "pacientes", "registrar-paciente", "perfil"), claves("admision.a"));
+        assertEquals(List.of("inicio", "cola", "pacientes", "registrar-paciente", "perfil"), claves("admision.a"));
     }
 
     @Test
     void medicoAtiendeYVeHistorias() {
-        assertEquals(List.of("inicio", "pacientes", "historia", "atencion", "perfil"), claves("medico.a"));
+        assertEquals(List.of("inicio", "cola", "pacientes", "historia", "atencion", "perfil"), claves("medico.a"));
     }
 
     /** RN-02: enfermeria ve historias pero no tiene "Registrar atencion". */
@@ -49,7 +52,7 @@ class MenuServiceTest {
 
     @Test
     void adminDelHospitalVeTableroYAuditoria() {
-        assertEquals(List.of("inicio", "auditoria", "perfil"), claves("admin.a"));
+        assertEquals(List.of("inicio", "usuarios", "auditoria", "perfil"), claves("admin.a"));
     }
 
     @Test
@@ -74,5 +77,13 @@ class MenuServiceTest {
                     .contains(clave));
             }
         }
+    }
+
+    /** Plan v3, 0.4: los 7 roles tienen menu propio; apoyo al diagnostico tiene su Inicio. */
+    @Test
+    void apoyoAlDiagnosticoTieneInicioPropio() {
+        Usuario apoyo = usuarios.save(new Usuario(usuarios.findByUsuario("admin.a").orElseThrow().getEstablecimiento(),
+            roles.findByNombre(CodigoRol.APOYO_DIAGNOSTICO.name()).orElseThrow(), "apoyo.menu.test", "hash", "ACTIVO"));
+        assertEquals(List.of("inicio", "examenes", "perfil"), menu.menuPara(apoyo).stream().map(ItemMenu::clave).toList());
     }
 }

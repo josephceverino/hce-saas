@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cambiar clave · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-login">
+  <div class="hce-login-marca">
+    <div class="hce-marca-login"><img src="/logo.svg" alt=""> Plataforma HCE</div>
+    <h1>Protege tu cuenta</h1>
+    <p>Tu cuenta se creó con una clave temporal. Antes de continuar, elige una clave que solo tú conozcas.</p>
+  </div>
+  <div class="hce-login-acceso">
+    <div class="hce-login-caja hce-tarjeta">
+      <h2>Cambiar clave</h2>
+      <p class="hce-subtitulo" id="saludo">Es tu primer ingreso.</p>
+      <form id="formulario">
+        <label class="hce-campo">Clave temporal <input id="claveActual" type="password" autocomplete="current-password" required></label>
+        <label class="hce-campo">Nueva clave <input id="claveNueva" type="password" autocomplete="new-password" required></label>
+        <label class="hce-campo">Repite la nueva clave <input id="confirmacion" type="password" autocomplete="new-password" required></label>
+        <ul class="hce-requisitos" aria-label="Requisitos de la clave">
+          <li id="reqLargo">Al menos 6 caracteres</li>
+          <li id="reqLetraNumero">Al menos una letra y un número</li>
+          <li id="reqDistinta">Distinta de la clave temporal</li>
+          <li id="reqIguales">Las dos claves nuevas coinciden</li>
+        </ul>
+        <button class="hce-boton primario" type="submit">Guardar y continuar</button>
+      </form>
+      <div id="mensaje" class="hce-mensaje" role="status"></div>
+      <p class="hce-login-pie"><button type="button" class="hce-enlace" id="salir">Cerrar sesión</button></p>
+    </div>
+  </div>
+</div>
+<script src="/js/comun.js"></script>
+<script src="cambiar-clave.js"></script>
+</body>
+</html>

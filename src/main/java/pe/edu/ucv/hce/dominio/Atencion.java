@@ -47,6 +47,20 @@ public class Atencion {
     @Column(name = "estado", nullable = false, length = 20)
     private String estado;
 
+    /** CU-05 ampliado (plan v3): admision del dia de la que nace la atencion. Nulo en atenciones antiguas. */
+    @ManyToOne
+    @JoinColumn(name = "id_admision")
+    private Admision admision;
+
+    @Column(name = "enfermedad_actual", columnDefinition = "TEXT")
+    private String enfermedadActual;
+
+    @Column(name = "funciones_biologicas", columnDefinition = "TEXT")
+    private String funcionesBiologicas;
+
+    @Column(name = "examen_sistemas", columnDefinition = "TEXT")
+    private String examenSistemas;
+
     protected Atencion() { }
 
     public Atencion(HistoriaClinica historiaClinica, ProfesionalSalud profesional, Establecimiento establecimiento,
@@ -61,7 +75,23 @@ public class Atencion {
         this.estado = ABIERTA;
     }
 
+    /** CU-05 ampliado: se llama una sola vez, al crear la atencion desde una admision (RN-03: luego no cambia). */
+    public void ampliar(Admision admision, String enfermedadActual, String funcionesBiologicas, String examenSistemas) {
+        this.admision = admision;
+        this.enfermedadActual = vacioANulo(enfermedadActual);
+        this.funcionesBiologicas = vacioANulo(funcionesBiologicas);
+        this.examenSistemas = vacioANulo(examenSistemas);
+    }
+
+    private static String vacioANulo(String texto) {
+        return texto == null || texto.isBlank() ? null : texto.trim();
+    }
+
     public boolean estaCerrada() { return CERRADA.equals(estado); }
+    public Admision getAdmision() { return admision; }
+    public String getEnfermedadActual() { return enfermedadActual; }
+    public String getFuncionesBiologicas() { return funcionesBiologicas; }
+    public String getExamenSistemas() { return examenSistemas; }
 
     public Integer getId() { return id; }
     public HistoriaClinica getHistoriaClinica() { return historiaClinica; }

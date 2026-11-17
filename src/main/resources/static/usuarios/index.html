@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usuarios · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div class="hce-encabezado">
+      <div>
+        <h1>Usuarios del hospital</h1>
+        <p class="hce-subtitulo">Crea al personal con su rol y controla quién puede entrar.</p>
+      </div>
+      <div class="hce-acciones">
+        <button class="hce-boton primario" type="button" id="nuevo">+ Nuevo usuario</button>
+      </div>
+    </div>
+    <div id="error" class="hce-mensaje" role="alert"></div>
+
+    <section class="hce-cifras-estado" id="cifras" aria-live="polite"></section>
+
+    <!-- CU-17: alta de usuario -->
+    <section class="hce-tarjeta" id="formularioTarjeta" hidden>
+      <div class="hce-evento-cabecera">
+        <h2>Nuevo usuario</h2>
+        <button class="hce-boton claro" type="button" id="cancelar">Cancelar</button>
+      </div>
+      <form id="formulario">
+        <div class="hce-seccion-form">
+          <div class="hce-seccion-titulo">Datos de la persona</div>
+          <div class="hce-formulario">
+            <label class="hce-campo">Nombres <input id="nombres" required maxlength="100"></label>
+            <label class="hce-campo">Apellidos <input id="apellidos" required maxlength="100"></label>
+            <label class="hce-campo">Documento de identidad <input id="documento" required maxlength="12"></label>
+            <label class="hce-campo">Correo <input id="correo" type="email" required maxlength="100"></label>
+          </div>
+        </div>
+        <div class="hce-seccion-form">
+          <div class="hce-seccion-titulo">Cuenta y rol</div>
+          <div class="hce-formulario">
+            <label class="hce-campo">Usuario <input id="usuario" required maxlength="50" placeholder="nombre.apellido"></label>
+            <label class="hce-campo">Rol
+              <select id="rol" required>
+                <option value="ADMISION">Admisión y archivo</option>
+                <option value="ENFERMERIA">Enfermería</option>
+                <option value="MEDICO">Médico</option>
+                <option value="APOYO_DIAGNOSTICO">Apoyo al diagnóstico</option>
+              </select>
+            </label>
+            <label class="hce-campo" id="campoColegiatura" hidden>Número de colegiatura <input id="colegiatura" maxlength="20"></label>
+            <label class="hce-campo" id="campoEspecialidad" hidden>Especialidad (opcional) <input id="especialidad" maxlength="100"></label>
+          </div>
+          <p class="hce-ayuda">El sistema genera una clave temporal y la muestra una sola vez. La persona la cambiará en su primer ingreso.</p>
+        </div>
+        <div class="hce-acciones">
+          <button class="hce-boton primario" type="submit">Crear usuario</button>
+        </div>
+      </form>
+      <div id="mensaje" class="hce-mensaje" role="status"></div>
+    </section>
+
+    <!-- Constancia de acceso: la clave temporal se ve una sola vez -->
+    <section class="hce-tarjeta hce-constancia imprimible" id="constancia" hidden>
+      <div class="hce-antetitulo">Constancia de acceso</div>
+      <h2 id="constanciaTitulo"></h2>
+      <div class="hce-constancia-datos">
+        <div class="hce-dato"><div class="etiqueta">Persona</div><div class="valor" id="cNombre"></div></div>
+        <div class="hce-dato"><div class="etiqueta">Rol</div><div class="valor" id="cRol"></div></div>
+        <div class="hce-dato"><div class="etiqueta">Usuario</div><div class="valor hce-monoespacio" id="cUsuario"></div></div>
+        <div class="hce-dato"><div class="etiqueta">Clave temporal</div><div class="valor hce-monoespacio hce-clave" id="cClave"></div></div>
+      </div>
+      <div class="hce-aviso-alerta">Esta clave se muestra <b>una sola vez</b>. Entrégala a la persona: deberá cambiarla en su primer ingreso.</div>
+      <div class="hce-acciones no-imprimir">
+        <button class="hce-boton primario" type="button" id="imprimir">Imprimir constancia</button>
+        <button class="hce-boton claro" type="button" id="cerrarConstancia">Listo</button>
+      </div>
+    </section>
+
+    <section class="hce-tarjeta hce-tarjeta-tabla">
+      <div class="hce-barra-tabla">
+        <div class="hce-pestanas" role="tablist" id="pestanas"></div>
+        <input id="buscar" class="hce-buscar" type="search" placeholder="Buscar por nombre, usuario o correo" aria-label="Buscar usuario" autocomplete="off">
+      </div>
+      <div class="hce-tabla-contenedor">
+        <table class="hce-tabla hce-tabla-limpia">
+          <thead><tr><th>Persona</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th class="derecha">Acciones</th></tr></thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+        <div id="vacio" class="hce-vacio" hidden></div>
+      </div>
+      <div class="hce-paginacion">
+        <span id="rango" class="hce-subtitulo"></span>
+        <div class="botones">
+          <button type="button" class="hce-boton claro" id="anterior">Anterior</button>
+          <button type="button" class="hce-boton claro" id="siguiente">Siguiente</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="usuarios.js"></script>
+</body>
+</html>

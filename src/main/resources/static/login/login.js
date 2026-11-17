@@ -14,10 +14,6 @@ $('formLogin').addEventListener('submit', async (e) => {
   }
 });
 
-document.querySelectorAll('.hce-demo button').forEach(b => b.addEventListener('click', () => {
-  $('usuario').value = b.dataset.u;
-  $('clave').value = 'demo123';
-}));
 
 // Si ya hay sesión, va directo a la aplicación.
 HCE.api('/api/sesion', { sinRedireccion: true }).then(r => { if (r.ok) window.location.replace(HCE.rutaInicial(r.cuerpo)); });

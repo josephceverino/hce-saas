@@ -22,8 +22,12 @@ public record HistoriaDetalleResponse(
         PacienteDto paciente, List<AlergiaDto> alergias, List<AntecedenteDto> antecedentes,
         List<AtencionDto> atenciones) {
 
+    /** Plan v3, 1.3: incluye la filiacion completa (seccion 1 de la historia clinica). */
     public record PacienteDto(String tipoDocumento, String nroDocumento, String nombres, String apellidos,
-                              LocalDate fechaNacimiento, String sexo) { }
+                              LocalDate fechaNacimiento, String sexo, String telefono, String direccion,
+                              String lugarNacimiento, String procedencia, String estadoCivil, String gradoInstruccion,
+                              String ocupacion, String religion, String contactoEmergenciaNombre,
+                              String contactoEmergenciaParentesco, String contactoEmergenciaTelefono) { }
 
     public record AlergiaDto(String agente, String reaccion, String gravedad) { }
 
@@ -36,11 +40,17 @@ public record HistoriaDetalleResponse(
     public record EnmiendaDto(Integer id, String motivo, String contenidoCorregido, LocalDateTime fecha,
                               String autor) { }
 
+    /** CU-22, CU-23: un examen pedido y, si ya se registro, su resultado. */
+    public record ExamenDto(Integer id, String tipoExamen, String indicaciones, String estado, LocalDateTime fechaHora,
+                            String solicitadoPor, String resultado, java.time.LocalDate fechaResultado,
+                            String registradoPor) { }
+
     /** estado: ABIERTA o CERRADA. cerrada = true muestra el candado y oculta el boton de editar. */
     public record AtencionDto(Integer id, LocalDateTime fechaHora, String motivo, String anamnesis,
                               String examenFisico, String estado, boolean cerrada, String profesional,
                               List<DiagnosticoDto> diagnosticos, List<TratamientoDto> tratamientos,
-                              List<EnmiendaDto> enmiendas) { }
+                              List<EnmiendaDto> enmiendas, String enfermedadActual, String funcionesBiologicas,
+                              String examenSistemas, List<ExamenDto> examenes) { }
 
     public static HistoriaDetalleResponse de(HistorialClinico h) {
         HistoriaClinica hc = h.historia();
@@ -48,7 +58,9 @@ public record HistoriaDetalleResponse(
         return new HistoriaDetalleResponse(
             hc.getId(), hc.getNroHc(), hc.getEstado(), hc.getFechaApertura(), hc.getEstablecimiento().getNombre(),
             new PacienteDto(p.getTipoDocumento(), p.getNroDocumento(), p.getNombres(), p.getApellidos(),
-                p.getFechaNacimiento(), p.getSexo()),
+                p.getFechaNacimiento(), p.getSexo(), p.getTelefono(), p.getDireccion(), p.getLugarNacimiento(),
+                p.getProcedencia(), p.getEstadoCivil(), p.getGradoInstruccion(), p.getOcupacion(), p.getReligion(),
+                p.getContactoEmergenciaNombre(), p.getContactoEmergenciaParentesco(), p.getContactoEmergenciaTelefono()),
             h.alergias().stream().map(HistoriaDetalleResponse::alergia).toList(),
             h.antecedentes().stream().map(HistoriaDetalleResponse::antecedente).toList(),
             h.atenciones().stream().map(HistoriaDetalleResponse::atencion).toList());
@@ -61,7 +73,17 @@ public record HistoriaDetalleResponse(
             a.getProfesional().getApellidos() + ", " + a.getProfesional().getNombres(),
             d.diagnosticos().stream().map(HistoriaDetalleResponse::diagnostico).toList(),
             d.tratamientos().stream().map(HistoriaDetalleResponse::tratamiento).toList(),
-            d.enmiendas().stream().map(HistoriaDetalleResponse::enmienda).toList());
+            d.enmiendas().stream().map(HistoriaDetalleResponse::enmienda).toList(),
+            a.getEnfermedadActual(), a.getFuncionesBiologicas(), a.getExamenSistemas(),
+            d.examenes().stream().map(HistoriaDetalleResponse::examen).toList());
+    }
+
+    public static ExamenDto examen(pe.edu.ucv.hce.dominio.SolicitudExamen x) {
+        var r = x.getResultado();
+        return new ExamenDto(x.getId(), x.getTipoExamen(), x.getIndicaciones(), x.getEstado(), x.getFechaHora(),
+            x.getSolicitante().getApellidos() + ", " + x.getSolicitante().getNombres(),
+            r == null ? null : r.getResultado(), r == null ? null : r.getFecha(),
+            r == null ? null : r.getProfesional().getApellidos() + ", " + r.getProfesional().getNombres());
     }
 
     public static DiagnosticoDto diagnostico(Diagnostico x) {

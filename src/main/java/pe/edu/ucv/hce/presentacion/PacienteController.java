@@ -31,16 +31,20 @@ public class PacienteController {
 
     /** CU-03: 201 si abre la historia; 200 si ya existia en el hospital (RN-01); 409 si esta en otro (DEC-02); 403 sin permiso. */
     @PostMapping("/pacientes")
-    public ResponseEntity<HistoriaResumen> registrar(@Valid @RequestBody PacienteRequest datos, HttpSession sesion,
+    public ResponseEntity<RegistroPacienteResponse> registrar(@Valid @RequestBody PacienteRequest datos, HttpSession sesion,
                                                      HttpServletRequest peticion) {
         Usuario usuario = sesionActual.requerir(sesion);
         Paciente paciente = new Paciente(
             datos.tipoDocumento().trim(), datos.nroDocumento().trim(), datos.nombres().trim(),
             datos.apellidos().trim(), datos.fechaNacimiento(), datos.sexo(), datos.telefono().trim(),
             datos.correo().trim(), datos.direccion().trim());
+        paciente.completarFiliacion(datos.lugarNacimiento().trim(), datos.procedencia().trim(), datos.estadoCivil(),
+            datos.gradoInstruccion(), datos.ocupacion().trim(), datos.religion() == null ? null : datos.religion().trim(),
+            datos.contactoEmergenciaNombre().trim(), datos.contactoEmergenciaParentesco().trim(),
+            datos.contactoEmergenciaTelefono().trim());
         ResultadoRegistro r = servicio.registrarPacienteYAbrirHistoria(paciente, usuario, peticion.getRemoteAddr());
         return ResponseEntity.status(r.yaExistia() ? HttpStatus.OK : HttpStatus.CREATED)
-            .body(HistoriaResumen.de(r.historia()));
+            .body(RegistroPacienteResponse.de(r));
     }
 
     /** RF-02 / RN-06: devuelve solo las historias del hospital del usuario. */

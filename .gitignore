@@ -8,3 +8,6 @@ data/
 HCE-Demo/
 
 dist/
+
+# Recorridos de interfaz (Playwright, solo desarrollo)
+e2e/node_modules/

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.ucv.hce.dominio.AccesoDenegadoException;
+import pe.edu.ucv.hce.dominio.Admision;
 import pe.edu.ucv.hce.dominio.Atencion;
 import pe.edu.ucv.hce.dominio.AtencionCerradaException;
 import pe.edu.ucv.hce.dominio.Cie10;
@@ -44,21 +45,25 @@ public class AtencionService {
     private final DiagnosticoRepository diagnosticos;
     private final TratamientoRepository tratamientos;
     private final EnmiendaRepository enmiendas;
+    private final pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes;
     private final ProfesionalSaludRepository profesionales;
     private final CatalogoCie10Service catalogo;
     private final AutorizacionService autorizacion;
     private final AuditoriaService auditoria;
+    private final AdmisionService admisiones;
 
     public AtencionService(HistoriaClinicaRepository historias, AtencionRepository atenciones,
                            DiagnosticoRepository diagnosticos, TratamientoRepository tratamientos,
-                           EnmiendaRepository enmiendas, ProfesionalSaludRepository profesionales,
+                           EnmiendaRepository enmiendas, pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes, ProfesionalSaludRepository profesionales,
                            CatalogoCie10Service catalogo, AutorizacionService autorizacion,
-                           AuditoriaService auditoria) {
+                           AuditoriaService auditoria, AdmisionService admisiones) {
+        this.admisiones = admisiones;
         this.historias = historias;
         this.atenciones = atenciones;
         this.diagnosticos = diagnosticos;
         this.tratamientos = tratamientos;
         this.enmiendas = enmiendas;
+        this.examenes = examenes;
         this.profesionales = profesionales;
         this.catalogo = catalogo;
         this.autorizacion = autorizacion;
@@ -79,6 +84,39 @@ public class AtencionService {
         Atencion atencion = atenciones.save(new Atencion(historia, profesional, usuario.getEstablecimiento(),
             LocalDateTime.now(), motivo.trim(), anamnesis.trim(), examenFisico.trim()));
         auditoria.registrar(usuario, ACCION_CREAR, "atencion", atencion.getId(), historia, ip);
+        return armar(atencion);
+    }
+
+    /** Id de la atencion de una admision del hospital del medico (para continuar desde la cola), si ya se inicio. */
+    @Transactional(readOnly = true)
+    public java.util.Optional<Integer> idDeAdmision(Usuario usuario, Integer idAdmision) {
+        autorizacion.exigir(usuario, Permiso.REGISTRAR_ATENCION);
+        Admision admision = admisiones.delHospital(usuario, idAdmision); // RN-06
+        return atenciones.findByAdmisionId(admision.getId()).map(Atencion::getId);
+    }
+
+    /** Datos clinicos ampliados de la atencion (CU-05 ampliado, D-40). Todos son de texto libre. */
+    public record Ampliacion(String enfermedadActual, String funcionesBiologicas, String examenSistemas) { }
+
+    /**
+     * CU-05 ampliado (RN-13, RN-06, RN-03): el medico inicia la atencion de un paciente de la cola. La admision debe estar
+     * LISTA PARA ATENCION (el dominio impone el orden), pasa a EN_ATENCION y la atencion queda ligada a ella.
+     * El hospital sale de la sesion; una admision de otro hospital se trata como inexistente.
+     */
+    @Transactional
+    public AtencionDetalle crearDesdeAdmision(Usuario usuario, Integer idAdmision, String motivo, String anamnesis,
+                                              String examenFisico, Ampliacion ampliacion, String ip) {
+        autorizacion.exigir(usuario, Permiso.REGISTRAR_ATENCION);
+        Admision admision = admisiones.delHospital(usuario, idAdmision);
+        if (atenciones.existsByAdmisionId(admision.getId())) {
+            throw new IllegalArgumentException("Esa admisión ya tiene una atención registrada.");
+        }
+        admisiones.iniciarAtencion(usuario, idAdmision, ip); // RN-13: solo desde "listo para atencion"
+        AtencionDetalle detalle = crear(usuario, admision.getHistoriaClinica().getId(), motivo, anamnesis, examenFisico, ip);
+        Atencion atencion = detalle.atencion();
+        atencion.ampliar(admision, ampliacion.enfermedadActual(), ampliacion.funcionesBiologicas(),
+            ampliacion.examenSistemas());
+        atenciones.save(atencion);
         return armar(atencion);
     }
 
@@ -114,6 +152,9 @@ public class AtencionService {
         }
         atencion.cerrar();
         atenciones.save(atencion);
+        if (atencion.getAdmision() != null) {
+            admisiones.cerrarAtencion(usuario, atencion.getAdmision().getId(), ip); // RN-13: EN_ATENCION -> ATENCION_CERRADA
+        }
         auditoria.registrar(usuario, ACCION_CERRAR, "atencion", atencion.getId(), atencion.getHistoriaClinica(), ip);
         return armar(atencion);
     }
@@ -193,6 +234,7 @@ public class AtencionService {
     private AtencionDetalle armar(Atencion a) {
         return new AtencionDetalle(a, diagnosticos.findAllByAtencionIdOrderByIdAsc(a.getId()),
             tratamientos.findAllByAtencionIdOrderByIdAsc(a.getId()),
-            enmiendas.findAllByAtencionIdOrderByFechaAsc(a.getId()));
+            enmiendas.findAllByAtencionIdOrderByFechaAsc(a.getId()),
+            examenes.findAllByAtencionIdOrderByIdAsc(a.getId()));
     }
 }

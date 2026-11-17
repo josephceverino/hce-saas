@@ -101,8 +101,11 @@ public class AutenticacionService {
     private LocalDateTime desbloqueoDe(Usuario u, LocalDateTime ahora) {
         int ultimoExito = registros.findFirstByUsuarioIdAndAccionOrderByIdDesc(u.getId(), ACCION_INICIO_SESION)
             .map(RegistroAuditoria::getId).orElse(0);
-        List<RegistroAuditoria> fallidos = registros.fallidosRecientes(u.getId(), ACCION_LOGIN_FALLIDO, ultimoExito,
-            ahora.minusMinutes(minutosBloqueo));
+        LocalDateTime desde = ahora.minusMinutes(minutosBloqueo);
+        if (u.getClaveRestablecidaEn() != null && u.getClaveRestablecidaEn().isAfter(desde)) {
+            desde = u.getClaveRestablecidaEn(); // CU-26: restablecer la clave levanta el bloqueo
+        }
+        List<RegistroAuditoria> fallidos = registros.fallidosRecientes(u.getId(), ACCION_LOGIN_FALLIDO, ultimoExito, desde);
         if (fallidos.size() < maxIntentos) {
             return null;
         }

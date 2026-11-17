@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.ucv.hce.aplicacion.AutenticacionService;
+import pe.edu.ucv.hce.aplicacion.CuentaService;
 import pe.edu.ucv.hce.aplicacion.MenuService;
 import pe.edu.ucv.hce.dominio.NoAutenticadoException;
 import pe.edu.ucv.hce.dominio.Usuario;
@@ -20,8 +21,11 @@ public class AuthController {
     private final AutenticacionService autenticacion;
     private final SesionActual sesionActual;
     private final MenuService menu;
+    private final CuentaService cuentas;
 
-    public AuthController(AutenticacionService autenticacion, SesionActual sesionActual, MenuService menu) {
+    public AuthController(AutenticacionService autenticacion, SesionActual sesionActual, MenuService menu,
+                          CuentaService cuentas) {
+        this.cuentas = cuentas;
         this.autenticacion = autenticacion;
         this.sesionActual = sesionActual;
         this.menu = menu;
@@ -42,7 +46,7 @@ public class AuthController {
     @PostMapping("/logout")
     public void logout(HttpSession sesion, HttpServletRequest peticion) {
         try {
-            autenticacion.cerrarSesion(sesionActual.requerir(sesion), peticion.getRemoteAddr());
+            autenticacion.cerrarSesion(sesionActual.requerirAunqueDebaCambiarClave(sesion), peticion.getRemoteAddr());
         } catch (NoAutenticadoException e) {
             // sin sesion valida: no hay nada que auditar, solo se invalida
         }
@@ -51,7 +55,16 @@ public class AuthController {
 
     @GetMapping("/sesion")
     public SesionResponse sesion(HttpSession sesion) {
-        Usuario usuario = sesionActual.requerir(sesion);
+        Usuario usuario = sesionActual.requerirAunqueDebaCambiarClave(sesion);
         return SesionResponse.de(usuario, menu.menuPara(usuario));
+    }
+
+    /** CU-18 (RF-28; RN-14, RN-12): cambio de clave, obligatorio si la clave es temporal. */
+    @PostMapping("/sesion/clave")
+    public SesionResponse cambiarClave(@Valid @RequestBody CambioClaveRequest datos, HttpSession sesion,
+                                       HttpServletRequest peticion) {
+        Usuario usuario = sesionActual.requerirAunqueDebaCambiarClave(sesion);
+        Usuario actualizado = cuentas.cambiarClave(usuario, datos.claveActual(), datos.claveNueva(), peticion.getRemoteAddr());
+        return SesionResponse.de(actualizado, menu.menuPara(actualizado));
     }
 }

@@ -27,6 +27,7 @@ import pe.edu.ucv.hce.persistencia.DiagnosticoRepository;
 import pe.edu.ucv.hce.persistencia.EstablecimientoRepository;
 import pe.edu.ucv.hce.persistencia.HistoriaClinicaRepository;
 import pe.edu.ucv.hce.persistencia.ProfesionalSaludRepository;
+import pe.edu.ucv.hce.persistencia.SuscripcionRepository;
 import pe.edu.ucv.hce.persistencia.UsuarioRepository;
 
 /**
@@ -51,10 +52,17 @@ public class IndicadoresService {
     private final AuditoriaService auditoria;
     private final AutorizacionService autorizacion;
 
+    private final SuscripcionRepository suscripciones;
+    private final pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes;
+
     public IndicadoresService(HistoriaClinicaRepository historias, AtencionRepository atenciones,
                               DiagnosticoRepository diagnosticos, UsuarioRepository usuarios,
                               EstablecimientoRepository establecimientos, ProfesionalSaludRepository profesionales,
-                              AuditoriaService auditoria, AutorizacionService autorizacion) {
+                              AuditoriaService auditoria, AutorizacionService autorizacion,
+                              SuscripcionRepository suscripciones,
+                              pe.edu.ucv.hce.persistencia.SolicitudExamenRepository examenes) {
+        this.examenes = examenes;
+        this.suscripciones = suscripciones;
         this.historias = historias;
         this.atenciones = atenciones;
         this.diagnosticos = diagnosticos;
@@ -65,10 +73,15 @@ public class IndicadoresService {
         this.autorizacion = autorizacion;
     }
 
-    /** Tarjetas del Inicio segun el rol (admision, medico, enfermeria, admin del hospital). Otro rol: 403. */
+    /**
+     * Tarjetas del Inicio segun el rol (admision, medico, enfermeria, apoyo al diagnostico, admin del hospital).
+     * Plan v3, 0.4: cada cifra sale de la base de datos del hospital del usuario. Paciente y plataforma: 403.
+     */
     @Transactional(readOnly = true)
     public Inicio inicio(Usuario usuario) {
-        if (!autorizacion.puede(usuario, Permiso.BUSCAR_PACIENTE) && !autorizacion.puede(usuario, Permiso.VER_REPORTES)) {
+        boolean apoyo = usuario.tieneRol(CodigoRol.APOYO_DIAGNOSTICO) && usuario.getEstablecimiento() != null;
+        if (!apoyo && !autorizacion.puede(usuario, Permiso.BUSCAR_PACIENTE)
+                && !autorizacion.puede(usuario, Permiso.VER_REPORTES)) {
             throw new AccesoDenegadoException(AutorizacionService.MENSAJE_SIN_PERMISO);
         }
         Integer h = hospitalDe(usuario);
@@ -88,6 +101,13 @@ public class IndicadoresService {
             tarjetas.add(new Tarjeta("abiertas-por-cerrar", "Atenciones abiertas por cerrar",
                 atenciones.countByProfesionalIdAndEstado(idProfesional, Atencion.ABIERTA), "Pendientes de cerrar"));
             tarjetas.add(new Tarjeta("pacientes", "Pacientes del hospital", pacientes, "En tu hospital"));
+        } else if (apoyo) {
+            tarjetas.add(new Tarjeta("examenes-pendientes", "Exámenes pendientes",
+                examenes.countByEstablecimientoIdAndEstado(h, pe.edu.ucv.hce.dominio.SolicitudExamen.SOLICITADO),
+                "Esperan su resultado"));
+            tarjetas.add(new Tarjeta("examenes-resueltos", "Resultados registrados",
+                examenes.countByEstablecimientoIdAndEstado(h, pe.edu.ucv.hce.dominio.SolicitudExamen.RESULTADO_REGISTRADO),
+                "En tu hospital"));
         } else if (usuario.tieneRol(CodigoRol.ENFERMERIA)) {
             tarjetas.add(new Tarjeta("pacientes", "Pacientes del hospital", pacientes, "En tu hospital"));
             tarjetas.add(new Tarjeta("historias-abiertas", "Historias abiertas", historiasAbiertas, "En tu hospital"));
@@ -159,6 +179,8 @@ public class IndicadoresService {
         autorizacion.exigir(usuario, Permiso.GESTIONAR_HOSPITALES);
         return establecimientos.findAll().stream()
             .map(e -> new ResumenHospital(e.getId(), e.getNombre(), e.getCodigoIpress(), e.getRegion(), e.getEstado(),
+                suscripciones.findFirstByEstablecimientoIdOrderByFechaInicioDescIdDesc(e.getId())
+                    .map(x -> x.getPlan()).orElse(null),
                 usuarios.countByEstablecimientoId(e.getId()), historias.countByEstablecimientoId(e.getId()),
                 atenciones.countByEstablecimientoId(e.getId())))
             .toList();

@@ -12,12 +12,12 @@ import pe.edu.ucv.hce.dominio.Usuario;
  * ultimoAcceso: para la pantalla "Mi perfil" (puede ser null).
  */
 public record SesionResponse(String usuario, String rol, String rolCodigo, String establecimiento,
-                             LocalDateTime ultimoAcceso, List<ItemMenu> menu) {
+                             LocalDateTime ultimoAcceso, List<ItemMenu> menu, boolean debeCambiarClave) {
 
     public static SesionResponse de(Usuario u, List<ItemMenu> menu) {
         String hospital = u.getEstablecimiento() != null ? u.getEstablecimiento().getNombre()
             : u.tieneRol(pe.edu.ucv.hce.dominio.CodigoRol.PACIENTE) ? "Portal del paciente" : "Plataforma";
         return new SesionResponse(u.getUsuario(), u.getRol().getDescripcion(), u.getRol().getNombre(), hospital,
-            u.getUltimoAcceso(), menu);
+            u.getUltimoAcceso(), menu, u.isDebeCambiarClave());
     }
 }

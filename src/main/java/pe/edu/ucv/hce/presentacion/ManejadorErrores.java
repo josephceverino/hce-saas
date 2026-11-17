@@ -11,6 +11,8 @@ import pe.edu.ucv.hce.dominio.AtencionCerradaException;
 import pe.edu.ucv.hce.dominio.DiagnosticoInvalidoException;
 import pe.edu.ucv.hce.dominio.DocumentoDuplicadoException;
 import pe.edu.ucv.hce.dominio.NoAutenticadoException;
+import pe.edu.ucv.hce.dominio.RegistroDuplicadoException;
+import pe.edu.ucv.hce.dominio.TransicionInvalidaException;
 import pe.edu.ucv.hce.dominio.RecursoNoEncontradoException;
 
 /** Convierte los errores en mensajes claros para el formulario. */
@@ -19,6 +21,16 @@ public class ManejadorErrores {
 
     @ExceptionHandler(DocumentoDuplicadoException.class)
     public ResponseEntity<Map<String, String>> duplicado(DocumentoDuplicadoException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("mensaje", e.getMessage()));
+    }
+
+    @ExceptionHandler(TransicionInvalidaException.class)
+    public ResponseEntity<Map<String, String>> transicion(TransicionInvalidaException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("mensaje", e.getMessage()));
+    }
+
+    @ExceptionHandler(RegistroDuplicadoException.class)
+    public ResponseEntity<Map<String, String>> duplicado(RegistroDuplicadoException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("mensaje", e.getMessage()));
     }
 

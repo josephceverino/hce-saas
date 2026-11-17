@@ -135,6 +135,16 @@ class IndicadoresServiceTest {
         assertThrows(AccesoDenegadoException.class, () -> indicadores.inicio(plataforma));
     }
 
+    /** CU-23: apoyo al diagnostico ve cifras reales de examenes (en cero si no hay). */
+    @Test
+    void apoyoAlDiagnosticoVeCifrasRealesDeExamenes() {
+        Usuario apoyo = usuarios.save(new Usuario(adminA.getEstablecimiento(),
+            roles.findByNombre(CodigoRol.APOYO_DIAGNOSTICO.name()).orElseThrow(), "apoyo.inicio.test", "hash", "ACTIVO"));
+        var inicio = indicadores.inicio(apoyo);
+        assertEquals(adminA.getEstablecimiento().getNombre(), inicio.establecimiento());
+        assertEquals(java.util.List.of(0L, 0L), inicio.tarjetas().stream().map(Indicadores.Tarjeta::valor).toList());
+    }
+
     /** Tablero del admin: 14 días y 8 semanas con ceros, top de diagnósticos, abiertas y cerradas y últimos accesos. */
     @Test
     void tableroDelAdminDelHospital() {
