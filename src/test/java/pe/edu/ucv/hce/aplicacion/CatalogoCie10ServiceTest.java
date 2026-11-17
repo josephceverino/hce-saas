@@ -53,4 +53,11 @@ class CatalogoCie10ServiceTest {
         List<Cie10> resultados = service.buscar("a");
         assertTrue(resultados.size() <= 20);
     }
+
+    /** Las descripciones con comas vienen entre comillas en el CSV: no deben quedar con comillas (RN-10). */
+    @Test
+    void laDescripcionNoLlevaComillas() {
+        Cie10 item = service.porCodigo("J02.9").orElseThrow();
+        assertEquals("Faringitis aguda, no especificada", item.descripcion());
+    }
 }

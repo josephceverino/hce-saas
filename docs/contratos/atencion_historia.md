@@ -1,6 +1,6 @@
 # Contrato de la API: historia clínica, atención, tratamiento y CIE-10
 Cubre CU-06, CU-05 y CU-08 (RF-05, RF-06, RF-08; RN-02, RN-03, RN-06, RN-07, RN-10, RN-11).
-**Estado:** historia y atención (secciones 1 a 5) **implementadas** en `feat/v3-atencion`. Tratamiento y CIE-10 (secciones 6 y 7) los implementa Mattias; hasta entonces el frontend usa los datos de ejemplo. Mientras no esté el catálogo CIE-10 (M-4), agregar un diagnóstico responde 500.
+**Estado:** historia y atención (secciones 1 a 5) **implementadas** en `feat/v3-atencion`. Tratamiento y CIE-10 (secciones 6 y 7) **implementados** en `fix/m2-tratamiento` (base de Mattias, M-2 y M-4, corregida por Pablo).
 
 Reglas comunes:
 - Todo requiere sesión iniciada (si no: **401**). Errores con cuerpo `{"mensaje": "texto en español"}`.
@@ -61,14 +61,14 @@ La pantalla pide confirmación antes de llamar.
 ```
 → **201** `EnmiendaDto` (con `autor` y `fecha` puestos por el servidor). Atención aún abierta: **400**.
 
-## 6. Tratamiento e indicaciones (CU-08) · solo MEDICO · *backend: Mattias*
+## 6. Tratamiento e indicaciones (CU-08) · solo MEDICO · *implementado*
 `POST /api/atenciones/{idAtencion}/tratamientos` — cuerpo `TratamientoRequest`:
 ```json
 { "indicacion": "Reposo e hidratación", "medicamento": "Paracetamol", "dosis": "500 mg cada 8 horas", "duracion": "5 días" }
 ```
-→ **201** `TratamientoDto`. Atención cerrada: **409** (usar enmienda). Enfermería: **403**.
+→ **201** `TratamientoDto`. Atención cerrada: **409** (usar enmienda). Enfermería o atención de otro médico: **403**. Atención de otro hospital o inexistente: **404** (también si está cerrada, RN-06). Campos vacíos: **400**.
 
-## 7. Buscar diagnóstico CIE-10 (RN-10) · solo MEDICO · *backend: Mattias*
+## 7. Buscar diagnóstico CIE-10 (RN-10) · solo MEDICO · *implementado*
 `GET /api/cie10?q=faringitis` → **200** lista de máximo 20 elementos:
 ```json
 [ { "codigo": "J02.9", "descripcion": "Faringitis aguda, no especificada" } ]

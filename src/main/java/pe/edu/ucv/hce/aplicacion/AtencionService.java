@@ -147,6 +147,17 @@ public class AtencionService {
         return armar(atencion);
     }
 
+    /**
+     * Para CU-08 (RF-08; RN-03, RN-06, RN-11): la atencion debe ser del hospital del usuario, propia y estar ABIERTA.
+     * Orden de los errores: otro hospital o inexistente 404, ajena 403, cerrada 409.
+     */
+    @Transactional
+    public Atencion atencionPropiaAbierta(Usuario usuario, Integer idAtencion) {
+        Atencion atencion = atencionPropia(usuario, idAtencion);
+        exigirAbierta(atencion);
+        return atencion;
+    }
+
     /** RN-06: una atencion de otro hospital se trata como inexistente (no se revela que existe). */
     private Atencion atencionDelHospital(Usuario usuario, Integer idAtencion) {
         if (usuario.getEstablecimiento() == null) {

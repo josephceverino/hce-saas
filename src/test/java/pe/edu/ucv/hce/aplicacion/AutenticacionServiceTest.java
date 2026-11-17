@@ -54,7 +54,7 @@ class AutenticacionServiceTest {
         Rol rol = rolRepository.findAll().stream().findFirst().orElse(null);
         Establecimiento est = establecimientoRepository.findAll().stream().findFirst().orElse(null);
 
-        Usuario u = new Usuario(est, rol, "inactivo.u", ClaveUtil.sha256("demo123"), "INACTIVO");
+        Usuario u = new Usuario(est, rol, "inactivo.u", ClaveUtil.bcrypt("demo123"), "INACTIVO");
         usuarioRepository.save(u);
 
         NoAutenticadoException e = assertThrows(NoAutenticadoException.class,
