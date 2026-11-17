@@ -1,5 +1,7 @@
 # Plantilla de casos de prueba
 
+> Para el recorrido del plan v3 (pasos 1 a 9) usa `pruebas_manuales_v3.md`: casos paso a paso para ejecutar a mano. Esta plantilla queda como referencia de las reglas.
+
 Derivada de las reglas de negocio y los casos de uso. **Todos están en estado 'Pendiente': nadie los ha ejecutado.** Las columnas Resultado real, Estado, Fecha y Responsable se llenan solo después de ejecutarlos. No marcar 'Aprobado' sin evidencia (captura o nombre del test).
 
 | ID | CU | Regla / requisito | Precondición | Pasos | Resultado esperado | Cobertura (auto / manual) | Resultado real | Estado | Fecha | Responsable |

@@ -47,6 +47,9 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] R5.3 `dist\data_ensayo`: copia de `data` ya poblada por el recorrido para restaurar la demo (usuarios en `GUIA_INSTALACION.md`).
 - [x] R5.4 `GUIA_INSTALACION.md` actualizada: sin cuentas demo, administrador inicial, restaurar `data_ensayo`.
 
+## Pruebas
+- [x] `docs/pruebas/pruebas_manuales_v3.md`: 24 casos manuales (MV-01 a MV-24) para ejecutar en esta PC, con el resultado esperado y la captura de referencia de cada uno. Todos en Pendiente: se llenan al ejecutarlos.
+
 ## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 
 **Qué quedó hecho.** Los 17 ítems del checklist. La rama `integracion` contiene todo y está subida.
