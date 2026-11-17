@@ -27,7 +27,11 @@ public enum Permiso {
     INTERCAMBIAR_INFORMACION("RF-18", MEDICO),
     VER_AUDITORIA("RF-13", ADMIN_HOSPITAL),
     VER_REPORTES("RF-19", ADMIN_HOSPITAL),
-    GESTIONAR_HOSPITALES("RF-20", ADMIN_PLATAFORMA);
+    GESTIONAR_HOSPITALES("RF-20", ADMIN_PLATAFORMA),
+    // Plan v3 (docs/requisitos_nuevos.md)
+    ADMITIR_PACIENTE("RF-21", ADMISION),
+    VER_COLA("RF-22", ADMISION, ENFERMERIA, MEDICO),
+    REGISTRAR_SIGNOS_VITALES("RF-23", ENFERMERIA);
 
     private final String requisito;
     private final Set<CodigoRol> roles;

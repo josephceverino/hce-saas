@@ -162,6 +162,35 @@ const HCE = (() => {
     });
   }
 
+  /** Modal para elegir una opcion. opciones: [{valor, texto, descripcion, clase}]. Devuelve el valor o null. */
+  function elegir(titulo, texto, opciones) {
+    return new Promise(resolver => {
+      const fondo = el('div', 'hce-modal-fondo');
+      const caja = el('div', 'hce-modal');
+      caja.setAttribute('role', 'dialog');
+      caja.setAttribute('aria-modal', 'true');
+      const cerrar = (valor) => { fondo.remove(); resolver(valor); };
+      const lista = el('div', 'hce-opciones');
+      opciones.forEach(o => {
+        const b = el('button', 'hce-opcion ' + (o.clase || ''));
+        b.type = 'button';
+        b.append(el('span', 'titulo', o.texto), el('span', 'nota', o.descripcion || ''));
+        b.addEventListener('click', () => cerrar(o.valor));
+        lista.append(b);
+      });
+      const cancelar = el('button', 'hce-boton claro', 'Cancelar');
+      cancelar.type = 'button';
+      cancelar.addEventListener('click', () => cerrar(null));
+      fondo.addEventListener('click', (e) => { if (e.target === fondo) cerrar(null); });
+      const pie = el('div', 'hce-acciones');
+      pie.append(cancelar);
+      caja.append(el('h2', null, titulo), el('p', null, texto), lista, pie);
+      fondo.append(caja);
+      document.body.append(fondo);
+      lista.querySelector('button').focus();
+    });
+  }
+
   /** Contenido de solo lectura de una atencion (AtencionDto): texto clinico, diagnosticos, tratamientos y enmiendas. */
   function detalleAtencion(a) {
     const caja = el('div', 'hce-atencion-detalle');
@@ -201,5 +230,5 @@ const HCE = (() => {
     window.print();
   }
 
-  return { api, mostrar, el, imprimir, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, detalleAtencion };
+  return { api, mostrar, el, imprimir, elegir, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, detalleAtencion };
 })();

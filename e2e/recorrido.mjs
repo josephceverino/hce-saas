@@ -118,8 +118,53 @@ const pasos = {
     await page.waitForLoadState('networkidle');
     await captura(page, 'paso3_P-02_pacientes', false);
     verificar((await page.textContent('#cuerpo')).includes('72345618'), 'el paciente aparece en la lista del hospital');
+  },
+
+  /** Paso 4 (CU-20): admision admite a la paciente por consulta externa y a otro paciente por emergencia. */
+  async 4(page) {
+    await entrarConClave(page, datos.personal.ADMISION.usuario, 'Admision2026');
+    // Un segundo paciente que llega despues por emergencia (para mostrar que la emergencia va primero)
+    await page.goto(BASE + '/pacientes/nuevo.html');
+    const otro = { nroDocumento: '73456729', nombres: 'José Antonio', apellidos: 'Vargas León', fechaNacimiento: '1958-02-03',
+      lugarNacimiento: 'Chiclayo', ocupacion: 'Jubilado', direccion: 'Av. España 1020, Trujillo', procedencia: 'Trujillo',
+      telefono: '944222333', correo: 'jvargas@example.com', contactoEmergenciaNombre: 'Carmen Vargas', contactoEmergenciaTelefono: '944333222' };
+    for (const [id, v] of Object.entries(otro)) await page.fill('#' + id, v);
+    await page.selectOption('#sexo', 'M');
+    await page.selectOption('#estadoCivil', 'VIUDO');
+    await page.selectOption('#gradoInstruccion', 'PRIMARIA');
+    await page.selectOption('#contactoEmergenciaParentesco', 'Hijo o hija');
+    await page.click('#formulario button[type=submit]');
+    await page.waitForSelector('#resultado:not([hidden])');
+    await page.goto(BASE + '/pacientes/');
+    await page.waitForLoadState('networkidle');
+    await admitirDesdeLista(page, '72345618', 'CONSULTA_EXTERNA', 'paso4_P-10_admitir_dialogo');
+    await admitirDesdeLista(page, '73456729', 'EMERGENCIA');
+    await captura(page, 'paso4_P-02_admitidos', false);
+    const texto = await page.textContent('#cuerpo');
+    verificar(texto.includes('Admitido'), 'los pacientes figuran como admitidos hoy');
+    verificar(texto.includes('Emergencia'), 'la emergencia se distingue en la lista');
   }
 };
+
+async function entrarConClave(page, usuario, clave) {
+  await page.goto(BASE + '/login/index.html');
+  await page.fill('#usuario', usuario);
+  await page.fill('#clave', clave);
+  await page.click('button[type=submit]');
+  await page.waitForURL(u => !u.pathname.startsWith('/login'));
+  await page.waitForLoadState('networkidle');
+}
+
+async function admitirDesdeLista(page, documento, tipo, capturaDialogo) {
+  await page.fill('#buscar', documento);
+  await page.click('#cuerpo tr:first-child button:has-text("Admitir")');
+  await page.waitForSelector('.hce-modal');
+  if (capturaDialogo) await captura(page, capturaDialogo, false);
+  await page.click('.hce-opcion:has-text("' + (tipo === 'EMERGENCIA' ? 'Emergencia' : 'Consulta externa') + '")');
+  await page.waitForSelector('#mensaje.ok');
+  await page.fill('#buscar', '');
+  await page.dispatchEvent('#buscar', 'input');
+}
 
 let fallo = null;
 try {

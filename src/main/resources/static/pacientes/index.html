@@ -10,21 +10,25 @@
 <body>
 <div class="hce-app" id="app">
   <main class="hce-contenido" id="contenido">
-    <div>
-      <h1>Pacientes</h1>
-      <p class="hce-subtitulo">Historias clínicas abiertas en tu hospital.</p>
+    <div class="hce-encabezado">
+      <div>
+        <h1>Pacientes</h1>
+        <p class="hce-subtitulo">Historias clínicas de tu hospital. Busca al paciente antes de registrarlo.</p>
+      </div>
+      <div class="hce-acciones">
+        <a class="hce-boton primario" id="nuevoPaciente" href="/pacientes/nuevo.html" hidden>+ Registrar paciente</a>
+      </div>
     </div>
-    <section class="hce-tarjeta">
-      <h2>Historias clínicas <span class="hce-chip" id="cuenta">0</span></h2>
-      <div class="hce-buscador">
-        <input id="buscar" type="search" placeholder="Buscar por DNI, N.° de historia o nombre" aria-label="Buscar paciente" autocomplete="off">
-        <a class="hce-boton primario" id="nuevoPaciente" href="/pacientes/nuevo.html" hidden>Registrar paciente</a>
+    <div id="mensaje" class="hce-mensaje" role="status"></div>
+
+    <section class="hce-tarjeta hce-tarjeta-tabla">
+      <div class="hce-barra-tabla">
+        <div class="hce-pestanas" role="tablist" id="pestanas"></div>
+        <input id="buscar" class="hce-buscar" type="search" placeholder="Buscar por documento, historia o nombre" aria-label="Buscar paciente" autocomplete="off">
       </div>
       <div class="hce-tabla-contenedor">
-        <table class="hce-tabla">
-          <thead>
-            <tr><th>N.° HC</th><th>Documento</th><th>Paciente</th><th>Apertura</th><th>Estado</th><th></th></tr>
-          </thead>
+        <table class="hce-tabla hce-tabla-limpia">
+          <thead><tr><th>Paciente</th><th>Historia</th><th>Apertura</th><th>Hoy</th><th class="derecha">Acciones</th></tr></thead>
           <tbody id="cuerpo"></tbody>
         </table>
         <div id="vacio" class="hce-vacio" hidden></div>

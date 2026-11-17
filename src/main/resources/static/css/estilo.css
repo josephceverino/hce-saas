@@ -254,6 +254,21 @@ a.hce-boton { text-decoration: none; display: inline-block; }
 .hce-estado.inactivo { color: var(--hce-texto-suave); }
 .hce-boton.pequeno { padding: 6px 12px; font-size: 13px; }
 
+/* ---- Admision y cola (plan v3, R2) ---- */
+.hce-opciones { display: grid; gap: 10px; margin: 14px 0 6px; }
+.hce-opcion { font: inherit; text-align: left; display: grid; gap: 2px; padding: 14px 16px; border: 2px solid var(--hce-borde); border-radius: 12px; background: #fff; cursor: pointer; }
+.hce-opcion:hover, .hce-opcion:focus { border-color: var(--hce-primario); background: var(--hce-primario-claro); outline: none; }
+.hce-opcion.emergencia:hover, .hce-opcion.emergencia:focus { border-color: var(--hce-error); background: var(--hce-error-fondo); }
+.hce-opcion .titulo { font-weight: 700; }
+.hce-opcion .nota { font-size: 13px; color: var(--hce-texto-suave); }
+.hce-chip.estado-ADMITIDO { background: var(--hce-info-fondo); color: var(--hce-info); }
+.hce-chip.estado-EN_ENFERMERIA { background: var(--hce-alerta-fondo); color: var(--hce-alerta); }
+.hce-chip.estado-LISTO_PARA_ATENCION { background: var(--hce-ok-fondo); color: var(--hce-ok); }
+.hce-chip.estado-EN_ATENCION { background: var(--hce-primario-claro); color: var(--hce-primario-oscuro); }
+.hce-chip.estado-ATENCION_CERRADA { background: #eef1f2; color: var(--hce-texto-suave); }
+.hce-chip.estado-CANCELADO { background: #eef1f2; color: var(--hce-texto-suave); text-decoration: line-through; }
+.hce-chip.emergencia { background: var(--hce-error); color: #fff; }
+
 @media (max-width: 800px) {
   .hce-login { grid-template-columns: 1fr; }
   .hce-login-marca { padding: 28px; }
@@ -277,3 +292,4 @@ a.hce-boton { text-decoration: none; display: inline-block; }
   body.imprimiendo .hce-contenido > *:not(.imprimible) { display: none !important; }
   body.imprimiendo .hce-constancia { border: 1px solid #000; }
 }
+.hce-acciones-fila { display: inline-flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
