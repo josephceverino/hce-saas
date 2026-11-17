@@ -47,6 +47,7 @@ const pasos = {
     datos.adminHospital = { usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
     verificar(datos.adminHospital.usuario === 'admin.trujillo', 'la constancia muestra el usuario del administrador');
     verificar(/^[A-Za-z0-9]{10}$/.test(datos.adminHospital.clave), 'la constancia muestra una clave temporal de 10 caracteres');
+    await page.waitForSelector('.hce-hospital-tarjeta');
     verificar(await page.locator('.hce-hospital-tarjeta').count() === 1, 'el hospital aparece en la lista');
     await captura(page, 'paso1_P-07_constancia', true);
   },
@@ -83,6 +84,7 @@ const pasos = {
       if (i === 2) await captura(page, 'paso2_P-08_constancia', false);
       await page.click('#cerrarConstancia');
     }
+    await page.waitForFunction(() => document.querySelectorAll('#cuerpo tr').length === 5);
     await captura(page, 'paso2_P-08_usuarios_lista', false);
     verificar(await page.locator('#cuerpo tr').count() === 5, 'la lista tiene al administrador y 4 personas');
     verificar((await page.textContent('#pestanas')).includes('Clave pendiente 4'), 'las 4 cuentas nuevas tienen clave pendiente');
@@ -158,7 +160,53 @@ const pasos = {
     await captura(page, 'paso5_P-09_cola_enfermeria', false);
     const primera = await page.textContent('#cuerpo tr:first-child');
     verificar(primera.includes('Vargas León') && primera.includes('Emergencia'), 'la emergencia va primero en la cola aunque llegó después');
-    if (pasos.signosVitales) await pasos.signosVitales(page);
+    // Toma a la emergencia (primera de la cola): pasa a "en enfermeria" y abre su historia con la admision de hoy
+    await page.click('#cuerpo tr:first-child button:has-text("Tomar paciente")');
+    await page.waitForURL('**/historia/**');
+    await page.waitForSelector('#formSignos:not([hidden])');
+    await captura(page, 'paso5_P-04_historia_enfermeria', true);
+    // Un valor imposible se rechaza con mensaje claro (RN-17)
+    const signos = { presionSistolica: '150', presionDiastolica: '95', frecuenciaCardiaca: '96', frecuenciaRespiratoria: '22',
+      temperatura: '45.5', saturacionOxigeno: '93' };
+    for (const [id, v] of Object.entries(signos)) await page.fill('#' + id, v);
+    await page.click('#formSignos button[type=submit]');
+    await page.waitForSelector('#mensajeEnfermeria.error');
+    verificar((await page.textContent('#mensajeEnfermeria')).includes('temperatura'), 'una temperatura imposible se rechaza con mensaje claro');
+    await captura(page, 'paso5_P-04_signos_rechazados', false);
+    await page.fill('#temperatura', '37.8');
+    await page.click('#formSignos button[type=submit]');
+    await page.waitForSelector('#mensajeEnfermeria.ok');
+    await page.selectOption('#tipoAntecedente', 'PERSONAL');
+    await page.fill('#descripcionAntecedente', 'Hipertensión arterial en tratamiento');
+    await page.click('#formAntecedente button[type=submit]');
+    await page.waitForSelector('#mensajeAntecedente.ok');
+    await page.selectOption('#tipoAntecedente', 'QUIRURGICO');
+    await page.fill('#descripcionAntecedente', 'Colecistectomía en 2015');
+    await page.click('#formAntecedente button[type=submit]');
+    await page.waitForSelector('#mensajeAntecedente.ok');
+    await page.fill('#agente', 'Ácido acetilsalicílico');
+    await page.fill('#reaccion', 'Dificultad para respirar');
+    await page.selectOption('#gravedad', 'ALTA');
+    await page.click('#formAlergia button[type=submit]');
+    await page.waitForSelector('#mensajeAlergia.ok');
+    await captura(page, 'paso5_P-04_signos_y_antecedentes', true);
+    await page.click('#listo');
+    await page.click('.hce-modal .primario');
+    await page.waitForFunction(() => document.getElementById('enfermeriaEstado').textContent.includes('Listo'), null, { timeout: 10000 }).catch(() => {});
+    verificar((await page.textContent('#enfermeriaEstado')).includes('Listo para atención'), 'la admisión pasó a listo para atención');
+    await captura(page, 'paso5_P-04_listo_para_atencion', false);
+  },
+
+  /** Cierre del paso 5: el medico ve al paciente listo en su cola (inicio del paso 6). */
+  async 6(page) {
+    const m = datos.personal.MEDICO;
+    await entrarConTemporal(page, m.usuario, m.clave, 'Medico2026');
+    await page.goto(BASE + '/cola/');
+    await page.waitForLoadState('networkidle');
+    await captura(page, 'paso5_P-09_cola_medico', false);
+    const texto = await page.textContent('#cuerpo');
+    verificar(texto.includes('Vargas León') && texto.includes('Listo para atención'), 'el médico ve al paciente listo en su cola');
+    verificar(!texto.includes('Gutiérrez Salas'), 'el médico no ve a quien aún no pasa por enfermería');
   }
 };
 

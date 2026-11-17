@@ -22,6 +22,6 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 
 ## R2 Recepción
 - [x] 2.1 CU-20: entidad `Admision` y `EstadoAdmision` (RN-13 en el dominio), `/api/admisiones`, diálogo Admitir en P-02; `EstadoAdmisionTest` (5 transiciones permitidas y 31 prohibidas) y `AdmisionServiceTest` (7). Commit `c603782`.
-- [ ] 2.2 Cola por rol (P-09, RF-22); emergencia primero.
+- [x] 2.2 P-09 `/cola/` por rol (admisión ve todo el día; enfermería, admitidos y en enfermería; médico, listos y en atención), emergencia primero, tiempo de espera y acciones por rol; la cola también en el Inicio de esos roles. Commit `eb1b6d8`.
 - [ ] 2.3 Signos vitales (CU-21, RN-17) y antecedentes por tipo dentro de P-04.
 - [ ] 2.4 Script Playwright de los pasos 1 a 5.

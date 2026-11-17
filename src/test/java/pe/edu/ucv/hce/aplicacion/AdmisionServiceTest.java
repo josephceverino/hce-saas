@@ -33,6 +33,7 @@ class AdmisionServiceTest {
     @Autowired RegistroPacienteService registro;
     @Autowired UsuarioRepository usuarios;
     @Autowired RegistroAuditoriaRepository auditoria;
+    @Autowired EnfermeriaService enfermeria;
 
     Usuario admisionA;
     Usuario admisionB;
@@ -54,6 +55,11 @@ class AdmisionServiceTest {
     private Paciente paciente(String dni) {
         return new Paciente("DNI", dni, "Paciente de prueba", "Admisión", LocalDate.of(1990, 1, 1), "F",
             "999111222", "prueba@example.com", "Calle Falsa 123");
+    }
+
+    private void signos(Admision a) {
+        enfermeria.registrarSignos(enfermeraA, a.getId(),
+            new EnfermeriaService.DatosSignos(120, 80, 72, 16, new java.math.BigDecimal("36.6"), 98), IP);
     }
 
     /** CU-20: se admite en ADMITIDO, del hospital de la historia, y queda auditado (RN-07). */
@@ -111,6 +117,7 @@ class AdmisionServiceTest {
         servicio.tomarEnEnfermeria(enfermeraA, a.getId(), IP);
         assertThrows(TransicionInvalidaException.class, () -> servicio.cancelar(admisionA, a.getId(), IP),
             "Solo se cancela desde ADMITIDO");
+        signos(a);
         servicio.marcarListo(enfermeraA, a.getId(), IP);
         servicio.iniciarAtencion(medicoA, a.getId(), IP);
         assertEquals(EstadoAdmision.ATENCION_CERRADA, servicio.cerrarAtencion(medicoA, a.getId(), IP).getEstado());
@@ -126,6 +133,7 @@ class AdmisionServiceTest {
         assertEquals(consulta.getId(), colaEnfermeria.get(1).getId());
         assertTrue(servicio.cola(medicoA).isEmpty(), "El médico solo ve a los listos para atención");
         servicio.tomarEnEnfermeria(enfermeraA, consulta.getId(), IP);
+        signos(consulta);
         servicio.marcarListo(enfermeraA, consulta.getId(), IP);
         assertEquals(consulta.getId(), servicio.cola(medicoA).get(0).getId());
         assertEquals(2, servicio.cola(admisionA).size(), "Admisión ve todos los del día");

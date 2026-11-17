@@ -26,7 +26,7 @@ public class HistorialService {
     public static final String ACCION_CONSULTAR = "CONSULTAR_HISTORIA";
     public static final String MENSAJE_OTRO_HOSPITAL =
         "Esta historia clínica pertenece a otro establecimiento. Para acceder a ella se requiere "
-        + "un intercambio autorizado por el paciente (RN-06).";
+        + "un intercambio autorizado por el paciente.";
 
     private final HistoriaClinicaRepository historias;
     private final AtencionRepository atenciones;

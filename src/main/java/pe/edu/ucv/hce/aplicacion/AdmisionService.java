@@ -18,6 +18,7 @@ import pe.edu.ucv.hce.dominio.RegistroDuplicadoException;
 import pe.edu.ucv.hce.dominio.Usuario;
 import pe.edu.ucv.hce.persistencia.AdmisionRepository;
 import pe.edu.ucv.hce.persistencia.HistoriaClinicaRepository;
+import pe.edu.ucv.hce.persistencia.SignosVitalesRepository;
 
 /**
  * CU-20 Admitir al paciente del dia y cola por rol (RF-21, RF-22; RN-13, RN-06, RN-07).
@@ -46,9 +47,12 @@ public class AdmisionService {
     private final HistoriaClinicaRepository historias;
     private final AutorizacionService autorizacion;
     private final AuditoriaService auditoria;
+    private final SignosVitalesRepository signos;
 
     public AdmisionService(AdmisionRepository admisiones, HistoriaClinicaRepository historias,
-                           AutorizacionService autorizacion, AuditoriaService auditoria) {
+                           AutorizacionService autorizacion, AuditoriaService auditoria,
+                           SignosVitalesRepository signos) {
+        this.signos = signos;
         this.admisiones = admisiones;
         this.historias = historias;
         this.autorizacion = autorizacion;
@@ -97,10 +101,17 @@ public class AdmisionService {
         return mover(usuario, idAdmision, EstadoAdmision.EN_ENFERMERIA, ip);
     }
 
-    /** CU-21 paso 5: enfermeria confirma (EN_ENFERMERIA -> LISTO_PARA_ATENCION). */
+    /**
+     * CU-21 paso 5: enfermeria confirma (EN_ENFERMERIA -> LISTO_PARA_ATENCION).
+     * RN-17: exige que la admision tenga signos vitales registrados.
+     */
     @Transactional
     public Admision marcarListo(Usuario usuario, Integer idAdmision, String ip) {
         autorizacion.exigir(usuario, Permiso.REGISTRAR_SIGNOS_VITALES);
+        Admision a = delHospital(usuario, idAdmision);
+        if (a.getEstado() == EstadoAdmision.EN_ENFERMERIA && !signos.existsByAdmisionId(a.getId())) {
+            throw new IllegalArgumentException("Registra los signos vitales antes de dejar al paciente listo para atención.");
+        }
         return mover(usuario, idAdmision, EstadoAdmision.LISTO_PARA_ATENCION, ip);
     }
 
