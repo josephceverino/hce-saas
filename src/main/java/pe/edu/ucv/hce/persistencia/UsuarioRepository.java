@@ -12,4 +12,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     /** RF-20: total de usuarios de un hospital (solo el numero). */
     long countByEstablecimientoId(Integer idEstablecimiento);
+
+    /** CU-17 (RN-06, RN-16): el personal de un hospital, por nombre de usuario. */
+    java.util.List<Usuario> findAllByEstablecimientoIdOrderByUsuarioAsc(Integer idEstablecimiento);
+
+    /** CU-17 (RN-16): un usuario solo si es de ese hospital. */
+    Optional<Usuario> findByIdAndEstablecimientoId(Integer id, Integer idEstablecimiento);
 }

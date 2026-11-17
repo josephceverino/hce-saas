@@ -13,7 +13,7 @@ public class ConfigWeb implements WebMvcConfigurer {
 
     private static final String[] PANTALLAS = {
         "inicio", "pacientes", "historia", "atencion", "mi-historial", "consentimiento", "auditoria", "hospitales",
-        "perfil", "login", "cambiar-clave"
+        "perfil", "login", "cambiar-clave", "usuarios"
     };
 
     @Override

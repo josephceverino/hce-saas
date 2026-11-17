@@ -52,7 +52,7 @@ class MenuServiceTest {
 
     @Test
     void adminDelHospitalVeTableroYAuditoria() {
-        assertEquals(List.of("inicio", "auditoria", "perfil"), claves("admin.a"));
+        assertEquals(List.of("inicio", "usuarios", "auditoria", "perfil"), claves("admin.a"));
     }
 
     @Test

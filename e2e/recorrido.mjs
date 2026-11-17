@@ -40,6 +40,41 @@ const pasos = {
     await page.waitForSelector('#constancia:not([hidden])');
     datos.adminHospital = { usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
     await captura(page, 'paso1_P-07_constancia', true);
+  },
+
+  /** Paso 2 (CU-18, CU-17): el administrador del hospital cambia su clave y crea al personal con su rol. */
+  async 2(page) {
+    const a = datos.adminHospital;
+    await entrarConTemporal(page, a.usuario, a.clave, 'Hospital2026', 'paso2');
+    await captura(page, 'paso2_inicio_admin_hospital', false);
+    await page.goto(BASE + '/usuarios/');
+    await page.waitForLoadState('networkidle');
+    await captura(page, 'paso2_P-08_usuarios_vacio', false);
+    const personal = [
+      { usuario: 'carlos.rios', nombres: 'Carlos', apellidos: 'Ríos Salazar', documento: '41234567', rol: 'ADMISION' },
+      { usuario: 'ana.flores', nombres: 'Ana', apellidos: 'Flores Vega', documento: '42345678', rol: 'ENFERMERIA', colegiatura: 'CEP-55120' },
+      { usuario: 'jorge.paz', nombres: 'Jorge', apellidos: 'Paz Herrera', documento: '43456789', rol: 'MEDICO', colegiatura: 'CMP-70231', especialidad: 'Medicina interna' },
+      { usuario: 'elena.campos', nombres: 'Elena', apellidos: 'Campos Ruiz', documento: '44567890', rol: 'APOYO_DIAGNOSTICO', colegiatura: 'CTMP-3301' }
+    ];
+    datos.personal = {};
+    for (const [i, p] of personal.entries()) {
+      await page.click('#nuevo');
+      await page.fill('#nombres', p.nombres);
+      await page.fill('#apellidos', p.apellidos);
+      await page.fill('#documento', p.documento);
+      await page.fill('#correo', p.usuario + '@example.com');
+      await page.fill('#usuario', p.usuario);
+      await page.selectOption('#rol', p.rol);
+      if (p.colegiatura) await page.fill('#colegiatura', p.colegiatura);
+      if (p.especialidad) await page.fill('#especialidad', p.especialidad);
+      if (i === 2) await captura(page, 'paso2_P-08_formulario_medico', false);
+      await page.click('#formulario button[type=submit]');
+      await page.waitForSelector('#constancia:not([hidden])');
+      datos.personal[p.rol] = { usuario: p.usuario, clave: await page.textContent('#cClave') };
+      if (i === 2) await captura(page, 'paso2_P-08_constancia', false);
+      await page.click('#cerrarConstancia');
+    }
+    await captura(page, 'paso2_P-08_usuarios_lista', false);
   }
 };
 

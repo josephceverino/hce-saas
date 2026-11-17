@@ -221,6 +221,39 @@ a.hce-boton { text-decoration: none; display: inline-block; }
 .hce-clave { font-size: 22px; font-weight: 700; letter-spacing: .08em; color: var(--hce-primario-oscuro); background: var(--hce-primario-claro); border-radius: 8px; padding: 4px 10px; display: inline-block; }
 .hce-aviso-alerta { background: var(--hce-alerta-fondo); color: #7a4f12; border-radius: 10px; padding: 10px 14px; }
 
+/* ---- Directorio: cifras por estado, pestanas, tabla limpia (referencia 05) ---- */
+.hce-cifras-estado { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+.hce-cifra-estado { border: 1px solid var(--hce-borde); border-radius: var(--hce-radio); padding: 16px 18px; background: linear-gradient(135deg, #fff 40%, var(--hce-primario-claro)); }
+.hce-cifra-estado.ok { background: linear-gradient(135deg, #fff 40%, var(--hce-ok-fondo)); border-color: #bfe3cc; }
+.hce-cifra-estado.alerta { background: linear-gradient(135deg, #fff 40%, var(--hce-alerta-fondo)); border-color: #f0d6a8; }
+.hce-cifra-estado.error { background: linear-gradient(135deg, #fff 40%, var(--hce-error-fondo)); border-color: #f1c4bf; }
+.hce-cifra-estado .titulo { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--hce-texto-suave); }
+.hce-cifra-estado .valor { font-size: 28px; font-weight: 700; margin: 4px 0 2px; }
+.hce-cifra-estado .nota { font-size: 12.5px; color: var(--hce-texto-suave); }
+.hce-tarjeta-tabla { padding: 0; overflow: hidden; }
+.hce-tarjeta-tabla .hce-tabla-contenedor { padding: 0; }
+.hce-tarjeta-tabla .hce-paginacion { padding: 12px 18px 16px; margin-top: 0; }
+.hce-barra-tabla { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--hce-borde); flex-wrap: wrap; }
+.hce-pestanas { display: inline-flex; gap: 4px; background: var(--hce-fondo); padding: 4px; border-radius: 10px; flex-wrap: wrap; }
+.hce-pestana { font: inherit; font-weight: 600; font-size: 13.5px; border: 0; background: transparent; padding: 7px 12px; border-radius: 8px; cursor: pointer; color: var(--hce-texto-suave); }
+.hce-pestana .cuenta { font-size: 12px; color: var(--hce-texto-suave); font-weight: 500; }
+.hce-pestana.activa { background: #fff; color: var(--hce-texto); box-shadow: 0 1px 3px rgba(16,40,46,.12); }
+.hce-buscar { min-width: 260px; padding: 9px 12px; border: 1px solid var(--hce-borde); border-radius: 8px; font: inherit; }
+.hce-tabla-limpia th { background: transparent; color: var(--hce-texto-suave); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.hce-tabla-limpia th, .hce-tabla-limpia td { padding: 12px 18px; }
+.hce-tabla .derecha { text-align: right; }
+.hce-persona { display: flex; align-items: center; gap: 10px; }
+.hce-persona .nombre { font-weight: 600; }
+.hce-persona .nota, .hce-nota-celda { font-size: 12.5px; color: var(--hce-texto-suave); margin-top: 2px; }
+.hce-monoespacio-celda { font-family: Consolas, "Courier New", monospace; }
+.hce-tabla-limpia .hce-chip { white-space: nowrap; }
+.hce-estado { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13.5px; }
+.hce-estado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.hce-estado.activo { color: var(--hce-ok); }
+.hce-estado.pendiente { color: var(--hce-alerta); }
+.hce-estado.inactivo { color: var(--hce-texto-suave); }
+.hce-boton.pequeno { padding: 6px 12px; font-size: 13px; }
+
 @media (max-width: 800px) {
   .hce-login { grid-template-columns: 1fr; }
   .hce-login-marca { padding: 28px; }

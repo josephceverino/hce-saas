@@ -23,6 +23,7 @@ public class MenuService {
     private static final ItemMenu MI_HISTORIAL = new ItemMenu("mi-historial", "Mi historial", "/mi-historial/");
     private static final ItemMenu CONSENTIMIENTO =
         new ItemMenu("consentimiento", "Consentimiento", "/consentimiento/");
+    private static final ItemMenu USUARIOS = new ItemMenu("usuarios", "Usuarios", "/usuarios/");
     private static final ItemMenu AUDITORIA = new ItemMenu("auditoria", "Auditoría", "/auditoria/");
     private static final ItemMenu HOSPITALES = new ItemMenu("hospitales", "Hospitales", "/hospitales/");
     private static final ItemMenu PERFIL = new ItemMenu("perfil", "Mi perfil", "/perfil/");
@@ -46,7 +47,7 @@ public class MenuService {
             return List.of(MI_HISTORIAL, CONSENTIMIENTO);
         }
         if (usuario.tieneRol(CodigoRol.ADMIN_HOSPITAL)) {
-            return List.of(INICIO, AUDITORIA);
+            return List.of(INICIO, USUARIOS, AUDITORIA);
         }
         if (usuario.tieneRol(CodigoRol.ADMIN_PLATAFORMA)) {
             return List.of(HOSPITALES);

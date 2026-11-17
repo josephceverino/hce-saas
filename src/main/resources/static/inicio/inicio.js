@@ -22,6 +22,7 @@ const DESCRIPCION_MENU = {
   'registrar-paciente': 'Registrar un paciente y abrir su historia',
   historia: 'Consultar la historia clínica',
   atencion: 'Registrar una atención médica',
+  usuarios: 'Crear al personal y controlar su acceso',
   auditoria: 'Quién accedió a qué y cuándo',
   hospitales: 'Hospitales suscritos',
   'mi-historial': 'Tu historia clínica',

@@ -14,7 +14,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] 0.4 Menú e Inicio propio para los 7 roles (apoyo al diagnóstico incluido, sin cifras inventadas); estructura visual rehecha según la referencia 01; capturas `inicio_*.png`. Commit `1d4b7a7`.
 
 ## R1 Cuentas
-- [ ] 1.1 CU-16: alta de hospital con su administrador (P-07, tests de RN-16).
+- [x] 1.1 CU-16: `POST /api/hospitales`, suscripción, administrador con clave temporal mostrada una vez en una constancia imprimible; P-07 rehecha; 5 tests (RN-16, código repetido, plan). Commit `8d27920`.
 - [ ] 1.2 CU-17: usuarios del hospital (P-08, test: un administrador no crea usuarios de otro hospital).
 - [ ] 1.3 Filiación completa en el registro de paciente (P-16).
 - [ ] 1.4 CU-19: cuenta del paciente al registrarlo, con constancia imprimible.
