@@ -172,6 +172,7 @@ CREATE TABLE diagnostico (
     codigo_cie10 VARCHAR(10) NOT NULL,
     descripcion VARCHAR(200) NOT NULL,
     tipo VARCHAR(20) NOT NULL,
+    certeza VARCHAR(15) NOT NULL DEFAULT 'DEFINITIVO', -- PRESUNTIVO / DEFINITIVO (D-43)
     CONSTRAINT pk_diagnostico PRIMARY KEY (id_diagnostico)
 );
 GO

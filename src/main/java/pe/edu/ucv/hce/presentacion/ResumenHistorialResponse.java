@@ -13,13 +13,16 @@ public record ResumenHistorialResponse(
         String nroHc, String paciente, String tipoDocumento, String nroDocumento, LocalDate fechaNacimiento,
         String sexo, String establecimiento, List<AlergiaDto> alergias, List<AntecedenteDto> antecedentes,
         int totalAtenciones, LocalDateTime ultimaAtencion, List<DiagnosticoDto> diagnosticos,
-        LocalDateTime generadoEn) {
+        List<ExamenDto> examenes, LocalDateTime generadoEn) {
 
     public record AlergiaDto(String agente, String reaccion, String gravedad) { }
 
     public record AntecedenteDto(String tipo, String descripcion, LocalDate fechaRegistro) { }
 
     public record DiagnosticoDto(String codigoCie10, String descripcion) { }
+
+    /** R4.2: examen con resultado de una atencion cerrada. */
+    public record ExamenDto(String tipoExamen, LocalDate fechaResultado, String resultado) { }
 
     public static ResumenHistorialResponse de(ResumenHistorial r) {
         var h = r.historia();
@@ -33,6 +36,8 @@ public record ResumenHistorialResponse(
             r.totalAtenciones(), r.ultimaAtencion(),
             r.diagnosticos().stream()
                 .map((Diagnostico d) -> new DiagnosticoDto(d.getCodigoCie10(), d.getDescripcion())).toList(),
+            r.examenes().stream().map(x -> new ExamenDto(x.getTipoExamen(), x.getResultado().getFecha(),
+                x.getResultado().getResultado())).toList(),
             r.generadoEn());
     }
 }

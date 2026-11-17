@@ -254,7 +254,7 @@ const HCE = (() => {
       }
       caja.append(bloque);
     };
-    lista('Diagnósticos (CIE-10)', a.diagnosticos, d => d.codigoCie10 + ' · ' + d.descripcion + ' (' + d.tipo.toLowerCase() + ')');
+    lista('Diagnósticos (CIE-10)', a.diagnosticos, d => d.codigoCie10 + ' · ' + d.descripcion + ' (' + d.tipo.toLowerCase() + ', ' + (d.certeza || 'DEFINITIVO').toLowerCase() + ')');
     lista('Tratamiento e indicaciones', a.tratamientos,
       t => t.medicamento + ' ' + t.dosis + ' por ' + t.duracion + '. ' + t.indicacion);
     if (a.examenes && a.examenes.length) {

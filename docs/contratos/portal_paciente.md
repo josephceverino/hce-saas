@@ -26,5 +26,5 @@ Cuentas demo (clave `demo123`): `paciente.a` (Hospital A, DNI 90000001) y `pacie
   "generadoEn": "2026-11-16T10:00:00"
 }
 ```
-`diagnosticos` trae los distintos (por código) de las atenciones cerradas. La edad se calcula en la pantalla a partir de `fechaNacimiento`.
+`examenes` (R4.2) trae los exámenes con resultado de las atenciones cerradas: `{ tipoExamen, fechaResultado, resultado }`. `diagnosticos` trae los distintos (por código) de las atenciones cerradas. La edad se calcula en la pantalla a partir de `fechaNacimiento`.
 Para "descargar": la pantalla arma una vista imprimible (`window.print()`); no hay endpoint de archivo.

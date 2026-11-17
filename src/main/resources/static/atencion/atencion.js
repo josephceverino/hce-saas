@@ -108,7 +108,7 @@ function conectarModo3() {
     }, 200);
   });
   $('formDiagnostico').addEventListener('submit', (e) => enviar(e, base() + '/diagnosticos',
-    { codigoCie10: $('cie10').value.trim(), tipo: $('tipoDiagnostico').value }, $('mensajeDiagnostico'), 'Diagnóstico agregado.'));
+    { codigoCie10: $('cie10').value.trim(), tipo: $('tipoDiagnostico').value, certeza: $('certezaDiagnostico').value }, $('mensajeDiagnostico'), 'Diagnóstico agregado.'));
   $('formTratamiento').addEventListener('submit', (e) => enviar(e, base() + '/tratamientos',
     { indicacion: $('indicacion').value, medicamento: $('medicamento').value, dosis: $('dosis').value, duracion: $('duracion').value },
     $('mensajeTratamiento'), 'Tratamiento agregado.'));

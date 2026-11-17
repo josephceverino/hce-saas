@@ -13,7 +13,7 @@ La aplicación ya **no trae cuentas ni pacientes de demostración**. Al arrancar
 - Las cuentas `admision.a`, `medico.a`, etc. (clave `demo123`) que mencionan las secciones antiguas de este README **solo existen en los tests** (`hce.demo-usuarios=true` en `src/test/resources`).
 - Avance del plan v3: `PROGRESO.md`. Decisiones por revisar: `DECISIONES_PENDIENTES.md`.
 
-## Cómo probar el recorrido (plan v3, pasos 1 a 8 de `docs/recorrido.md`)
+## Cómo probar el recorrido (plan v3, pasos 1 a 9 de `docs/recorrido.md`, más controles del paso 10)
 1. Borra `data/` (con la app cerrada) y arranca: `.\mvnw.cmd spring-boot:run`. Abre `http://localhost:8090`.
 2. **Paso 1:** entra con `admin` / `Temporal2026`, cambia la clave y en **Hospitales** da de alta un hospital con su administrador. Anota la clave temporal de la constancia (se muestra una sola vez).
 3. **Paso 2:** entra con el administrador del hospital, cambia su clave y en **Usuarios** crea a admisión, enfermería, médico (con colegiatura) y apoyo al diagnóstico.
@@ -23,8 +23,12 @@ La aplicación ya **no trae cuentas ni pacientes de demostración**. Al arrancar
 7. **Paso 6:** entra con el médico: en **Cola de pacientes**, **Iniciar atención** sobre el paciente listo. Completa motivo, enfermedad actual, anamnesis, funciones biológicas, examen físico y por sistemas; agrega un diagnóstico CIE-10 (ej. `J02.9`), un tratamiento y **Solicitar examen auxiliar**.
 8. **Paso 7:** entra con apoyo al diagnóstico (cambia su clave): en **Exámenes** ve el pedido pendiente y pulsa **Registrar resultado**.
 9. **Paso 8:** el médico abre la atención, ve el resultado y la cierra: la admisión pasa a "atención cerrada" y ya no se edita (solo enmienda).
+10. **Paso 9:** la admisión restablece la clave del paciente (Pacientes → Restablecer clave) y le da la temporal. El paciente entra, la cambia y en **Mi historial** ve solo atenciones cerradas (con exámenes y resultado, sin signos vitales); **Ver resumen** lo imprime; en **Consentimiento** otorga y revoca. El administrador del hospital lo ve en **Auditoría**.
 - **Restablecer clave (CU-26):** el administrador del hospital lo hace desde **Usuarios**, la plataforma desde **Hospitales** (al administrador) y la admisión desde **Pacientes** (cuenta del portal). La clave temporal se muestra una sola vez.
-- Automático: `cd e2e`, `npm install` y `npm run recorrido -- 8` con la app en el puerto 8191 y base nueva (ver `e2e/LEEME.md`). Capturas en `docs/capturas/`.
+- Automático: `cd e2e`, `npm install` y `npm run recorrido -- 10` con la app en el puerto 8191 y base nueva (ver `e2e/LEEME.md`). El paso 10 (segundo hospital sin ver datos del primero, permisos por rol y bloqueo por intentos) también corre solo: `node recorrido.mjs 10 10`. Capturas en `docs/capturas/`.
+
+## Archivo: pruebas de versiones anteriores (no aplican a la app actual)
+Las secciones siguientes (Fase 0 a v5) son el historial de pruebas de cada versión. **Usan las cuentas `admision.a`, `medico.a`, etc. con clave `demo123`, que ya no existen en la aplicación**: solo se crean con `--hce.demo-usuarios=true --hce.demo-datos=true` o en los tests. Para probar la aplicación actual sigue la sección "Cómo probar el recorrido" de arriba. La ayuda del paquete portable está en `GUIA_INSTALACION.md`.
 
 ## Cómo probar (Fase 0)
 Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene incluido (`mvnw`). La primera vez necesita internet para bajar dependencias.

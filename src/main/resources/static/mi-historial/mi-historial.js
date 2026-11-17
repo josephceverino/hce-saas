@@ -32,6 +32,7 @@ function dibujarResumen(r) {
     lista('Antecedentes', r.antecedentes, a => a.tipo + ': ' + a.descripcion + ' (' + a.fechaRegistro + ')', 'Sin antecedentes registrados.'),
     dato('Atenciones cerradas', r.totalAtenciones + (r.ultimaAtencion ? ' · última: ' + HCE.fechaHora(r.ultimaAtencion) : '')),
     lista('Diagnósticos', r.diagnosticos, d => d.codigoCie10 + ' · ' + d.descripcion, 'Sin diagnósticos.'),
+    lista('Exámenes con resultado', r.examenes || [], x => x.tipoExamen + ' (' + x.fechaResultado + '): ' + x.resultado, 'Sin exámenes con resultado.'),
     HCE.el('p', 'hce-subtitulo', 'Generado el ' + HCE.fechaHora(r.generadoEn) + ' Datos ficticios de demostración.')
   );
 }

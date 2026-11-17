@@ -1,8 +1,10 @@
-// Recorrido del paciente (docs/recorrido.md) con Playwright. Uso: node recorrido.mjs [ultimoPaso]
+// Recorrido del paciente (docs/recorrido.md) con Playwright. Uso: node recorrido.mjs [ultimoPaso] [primerPaso]
+// El paso 9 solo usa claves fijas de los pasos 1 a 8, asi que puede correr solo: node recorrido.mjs 9 9
 // Requiere la app recien creada (sin cuentas): solo existe admin / Temporal2026. Guarda capturas en docs/capturas/.
 import { navegador, captura, BASE } from './lib.mjs';
 
 const ultimo = Number(process.argv[2] || 9);
+const primero = Number(process.argv[3] || 1);
 
 /** Verificacion explicita: si falla, el recorrido se detiene con el motivo (sirve como prueba de aceptacion). */
 function verificar(condicion, mensaje) {
@@ -211,11 +213,11 @@ const pasos = {
     await page.click('#cuerpo tr:first-child a:has-text("Iniciar atención")');
     await page.waitForSelector('#nueva:not([hidden])');
     verificar(await page.isVisible('#enfermedadActual'), 'desde la cola aparecen los campos ampliados de la atención');
-    await page.fill('#motivo', 'Dolor torácico opresivo de 2 horas');
-    await page.fill('#enfermedadActual', 'Dolor retroesternal que se irradia al brazo izquierdo, con sudoración');
-    await page.fill('#anamnesis', 'Paciente con hipertensión arterial; refiere dolor desde hace 2 horas.');
-    await page.fill('#funcionesBiologicas', 'Apetito conservado, sueño alterado, orina normal');
-    await page.fill('#examenFisico', 'Ansioso, sudoroso, ruidos cardíacos rítmicos');
+    await page.fill('#motivo', 'Dolor de garganta y fiebre de 2 días');
+    await page.fill('#enfermedadActual', 'Dolor al tragar que empeora en la noche, con fiebre de 38 grados');
+    await page.fill('#anamnesis', 'Paciente con hipertensión arterial; refiere dolor de garganta desde hace 2 días.');
+    await page.fill('#funcionesBiologicas', 'Apetito disminuido, sueño conservado, orina normal');
+    await page.fill('#examenFisico', 'Faringe enrojecida con placas, ganglios cervicales dolorosos');
     await page.fill('#examenSistemas', 'Cardiovascular: sin soplos. Respiratorio: murmullo vesicular conservado.');
     await captura(page, 'paso6_P-03_atencion_ampliada', true);
     await page.click('#formNueva button[type=submit]');
@@ -223,6 +225,7 @@ const pasos = {
     await page.waitForSelector('#atencion:not([hidden])');
     datos.atencionUrl = page.url();
     await page.fill('#cie10', 'J02.9');
+    await page.selectOption('#certezaDiagnostico', 'PRESUNTIVO');
     await page.click('#formDiagnostico button[type=submit]');
     await page.waitForSelector('#mensajeDiagnostico.ok');
     await page.fill('#medicamento', 'Paracetamol');
@@ -282,6 +285,164 @@ const pasos = {
     await page.goto(BASE + '/cola/');
     await page.waitForLoadState('networkidle');
     verificar(!(await page.textContent('#cuerpo')).includes('Vargas León'), 'el paciente sale de la cola del médico al cerrar');
+  },
+
+  /** Paso 9 (CU-26, CU-10, CU-11, CU-25): admision restablece la clave del paciente; el paciente ve su historia cerrada,
+      su resumen y gestiona su consentimiento; el administrador del hospital ve la auditoria. */
+  async 9(page) {
+    // Admision restablece la clave de Vargas Leon desde la lista de pacientes (la clave temporal se ve una sola vez)
+    await entrarConClave(page, 'carlos.rios', 'Admision2026');
+    await page.goto(BASE + '/pacientes/');
+    await page.waitForLoadState('networkidle');
+    await page.fill('#buscar', '73456729');
+    await page.click('#cuerpo tr:first-child button:has-text("Restablecer clave")');
+    await page.click('.hce-modal .primario');
+    await page.waitForSelector('.hce-modal .hce-clave');
+    const temporal = (await page.textContent('.hce-modal .hce-clave')).trim();
+    verificar(/^[A-Za-z0-9]{10}$/.test(temporal), 'admisión restablece la clave del paciente y ve una clave temporal de 10 caracteres');
+    await captura(page, 'paso9_P-02_restablecer_clave_paciente', false);
+    await page.click('.hce-modal .primario');
+    await page.context().close();
+
+    // El paciente entra con la temporal, la cambia y ve su historial (solo atenciones cerradas, sin signos vitales)
+    const paciente = await nuevaPagina();
+    await entrarConTemporal(paciente, '73456729', temporal, 'Paciente2026', 'paso9');
+    await paciente.goto(BASE + '/mi-historial/');
+    await paciente.waitForLoadState('networkidle');
+    await paciente.waitForSelector('#atenciones .hce-evento, #atenciones > *');
+    const historial = await paciente.textContent('#contenido');
+    verificar(historial.includes('Dolor de garganta') && historial.includes('Enfermedad actual'), 'el paciente ve su atención cerrada con los datos ampliados');
+    verificar(historial.includes('Hemograma completo') && historial.includes('Hemoglobina 13,2'), 'el paciente ve su examen con el resultado');
+    verificar(!/signos vitales|saturaci/i.test(historial), 'el portal no muestra signos vitales');
+    await captura(paciente, 'paso9_P-05_mi_historial', true);
+    await paciente.click('#verResumen');
+    await paciente.waitForSelector('#resumen:not([hidden])');
+    verificar((await paciente.textContent('#resumenContenido')).includes('Hemoglobina 13,2'), 'el resumen descargable lista el examen con resultado');
+    await captura(paciente, 'paso9_P-05_resumen', true);
+
+    // Consentimiento: otorga y revoca
+    await paciente.goto(BASE + '/consentimiento/');
+    await paciente.waitForLoadState('networkidle');
+    await paciente.fill('#otorgadoA', 'Hospital Regional de Chiclayo');
+    await paciente.fill('#alcance', 'Lectura de mi historial para una interconsulta');
+    await paciente.click('#formulario button[type=submit]');
+    await paciente.waitForSelector('#mensaje.ok');
+    verificar((await paciente.textContent('#lista')).includes('Hospital Regional de Chiclayo'), 'el consentimiento otorgado aparece en la lista');
+    await captura(paciente, 'paso9_P-06_consentimiento_otorgado', false);
+    const revocadasAntes = await paciente.locator('#lista .hce-autorizacion.revocada').count();
+    await paciente.click('#lista .hce-autorizacion:not(.revocada) input[type=checkbox]');
+    await paciente.click('.hce-modal .primario');
+    await paciente.waitForSelector('#mensajeLista.ok');
+    verificar(await paciente.locator('#lista .hce-autorizacion.revocada').count() === revocadasAntes + 1, 'al apagar el interruptor el consentimiento queda revocado');
+    await captura(paciente, 'paso9_P-06_consentimiento_revocado', false);
+    await paciente.context().close();
+
+    // El administrador del hospital ve la auditoria de todo lo anterior
+    const admin = await nuevaPagina();
+    await entrarConClave(admin, 'admin.trujillo', 'Hospital2026');
+    await admin.goto(BASE + '/auditoria/');
+    await admin.waitForLoadState('networkidle');
+    await admin.waitForSelector('#cuerpo tr');
+    await admin.selectOption('#accion', 'RESTABLECER_CLAVE');
+    await admin.click('#filtros button[type=submit]');
+    await admin.waitForFunction(() => document.getElementById('cuerpo').textContent.includes('RESTABLECER_CLAVE'));
+    verificar((await admin.textContent('#cuerpo')).includes('carlos.rios'), 'la auditoría muestra quién restableció la clave');
+    await captura(admin, 'paso9_P-14_auditoria_restablecer', false);
+    await admin.selectOption('#accion', 'SOLICITAR_EXAMEN');
+    await admin.click('#filtros button[type=submit]');
+    await admin.waitForFunction(() => document.getElementById('cuerpo').textContent.includes('SOLICITAR_EXAMEN'));
+    verificar((await admin.textContent('#cuerpo')).includes('jorge.paz'), 'la auditoría muestra al médico que pidió el examen');
+    await captura(admin, 'paso9_P-14_auditoria_examen', false);
+    await admin.context().close();
+  },
+
+  /** Paso 10, controles transversales (MV-21 a MV-23): un segundo hospital no ve nada del primero (RN-06), los roles no
+      pasan sus permisos (RN-02) y 5 claves malas bloquean la cuenta hasta que el administrador la restablece (RN-12).
+      Usa claves fijas de los pasos 1 a 9 y un sufijo propio, asi que puede repetirse: node recorrido.mjs 10 10 */
+  async 10(page) {
+    const numero = String(Date.now());
+    const sufijo = numero.slice(-5);
+    const estado = async (p, ruta, metodo = 'GET') => p.evaluate(async ([r, m]) => (await fetch(r, { method: m })).status, [ruta, metodo]);
+
+    // Segundo hospital con su administrador y su admision (por pantallas)
+    await entrarConClave(page, 'admin', 'Plataforma2026');
+    await page.goto(BASE + '/hospitales/');
+    await page.waitForLoadState('networkidle');
+    await page.click('#nuevo');
+    await page.fill('#nombre', 'Hospital Regional de Chiclayo ' + sufijo);
+    await page.fill('#codigo', '00' + numero.slice(-6));
+    await page.fill('#region', 'Lambayeque');
+    await page.selectOption('#plan', 'BASICO');
+    await page.fill('#adminNombre', 'Marta Rojas Díaz');
+    await page.fill('#adminDocumento', '46789123');
+    await page.fill('#adminCorreo', 'mrojas@example.com');
+    await page.fill('#adminUsuario', 'admin.chiclayo' + sufijo);
+    await page.click('#formulario button[type=submit]');
+    await page.waitForSelector('#constancia:not([hidden])');
+    const admin2 = { usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
+    await captura(page, 'paso10_P-07_segundo_hospital', false);
+
+    const adm = await nuevaPagina();
+    await entrarConTemporal(adm, admin2.usuario, admin2.clave, 'Chiclayo2026');
+    await adm.goto(BASE + '/usuarios/');
+    await adm.waitForLoadState('networkidle');
+    await adm.click('#nuevo');
+    await adm.fill('#nombres', 'Luis');
+    await adm.fill('#apellidos', 'Mora Vega');
+    await adm.fill('#documento', '47891234');
+    await adm.fill('#correo', 'lmora@example.com');
+    await adm.fill('#usuario', 'luis.mora' + sufijo);
+    await adm.selectOption('#rol', 'ADMISION');
+    await adm.click('#formulario button[type=submit]');
+    await adm.waitForSelector('#constancia:not([hidden])');
+    const luis = { usuario: 'luis.mora' + sufijo, clave: await adm.textContent('#cClave') };
+    await adm.click('#cerrarConstancia');
+
+    // MV-21: la admision del segundo hospital no ve nada del primero
+    const op = await nuevaPagina();
+    await entrarConTemporal(op, luis.usuario, luis.clave, 'Admision2026b');
+    await op.goto(BASE + '/pacientes/');
+    await op.waitForLoadState('networkidle');
+    const lista = await op.textContent('#contenido');
+    verificar(!lista.includes('Gutiérrez') && !lista.includes('Vargas'), 'el segundo hospital no ve a los pacientes del primero');
+    await captura(op, 'paso10_P-02_segundo_hospital_sin_pacientes', false);
+    verificar([403, 404].includes(await estado(op, '/api/historias/1')), 'pedir la historia de otro hospital por la API se rechaza');
+    verificar([403, 404].includes(await estado(op, '/api/atenciones/1')), 'pedir la atención de otro hospital por la API se rechaza');
+    await adm.goto(BASE + '/auditoria/');
+    await adm.waitForLoadState('networkidle');
+    await adm.waitForSelector('#cuerpo tr');
+    const auditoria = await adm.textContent('#cuerpo');
+    verificar(!auditoria.includes('jorge.paz') && !auditoria.includes('carlos.rios'), 'la auditoría del segundo hospital no muestra acciones del primero');
+    await captura(adm, 'paso10_P-14_auditoria_segundo_hospital', false);
+
+    // MV-22: cada rol solo hace lo suyo (el servidor lo impone, no solo el menu)
+    const enf = await nuevaPagina();
+    await entrarConClave(enf, 'ana.flores', 'Enfermeria2026');
+    const menu = await enf.textContent('#app');
+    verificar(!menu.includes('Usuarios') && !menu.includes('Hospitales') && !menu.includes('Exámenes'), 'el menú de enfermería no ofrece usuarios, hospitales ni exámenes');
+    verificar(await estado(enf, '/api/usuarios') === 403, 'enfermería no puede pedir la lista de usuarios');
+    verificar(await estado(enf, '/api/examenes') === 403, 'enfermería no puede ver los exámenes');
+    verificar(await estado(enf, '/api/restablecimientos/personal/1', 'POST') === 403, 'enfermería no puede restablecer claves');
+    const med = await nuevaPagina();
+    await entrarConClave(med, 'jorge.paz', 'Medico2026');
+    verificar(await estado(med, '/api/examenes') === 403, 'el médico no registra resultados de exámenes');
+    verificar(await estado(med, '/api/indicadores/hospitales') === 403, 'el médico no ve la lista de hospitales');
+
+    // MV-23: 5 claves malas bloquean la cuenta; el administrador del hospital restablece la clave y se levanta
+    const intento = async (clave) => (await op.request.post(BASE + '/api/login', { data: { usuario: luis.usuario, clave } }));
+    for (let i = 0; i < 5; i++) verificar((await intento('incorrecta1')).status() === 401, 'intento fallido ' + (i + 1) + ' rechazado');
+    const bloqueada = await intento('Admision2026b');
+    verificar(bloqueada.status() === 401 && JSON.stringify(await bloqueada.json()).includes('bloqueada'), 'tras 5 intentos la cuenta queda bloqueada, aunque la clave sea la correcta');
+    await adm.goto(BASE + '/usuarios/');
+    await adm.waitForLoadState('networkidle');
+    await adm.fill('#buscar', luis.usuario);
+    await adm.click('#cuerpo tr:first-child button:has-text("Restablecer clave")');
+    await adm.click('.hce-modal .primario');
+    await adm.waitForSelector('.hce-modal .hce-clave');
+    const nueva = (await adm.textContent('.hce-modal .hce-clave')).trim();
+    await captura(adm, 'paso10_P-08_restablecer_bloqueada', false);
+    verificar((await intento(nueva)).status() === 200, 'tras restablecer la clave, la cuenta entra de nuevo');
+    for (const p of [adm, op, enf, med]) await p.context().close();
   }
 };
 
@@ -318,7 +479,7 @@ async function admitirDesdeLista(page, documento, tipo, capturaDialogo) {
 
 let fallo = null;
 try {
-  for (let n = 1; n <= ultimo; n++) {
+  for (let n = primero; n <= ultimo; n++) {
     if (!pasos[n]) break;
     const page = await nuevaPagina();
     console.log('--- paso', n);

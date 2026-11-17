@@ -32,7 +32,33 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] R3b.2 Pedido de exámenes (CU-22, RF-25; RN-18): tabla `solicitud_examen`, formulario en la atención abierta, lista en la atención y la historia.
 - [x] R3b.3 Resultados (CU-23, RF-09; RN-18, RN-06): P-12 `/examenes/` para apoyo al diagnóstico, tabla `resultado_examen`, cifras reales en su Inicio; 6 tests (213 en total). Decisión D-41.
 - [x] R3b.4 Cierre de la atención: cerrarla pasa la admisión a ATENCION_CERRADA y la atención cerrada no se edita (RN-03); quedó cubierto por los tests de R3b.1 y el paso 8 del recorrido.
-- [x] R3b.5 `npm run recorrido -- 8` recorre los pasos 1 a 8 con 28 verificaciones y sin errores de consola; capturas paso6_ a paso8_ en `docs/capturas/`. `docs/script_sqlserver.sql` actualizado (admision, signos_vitales, solicitud_examen y columnas nuevas; sin probar en SQL Server).
+- [x] R3b.5 `npm run recorrido -- 8` recorre los pasos 1 a 8 con 25 verificaciones y sin errores de consola; capturas paso6_ a paso8_ en `docs/capturas/`. `docs/script_sqlserver.sql` actualizado (admision, signos_vitales, solicitud_examen y columnas nuevas; sin probar en SQL Server).
+
+## R4 (aprobado el 17 nov: solo atenciones cerradas, sin signos vitales en el portal, sin cerrar sesiones al restablecer)
+- [x] R4.1 Portal verificado con la historia nueva: el paciente ve solo atenciones cerradas, con enfermedad actual, funciones biológicas, examen por sistemas y exámenes con su resultado; no ve atenciones abiertas ni signos vitales; no ve lo de otro paciente (RN-04). No hizo falta cambiar código; 4 tests nuevos (217 en total).
+- [x] R4.2 El resumen descargable (`/api/mi-historial/resumen`) lista los exámenes con resultado de las atenciones cerradas; `Mi historial` ya los mostraba dentro de cada atención. Contrato `docs/contratos/portal_paciente.md` actualizado; 1 test nuevo (218 en total).
+- [x] R4.3 Consentimiento (CU-11): ya estaba construido y cubierto por 7 tests (otorgar, revocar, no revocar dos veces, aislamiento entre pacientes, solo el paciente, campos vacíos, auditoría). Sin cambios de código. Aclaración: el consentimiento es un registro con fecha y alcance (RF-17); no bloquea el acceso del personal del hospital, porque el intercambio entre hospitales (RF-18) no está en el alcance de la demo. La verificación en pantalla queda en el recorrido del paso 9 (R4.5).
+- [x] R4.4 Auditoría CU-25: comprobado con datos reales (8090) y con 2 tests nuevos (220 en total) que las acciones de admisión, atención desde la cola, exámenes y restablecer clave se registran, se filtran y solo las ve el administrador de su hospital (RN-06, RN-07). Sin cambios de código. Decisión D-42.
+- [x] R4.5 Recorrido paso 9 con 9 verificaciones y sin errores de consola (restablecer clave del paciente, historial cerrado sin signos vitales, resumen, consentimiento otorgado y revocado, auditoría); capturas `paso9_` en `docs/capturas/`. El recorrido acepta un paso inicial: `node recorrido.mjs 9 9`.
+
+## R5 Paquete portable (probado en esta PC)
+- [x] R5.1 `empaquetar.bat` (en una copia limpia, con 220 tests dentro del build) genera `dist\HCE-Demo\HCE-Demo.exe` con Java 25 incluido y `dist\HCE-Demo.zip` (78 MB).
+- [x] R5.2 Probado el `.exe`: con la app de desarrollo ocupando 8090 abrió sola en 8091; los datos se crean en `dist\HCE-Demo\data` junto al programa; el recorrido completo (pasos 1 a 9, 34 verificaciones) pasó contra el `.exe` y sin errores; tras cerrar y reabrir, los usuarios y datos siguen.
+- [x] R5.3 `dist\data_ensayo`: copia de `data` ya poblada por el recorrido para restaurar la demo (usuarios en `GUIA_INSTALACION.md`).
+- [x] R5.4 `GUIA_INSTALACION.md` actualizada: sin cuentas demo, administrador inicial, restaurar `data_ensayo`.
+
+## Pruebas
+- [x] `docs/pruebas/pruebas_manuales_v3.md`: 24 casos manuales (MV-01 a MV-24) para ejecutar en esta PC, con el resultado esperado y la captura de referencia de cada uno. Todos en Pendiente: se llenan al ejecutarlos.
+
+## Cierre de pendientes (17 nov, tarde)
+- [x] `REVISION_DECISIONES.md`: hoja para marcar con mi recomendación en cada decisión (11 para mirar con cuidado, el resto en bloque, 3 obsoletas). Deja a la vista dos pendientes heredados: P-2 a P-4 (campos de la atención como texto libre) y **P-5 (diagnóstico presuntivo o definitivo) sin aplicar**.
+- [x] Recorrido paso 10 (17 verificaciones, sin errores): segundo hospital sin ver datos del primero, permisos por rol, bloqueo tras 5 intentos y restablecer. Cubre MV-21 a MV-23 en automático; **no sustituye** la prueba manual.
+- [x] README: sección "Archivo" que marca las pruebas antiguas (con `demo123`) como no aplicables a la app actual.
+
+## P-5 y ajustes finales (17 nov, noche)
+- [x] P-5 aplicado (D-43): cada diagnóstico es **presuntivo o definitivo** (campo `certeza`, además de principal o secundario). Se elige en la atención y se ve en la historia y el portal. Los diagnósticos anteriores y los creados sin indicarlo quedan como definitivos. Comprobado: la app arranca sobre una copia de la base antigua y agrega la columna sola. 3 tests nuevos (223 en total).
+- [x] El dato de ejemplo del recorrido es coherente (dolor de garganta con faringitis presuntiva).
+- [x] Conteos corregidos: pasos 1 a 8 = 25 verificaciones, 1 a 9 = 34, 1 a 10 = 51.
 
 ## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 

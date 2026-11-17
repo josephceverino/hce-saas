@@ -33,7 +33,7 @@ public record HistoriaDetalleResponse(
 
     public record AntecedenteDto(String tipo, String descripcion, LocalDate fechaRegistro) { }
 
-    public record DiagnosticoDto(Integer id, String codigoCie10, String descripcion, String tipo) { }
+    public record DiagnosticoDto(Integer id, String codigoCie10, String descripcion, String tipo, String certeza) { }
 
     public record TratamientoDto(Integer id, String indicacion, String medicamento, String dosis, String duracion) { }
 
@@ -87,7 +87,7 @@ public record HistoriaDetalleResponse(
     }
 
     public static DiagnosticoDto diagnostico(Diagnostico x) {
-        return new DiagnosticoDto(x.getId(), x.getCodigoCie10(), x.getDescripcion(), x.getTipo());
+        return new DiagnosticoDto(x.getId(), x.getCodigoCie10(), x.getDescripcion(), x.getTipo(), x.getCerteza());
     }
 
     public static TratamientoDto tratamiento(Tratamiento x) {
