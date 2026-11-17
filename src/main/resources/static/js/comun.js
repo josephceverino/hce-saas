@@ -90,10 +90,11 @@ const HCE = (() => {
     sidebar.append(marca, menu, perfil);
 
     const barra = el('header', 'hce-barra');
-    if (sesion.establecimiento) {
-      barra.append(el('span', 'hce-chip', 'Hospital activo'), el('span', 'hce-hospital', sesion.establecimiento));
+    // El paciente y el administrador de plataforma no pertenecen a un hospital: el servidor manda una etiqueta, no un hospital.
+    if (sesion.rolCodigo === 'PACIENTE' || sesion.rolCodigo === 'ADMIN_PLATAFORMA') {
+      barra.append(el('span', 'hce-chip', sesion.establecimiento));
     } else {
-      barra.append(el('span', 'hce-chip', 'Administración de la plataforma'));
+      barra.append(el('span', 'hce-chip', 'Hospital activo'), el('span', 'hce-hospital', sesion.establecimiento));
     }
 
     app.prepend(sidebar);

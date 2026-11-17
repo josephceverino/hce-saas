@@ -53,6 +53,13 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Apaga el interruptor: confirma en el modal y queda "Revocado" con la fecha de revocación, sin posibilidad de reactivarlo (CP-20).
 4. Con `medico.a` el endpoint responde 403 y sin sesión 401. `paciente.b` no ve los consentimientos de `paciente.a` (RN-04).
 
+## Cómo probar (bloque 4: Mi historial y Mi perfil; A-6 y A-9)
+1. `./mvnw spring-boot:run`, abrir `http://localhost:8090` y entrar con `paciente.a` (clave `demo123`): ahora aterriza en **Mi historial**, solo lectura y solo atenciones cerradas, sin botones de edición.
+2. **Ver resumen** muestra el resumen imprimible; "Imprimir o guardar como PDF" abre el diálogo del navegador sin el menú.
+3. Entra con `paciente.b`: ve su propia historia (HC-000005) y nada del Hospital A (RN-04). Con `medico.a` el endpoint del portal responde 403.
+4. **Mi perfil** está en el menú de todos los roles. `plataforma` muestra "Plataforma" como hospital.
+5. Con esto ya no queda ningún enlace del menú de paciente, médico, enfermería o admisión que dé 404; faltan solo Auditoría y Hospitales.
+
 ## Cómo probar (v5: paquete portable)
 Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
 1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).

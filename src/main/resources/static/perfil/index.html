@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi perfil · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div>
+      <h1>Mi perfil</h1>
+      <p class="hce-subtitulo">Los datos de tu cuenta. El hospital y el rol los asigna el sistema; no se pueden cambiar desde aquí.</p>
+    </div>
+    <section class="hce-tarjeta">
+      <div class="hce-cabecera-paciente">
+        <div class="hce-avatar" id="avatar"></div>
+        <div class="datos">
+          <h2 id="usuario"></h2>
+          <div class="hce-fila-chips"><span class="hce-chip" id="rol"></span></div>
+        </div>
+      </div>
+    </section>
+    <section class="hce-tarjeta">
+      <div class="hce-dato"><div class="etiqueta">Hospital</div><div class="valor" id="hospital"></div></div>
+      <div class="hce-dato"><div class="etiqueta">Último acceso</div><div class="valor" id="ultimoAcceso"></div></div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="perfil.js"></script>
+</body>
+</html>

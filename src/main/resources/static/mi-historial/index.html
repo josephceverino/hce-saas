@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi historial · Plataforma HCE</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div class="hce-app" id="app">
+  <main class="hce-contenido" id="contenido">
+    <div class="no-imprimir">
+      <h1>Mi historial</h1>
+      <p class="hce-subtitulo">Tu historia clínica en modo solo lectura. Aquí ves las atenciones ya cerradas por tu médico.</p>
+    </div>
+    <div id="error" class="hce-mensaje" role="alert"></div>
+
+    <div id="vistaHistorial">
+      <section class="hce-tarjeta" id="cabecera" hidden>
+        <div class="hce-cabecera-paciente">
+          <div class="hce-avatar" id="avatar"></div>
+          <div class="datos">
+            <h2 id="nombre"></h2>
+            <div class="hce-subtitulo" id="datosPaciente"></div>
+            <div class="hce-fila-chips" id="alergias"></div>
+          </div>
+          <button class="hce-boton primario" id="verResumen" type="button">Ver resumen</button>
+        </div>
+      </section>
+      <section class="hce-tarjeta" id="antecedentesTarjeta" hidden>
+        <h2>Antecedentes</h2>
+        <ul class="hce-lista" id="antecedentes"></ul>
+      </section>
+      <section class="hce-tarjeta" id="atencionesTarjeta" hidden>
+        <h2>Mis atenciones <span class="hce-chip" id="cuenta">0</span></h2>
+        <div class="hce-linea-tiempo" id="atenciones"></div>
+        <div class="hce-vacio" id="sinAtenciones" hidden>Aún no tienes atenciones cerradas.</div>
+      </section>
+    </div>
+
+    <section class="hce-tarjeta hce-resumen" id="resumen" hidden>
+      <div class="hce-acciones no-imprimir">
+        <button class="hce-boton primario" id="imprimir" type="button">Imprimir o guardar como PDF</button>
+        <button class="hce-boton claro" id="volver" type="button">Volver a mi historial</button>
+      </div>
+      <h2>Resumen de mi historia clínica</h2>
+      <div id="resumenContenido"></div>
+    </section>
+  </main>
+</div>
+<script src="/js/comun.js"></script>
+<script src="/js/historia-vista.js"></script>
+<script src="mi-historial.js"></script>
+</body>
+</html>

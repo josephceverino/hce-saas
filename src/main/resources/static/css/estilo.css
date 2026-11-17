@@ -158,3 +158,12 @@ a.hce-boton { text-decoration: none; display: inline-block; }
   .hce-perfil { border: 0; padding: 0; }
   .hce-contenido { padding: 16px; }
 }
+
+/* ---- Impresion del resumen (A-6) ---- */
+.hce-resumen h2 { margin-top: 18px; }
+@media print {
+  .hce-sidebar, .hce-barra, .no-imprimir { display: none !important; }
+  .hce-app { padding-left: 0; }
+  body { background: #fff; }
+  .hce-tarjeta { box-shadow: none; border: 0; }
+}
