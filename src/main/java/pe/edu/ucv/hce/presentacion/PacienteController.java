@@ -38,6 +38,10 @@ public class PacienteController {
             datos.tipoDocumento().trim(), datos.nroDocumento().trim(), datos.nombres().trim(),
             datos.apellidos().trim(), datos.fechaNacimiento(), datos.sexo(), datos.telefono().trim(),
             datos.correo().trim(), datos.direccion().trim());
+        paciente.completarFiliacion(datos.lugarNacimiento().trim(), datos.procedencia().trim(), datos.estadoCivil(),
+            datos.gradoInstruccion(), datos.ocupacion().trim(), datos.religion() == null ? null : datos.religion().trim(),
+            datos.contactoEmergenciaNombre().trim(), datos.contactoEmergenciaParentesco().trim(),
+            datos.contactoEmergenciaTelefono().trim());
         ResultadoRegistro r = servicio.registrarPacienteYAbrirHistoria(paciente, usuario, peticion.getRemoteAddr());
         return ResponseEntity.status(r.yaExistia() ? HttpStatus.OK : HttpStatus.CREATED)
             .body(HistoriaResumen.de(r.historia()));

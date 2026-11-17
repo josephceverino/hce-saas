@@ -15,7 +15,7 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 
 ## R1 Cuentas
 - [x] 1.1 CU-16: `POST /api/hospitales`, suscripción, administrador con clave temporal mostrada una vez en una constancia imprimible; P-07 rehecha; 5 tests (RN-16, código repetido, plan). Commit `8d27920`.
-- [ ] 1.2 CU-17: usuarios del hospital (P-08, test: un administrador no crea usuarios de otro hospital).
+- [x] 1.2 CU-17: `/api/usuarios` (listar, crear con clave temporal y colegiatura, desactivar, reactivar); P-08 según la referencia 05; 6 tests, incluido que un administrador no crea ni toca usuarios de otro hospital. Commit `4b9b8c7`.
 - [ ] 1.3 Filiación completa en el registro de paciente (P-16).
 - [ ] 1.4 CU-19: cuenta del paciente al registrarlo, con constancia imprimible.
 - [ ] 1.5 Script Playwright de los pasos 1 a 3 con capturas.

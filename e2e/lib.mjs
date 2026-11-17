@@ -32,6 +32,13 @@ export async function entrar(page, usuario, clave) {
 
 export async function captura(page, nombre, completa = true) {
   await page.waitForLoadState('networkidle');
-  await page.screenshot({ path: path.join(CAPTURAS, nombre + '.png'), fullPage: completa });
+  // Pagina completa sin que la barra lateral fija y la superior se desplacen: se agranda la ventana y se restaura.
+  const original = page.viewportSize();
+  if (completa) {
+    const alto = await page.evaluate(() => document.documentElement.scrollHeight);
+    if (alto > original.height) await page.setViewportSize({ width: original.width, height: Math.min(alto, 4000) });
+  }
+  await page.screenshot({ path: path.join(CAPTURAS, nombre + '.png') });
+  await page.setViewportSize(original);
   console.log('captura', nombre, page.url());
 }

@@ -75,6 +75,35 @@ const pasos = {
       await page.click('#cerrarConstancia');
     }
     await captura(page, 'paso2_P-08_usuarios_lista', false);
+  },
+
+  /** Paso 3 (CU-03, CU-19): admision registra al paciente con su filiacion completa; se abre su historia. */
+  async 3(page) {
+    const a = datos.personal.ADMISION;
+    await entrarConTemporal(page, a.usuario, a.clave, 'Admision2026');
+    await captura(page, 'paso3_inicio_admision', false);
+    await page.goto(BASE + '/pacientes/nuevo.html');
+    await page.waitForLoadState('networkidle');
+    const valores = {
+      nroDocumento: '72345618', nombres: 'María Elena', apellidos: 'Gutiérrez Salas', fechaNacimiento: '1987-06-14',
+      lugarNacimiento: 'Trujillo', ocupacion: 'Comerciante', religion: 'Católica', direccion: 'Jr. Pizarro 455, Trujillo',
+      procedencia: 'Trujillo', telefono: '949123456', correo: 'mgutierrez@example.com',
+      contactoEmergenciaNombre: 'Luis Gutiérrez Salas', contactoEmergenciaTelefono: '949654321'
+    };
+    for (const [id, v] of Object.entries(valores)) await page.fill('#' + id, v);
+    await page.selectOption('#sexo', 'F');
+    await page.selectOption('#estadoCivil', 'CASADO');
+    await page.selectOption('#gradoInstruccion', 'SECUNDARIA');
+    await page.selectOption('#contactoEmergenciaParentesco', 'Hermano o hermana');
+    await captura(page, 'paso3_P-16_registrar_paciente', true);
+    await page.click('#formulario button[type=submit]');
+    await page.waitForSelector('#resultado:not([hidden])');
+    datos.paciente = { documento: valores.nroDocumento,
+      usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
+    await captura(page, 'paso3_P-16_constancia', false);
+    await page.goto(BASE + '/pacientes/');
+    await page.waitForLoadState('networkidle');
+    await captura(page, 'paso3_P-02_pacientes', false);
   }
 };
 

@@ -22,8 +22,12 @@ public record HistoriaDetalleResponse(
         PacienteDto paciente, List<AlergiaDto> alergias, List<AntecedenteDto> antecedentes,
         List<AtencionDto> atenciones) {
 
+    /** Plan v3, 1.3: incluye la filiacion completa (seccion 1 de la historia clinica). */
     public record PacienteDto(String tipoDocumento, String nroDocumento, String nombres, String apellidos,
-                              LocalDate fechaNacimiento, String sexo) { }
+                              LocalDate fechaNacimiento, String sexo, String telefono, String direccion,
+                              String lugarNacimiento, String procedencia, String estadoCivil, String gradoInstruccion,
+                              String ocupacion, String religion, String contactoEmergenciaNombre,
+                              String contactoEmergenciaParentesco, String contactoEmergenciaTelefono) { }
 
     public record AlergiaDto(String agente, String reaccion, String gravedad) { }
 
@@ -48,7 +52,9 @@ public record HistoriaDetalleResponse(
         return new HistoriaDetalleResponse(
             hc.getId(), hc.getNroHc(), hc.getEstado(), hc.getFechaApertura(), hc.getEstablecimiento().getNombre(),
             new PacienteDto(p.getTipoDocumento(), p.getNroDocumento(), p.getNombres(), p.getApellidos(),
-                p.getFechaNacimiento(), p.getSexo()),
+                p.getFechaNacimiento(), p.getSexo(), p.getTelefono(), p.getDireccion(), p.getLugarNacimiento(),
+                p.getProcedencia(), p.getEstadoCivil(), p.getGradoInstruccion(), p.getOcupacion(), p.getReligion(),
+                p.getContactoEmergenciaNombre(), p.getContactoEmergenciaParentesco(), p.getContactoEmergenciaTelefono()),
             h.alergias().stream().map(HistoriaDetalleResponse::alergia).toList(),
             h.antecedentes().stream().map(HistoriaDetalleResponse::antecedente).toList(),
             h.atenciones().stream().map(HistoriaDetalleResponse::atencion).toList());
