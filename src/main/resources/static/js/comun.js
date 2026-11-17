@@ -46,6 +46,7 @@ const HCE = (() => {
 
   /** Primera pantalla de cada rol: la primera opcion del menu que entrega el servidor. */
   function rutaInicial(sesion) {
+    if (sesion && sesion.debeCambiarClave) return '/cambiar-clave/'; // RN-14, CU-18
     return (sesion && sesion.menu && sesion.menu.length) ? sesion.menu[0].ruta : '/login/index.html';
   }
 
@@ -64,6 +65,8 @@ const HCE = (() => {
     const r = await api('/api/sesion');
     if (!r.ok) return null;
     const sesion = r.cuerpo;
+    // RN-14 (CU-18): con clave temporal no se usa otra pantalla. El servidor tambien lo rechaza (403).
+    if (sesion.debeCambiarClave) { window.location.replace('/cambiar-clave/'); return null; }
     const app = document.getElementById('app');
 
     const sidebar = el('aside', 'hce-sidebar');
