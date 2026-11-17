@@ -1,5 +1,18 @@
 # Plataforma HCE (SaaS de historia clínica electrónica)
 
+## Cómo entrar (plan v3: sin cuentas de demostración)
+La aplicación ya **no trae cuentas ni pacientes de demostración**. Al arrancar por primera vez crea un único **administrador de plataforma**:
+
+| Usuario | Clave temporal | Qué pasa al entrar |
+|---|---|---|
+| `admin` | `Temporal2026` | El sistema obliga a cambiar la clave en el primer ingreso (RN-14, CU-18) |
+
+- Se configuran en `src/main/resources/application.properties` con `hce.admin-inicial.usuario` y `hce.admin-inicial.clave` (la clave debe tener al menos 6 caracteres con una letra y un número). En el paquete portable también se pueden pasar al lanzarlo, por ejemplo `--hce.admin-inicial.clave=OtraClave1`.
+- Solo se crea si no existe ningún administrador de plataforma: reiniciar la aplicación nunca pisa una clave ya cambiada.
+- Para empezar de cero, borra la carpeta `data/` con la aplicación cerrada.
+- Las cuentas `admision.a`, `medico.a`, etc. (clave `demo123`) que mencionan las secciones antiguas de este README **solo existen en los tests** (`hce.demo-usuarios=true` en `src/test/resources`).
+- Avance del plan v3: `PROGRESO.md`. Decisiones por revisar: `DECISIONES_PENDIENTES.md`.
+
 ## Cómo probar (Fase 0)
 Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene incluido (`mvnw`). La primera vez necesita internet para bajar dependencias.
 1. `./mvnw test` (en Windows también `mvnw.cmd test`): deben pasar todos los tests (los `@Disabled` de M-1 salen como omitidos).

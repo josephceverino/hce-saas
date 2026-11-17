@@ -34,6 +34,10 @@ public class Usuario {
     @Column(name = "ultimo_acceso")
     private LocalDateTime ultimoAcceso;
 
+    /** RN-14: la cuenta la creo otra persona con clave temporal; debe cambiarla en el primer ingreso (CU-18). */
+    @Column(name = "debe_cambiar_clave", nullable = false, columnDefinition = "boolean default false not null")
+    private boolean debeCambiarClave;
+
     protected Usuario() { }
 
     public Usuario(Establecimiento establecimiento, Rol rol, String usuario,
@@ -61,4 +65,7 @@ public class Usuario {
     public String getEstado() { return estado; }
     public LocalDateTime getUltimoAcceso() { return ultimoAcceso; }
     public void setUltimoAcceso(LocalDateTime ultimoAcceso) { this.ultimoAcceso = ultimoAcceso; }
+    public boolean isDebeCambiarClave() { return debeCambiarClave; }
+    /** RN-14: marca o quita la obligacion de cambiar la clave temporal. */
+    public void setDebeCambiarClave(boolean debeCambiarClave) { this.debeCambiarClave = debeCambiarClave; }
 }
