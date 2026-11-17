@@ -17,7 +17,26 @@ public final class ClaveUtil {
 
     private static final BCryptPasswordEncoder BCRYPT = new BCryptPasswordEncoder();
 
+    private static final java.security.SecureRandom AZAR = new java.security.SecureRandom();
+    /** Sin caracteres que se confunden al dictar o leer (0/O, 1/l/I). */
+    private static final String LETRAS = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+    private static final String DIGITOS = "23456789";
+
     private ClaveUtil() { }
+
+    /**
+     * RN-14: clave temporal aleatoria de 10 caracteres que cumple la politica (letras y al menos dos digitos).
+     * Se muestra una sola vez al crear la cuenta; solo se guarda su hash.
+     */
+    public static String generarTemporal() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            sb.append(LETRAS.charAt(AZAR.nextInt(LETRAS.length())));
+        }
+        sb.insert(AZAR.nextInt(sb.length() + 1), DIGITOS.charAt(AZAR.nextInt(DIGITOS.length())));
+        sb.insert(AZAR.nextInt(sb.length() + 1), DIGITOS.charAt(AZAR.nextInt(DIGITOS.length())));
+        return sb.toString();
+    }
 
     /** Hash BCrypt (empieza con "$2"). Dos hashes de la misma clave son distintos: la sal es aleatoria. */
     public static String bcrypt(String clave) {

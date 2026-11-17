@@ -27,6 +27,7 @@ import pe.edu.ucv.hce.persistencia.DiagnosticoRepository;
 import pe.edu.ucv.hce.persistencia.EstablecimientoRepository;
 import pe.edu.ucv.hce.persistencia.HistoriaClinicaRepository;
 import pe.edu.ucv.hce.persistencia.ProfesionalSaludRepository;
+import pe.edu.ucv.hce.persistencia.SuscripcionRepository;
 import pe.edu.ucv.hce.persistencia.UsuarioRepository;
 
 /**
@@ -51,10 +52,14 @@ public class IndicadoresService {
     private final AuditoriaService auditoria;
     private final AutorizacionService autorizacion;
 
+    private final SuscripcionRepository suscripciones;
+
     public IndicadoresService(HistoriaClinicaRepository historias, AtencionRepository atenciones,
                               DiagnosticoRepository diagnosticos, UsuarioRepository usuarios,
                               EstablecimientoRepository establecimientos, ProfesionalSaludRepository profesionales,
-                              AuditoriaService auditoria, AutorizacionService autorizacion) {
+                              AuditoriaService auditoria, AutorizacionService autorizacion,
+                              SuscripcionRepository suscripciones) {
+        this.suscripciones = suscripciones;
         this.historias = historias;
         this.atenciones = atenciones;
         this.diagnosticos = diagnosticos;
@@ -166,6 +171,8 @@ public class IndicadoresService {
         autorizacion.exigir(usuario, Permiso.GESTIONAR_HOSPITALES);
         return establecimientos.findAll().stream()
             .map(e -> new ResumenHospital(e.getId(), e.getNombre(), e.getCodigoIpress(), e.getRegion(), e.getEstado(),
+                suscripciones.findFirstByEstablecimientoIdOrderByFechaInicioDescIdDesc(e.getId())
+                    .map(x -> x.getPlan()).orElse(null),
                 usuarios.countByEstablecimientoId(e.getId()), historias.countByEstablecimientoId(e.getId()),
                 atenciones.countByEstablecimientoId(e.getId())))
             .toList();

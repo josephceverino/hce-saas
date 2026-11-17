@@ -38,6 +38,16 @@ public class Usuario {
     @Column(name = "debe_cambiar_clave", nullable = false, columnDefinition = "boolean default false not null")
     private boolean debeCambiarClave;
 
+    /** Plan v3 (CU-16, CU-17): datos de la persona de la cuenta de personal. Nulos en cuentas antiguas. */
+    @Column(name = "nombre_completo", length = 150)
+    private String nombreCompleto;
+
+    @Column(name = "documento", length = 20)
+    private String documento;
+
+    @Column(name = "correo", length = 100)
+    private String correo;
+
     protected Usuario() { }
 
     public Usuario(Establecimiento establecimiento, Rol rol, String usuario,
@@ -65,6 +75,16 @@ public class Usuario {
     public String getEstado() { return estado; }
     public LocalDateTime getUltimoAcceso() { return ultimoAcceso; }
     public void setUltimoAcceso(LocalDateTime ultimoAcceso) { this.ultimoAcceso = ultimoAcceso; }
+    public String getNombreCompleto() { return nombreCompleto; }
+    public String getDocumento() { return documento; }
+    public String getCorreo() { return correo; }
+    /** CU-16, CU-17: datos de la persona. */
+    public void setDatosPersona(String nombreCompleto, String documento, String correo) {
+        this.nombreCompleto = nombreCompleto;
+        this.documento = documento;
+        this.correo = correo;
+    }
+    public void setEstado(String estado) { this.estado = estado; }
     public boolean isDebeCambiarClave() { return debeCambiarClave; }
     /** RN-14: marca o quita la obligacion de cambiar la clave temporal. */
     public void setDebeCambiarClave(boolean debeCambiarClave) { this.debeCambiarClave = debeCambiarClave; }

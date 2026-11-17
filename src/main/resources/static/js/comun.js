@@ -193,5 +193,12 @@ const HCE = (() => {
     return caja;
   }
 
-  return { api, mostrar, el, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, detalleAtencion };
+  /** Imprime solo los bloques marcados con la clase "imprimible" (constancias de acceso, resumen). */
+  function imprimir() {
+    document.body.classList.add('imprimiendo');
+    window.addEventListener('afterprint', () => document.body.classList.remove('imprimiendo'), { once: true });
+    window.print();
+  }
+
+  return { api, mostrar, el, imprimir, iniciarPantalla, rutaInicial, tieneOpcion, fechaHora, edad, iniciales, confirmar, detalleAtencion };
 })();

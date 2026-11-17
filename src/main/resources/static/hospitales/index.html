@@ -10,17 +10,75 @@
 <body>
 <div class="hce-app" id="app">
   <main class="hce-contenido" id="contenido">
-    <div>
-      <h1>Hospitales</h1>
-      <p class="hce-subtitulo">Hospitales suscritos a la plataforma.</p>
-    </div>
-    <div class="hce-aviso">
-      <b>DEC-11:</b> esta es la única vista que cruza hospitales a propósito y muestra <b>solo totales</b>.
-      Nunca muestra datos clínicos ni identificadores de pacientes.
+    <div class="hce-encabezado">
+      <div>
+        <h1>Hospitales</h1>
+        <p class="hce-subtitulo">Hospitales suscritos a la plataforma. Solo se muestran totales, nunca datos clínicos.</p>
+      </div>
+      <div class="hce-acciones">
+        <button class="hce-boton primario" type="button" id="nuevo">+ Nuevo hospital</button>
+      </div>
     </div>
     <div id="error" class="hce-mensaje" role="alert"></div>
+
+    <!-- CU-16: alta de hospital con su administrador -->
+    <section class="hce-tarjeta" id="formularioTarjeta" hidden>
+      <div class="hce-evento-cabecera">
+        <h2>Nuevo hospital</h2>
+        <button class="hce-boton claro" type="button" id="cancelar">Cancelar</button>
+      </div>
+      <form id="formulario">
+        <div class="hce-seccion-form">
+          <div class="hce-seccion-titulo">Datos del hospital</div>
+          <div class="hce-formulario">
+            <label class="hce-campo">Nombre del hospital <input id="nombre" required maxlength="150" placeholder="Hospital Regional de Trujillo"></label>
+            <label class="hce-campo">Código del establecimiento <input id="codigo" required inputmode="numeric" placeholder="Entre 5 y 10 dígitos"></label>
+            <label class="hce-campo">Región <input id="region" required maxlength="50" placeholder="La Libertad"></label>
+            <label class="hce-campo">Plan de suscripción
+              <select id="plan" required>
+                <option value="BASICO">Básico</option>
+                <option value="ESTANDAR" selected>Estándar</option>
+                <option value="COMPLETO">Completo</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="hce-seccion-form">
+          <div class="hce-seccion-titulo">Administrador del hospital</div>
+          <div class="hce-formulario">
+            <label class="hce-campo">Nombre completo <input id="adminNombre" required maxlength="150"></label>
+            <label class="hce-campo">Documento de identidad <input id="adminDocumento" required maxlength="12"></label>
+            <label class="hce-campo">Correo <input id="adminCorreo" type="email" required maxlength="100"></label>
+            <label class="hce-campo">Usuario <input id="adminUsuario" required maxlength="50" placeholder="admin.trujillo"></label>
+          </div>
+          <p class="hce-ayuda">El sistema genera una clave temporal y la muestra una sola vez. El administrador la cambiará en su primer ingreso.</p>
+        </div>
+        <div class="hce-acciones">
+          <button class="hce-boton primario" type="submit">Dar de alta</button>
+        </div>
+      </form>
+      <div id="mensaje" class="hce-mensaje" role="status"></div>
+    </section>
+
+    <!-- Constancia de acceso: la clave temporal se ve una sola vez -->
+    <section class="hce-tarjeta hce-constancia imprimible" id="constancia" hidden>
+      <div class="hce-antetitulo">Constancia de acceso</div>
+      <h2 id="constanciaTitulo"></h2>
+      <div class="hce-constancia-datos">
+        <div class="hce-dato"><div class="etiqueta">Administrador</div><div class="valor" id="cNombre"></div></div>
+        <div class="hce-dato"><div class="etiqueta">Usuario</div><div class="valor hce-monoespacio" id="cUsuario"></div></div>
+        <div class="hce-dato"><div class="etiqueta">Clave temporal</div><div class="valor hce-monoespacio hce-clave" id="cClave"></div></div>
+        <div class="hce-dato"><div class="etiqueta">Plan y vigencia</div><div class="valor" id="cPlan"></div></div>
+      </div>
+      <div class="hce-aviso-alerta">Esta clave se muestra <b>una sola vez</b>. Entrégala al administrador del hospital: deberá cambiarla en su primer ingreso.</div>
+      <div class="hce-acciones no-imprimir">
+        <button class="hce-boton primario" type="button" id="imprimir">Imprimir constancia</button>
+        <button class="hce-boton claro" type="button" id="cerrarConstancia">Listo</button>
+      </div>
+    </section>
+
     <section class="hce-hospitales" id="lista" aria-live="polite"></section>
-    <div id="vacio" class="hce-vacio" hidden>Aún no hay hospitales registrados.</div>
+    <div id="vacio" class="hce-vacio-caja" hidden>Aún no hay hospitales registrados. Usa "Nuevo hospital" para dar de alta el primero.</div>
   </main>
 </div>
 <script src="/js/comun.js"></script>

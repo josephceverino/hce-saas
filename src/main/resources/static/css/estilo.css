@@ -211,6 +211,16 @@ a.hce-boton { text-decoration: none; display: inline-block; }
 .hce-acceso .flecha { color: var(--hce-primario); font-weight: 700; }
 @media (max-width: 900px) { .hce-inicio-grid { grid-template-columns: 1fr; } }
 
+/* ---- Formularios por secciones y constancias de acceso (plan v3, R1) ---- */
+.hce-seccion-form { border: 1px solid var(--hce-borde); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+.hce-seccion-titulo { font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--hce-primario); margin-bottom: 12px; }
+.hce-ayuda { font-size: 13px; color: var(--hce-texto-suave); margin: 12px 0 0; }
+.hce-constancia { border: 2px solid var(--hce-primario); }
+.hce-constancia-datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 20px; margin: 12px 0; }
+.hce-monoespacio { font-family: Consolas, "Courier New", monospace; font-size: 16px; }
+.hce-clave { font-size: 22px; font-weight: 700; letter-spacing: .08em; color: var(--hce-primario-oscuro); background: var(--hce-primario-claro); border-radius: 8px; padding: 4px 10px; display: inline-block; }
+.hce-aviso-alerta { background: var(--hce-alerta-fondo); color: #7a4f12; border-radius: 10px; padding: 10px 14px; }
+
 @media (max-width: 800px) {
   .hce-login { grid-template-columns: 1fr; }
   .hce-login-marca { padding: 28px; }
@@ -229,4 +239,8 @@ a.hce-boton { text-decoration: none; display: inline-block; }
   .hce-app { padding-left: 0; }
   body { background: #fff; }
   .hce-tarjeta { box-shadow: none; border: 0; }
+}
+@media print {
+  body.imprimiendo .hce-contenido > *:not(.imprimible) { display: none !important; }
+  body.imprimiendo .hce-constancia { border: 1px solid #000; }
 }
