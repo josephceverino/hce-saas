@@ -1,41 +1,66 @@
-/* Pacientes: registrar paciente y abrir historia (CU-03; RF-01, RF-04; RN-01, RN-06; DEC-02). */
+/* P-02 Pacientes: lista del hospital con buscador y paginacion (A-2; RF-02, RN-06).
+   El filtro se hace en el navegador sobre la lista que el servidor ya limito al hospital del usuario. */
 const $ = (id) => document.getElementById(id);
-const campos = ['tipoDocumento', 'nroDocumento', 'nombres', 'apellidos', 'fechaNacimiento', 'sexo', 'telefono', 'correo', 'direccion'];
+const POR_PAGINA = 10;
+let todas = [];
+let pagina = 0;
+let puedeVerHistoria = false;
 
-async function cargar() {
-  const r = await HCE.api('/api/historias');
-  if (!r.ok) return;
-  const cuerpo = $('cuerpo');
-  cuerpo.replaceChildren();
-  r.cuerpo.forEach(h => {
-    const tr = document.createElement('tr');
-    [h.nroHc, h.tipoDocumento + ' ' + h.nroDocumento, h.paciente, h.fechaApertura, h.establecimiento, h.estado]
-      .forEach(t => tr.appendChild(HCE.el('td', null, t)));
-    cuerpo.appendChild(tr);
-  });
-  $('cuenta').textContent = r.cuerpo.length;
-  $('vacio').hidden = r.cuerpo.length > 0;
+function normalizar(texto) {
+  return String(texto).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
-$('formulario').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const datos = {};
-  campos.forEach(c => datos[c] = $(c).value);
-  const r = await HCE.api('/api/pacientes', { method: 'POST', cuerpo: datos });
-  if (r.status === 201) {
-    HCE.mostrar($('mensaje'), 'Historia clínica ' + r.cuerpo.nroHc + ' abierta para ' + r.cuerpo.paciente + '.', 'ok');
-    e.target.reset();
-    cargar();
-  } else if (r.status === 200) {
-    // Flujo alternativo de CU-03: el paciente ya tiene historia en este hospital (RN-01).
-    HCE.mostrar($('mensaje'), 'El paciente ya tiene la historia clínica ' + r.cuerpo.nroHc + ' en tu hospital (' + r.cuerpo.paciente + '). No se creó otra.', 'info');
-    cargar();
-  } else if (r.cuerpo) {
-    HCE.mostrar($('mensaje'), r.cuerpo.mensaje || 'No se pudo registrar.', 'error');
-  }
-});
+function filtradas() {
+  const q = normalizar($('buscar').value.trim());
+  if (!q) return todas;
+  return todas.filter(h => normalizar([h.nroDocumento, h.nroHc, h.paciente].join(' ')).includes(q));
+}
+
+function dibujar() {
+  const lista = filtradas();
+  const paginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+  if (pagina >= paginas) pagina = paginas - 1;
+  const visibles = lista.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA);
+  const cuerpo = $('cuerpo');
+  cuerpo.replaceChildren();
+  visibles.forEach(h => {
+    const tr = document.createElement('tr');
+    [h.nroHc, h.tipoDocumento + ' ' + h.nroDocumento, h.paciente, h.fechaApertura]
+      .forEach(t => tr.appendChild(HCE.el('td', null, t)));
+    const estado = HCE.el('td');
+    estado.append(HCE.el('span', 'hce-chip ' + (h.estado === 'ABIERTA' ? 'ok' : 'alerta'), h.estado));
+    tr.appendChild(estado);
+    const accion = HCE.el('td');
+    if (puedeVerHistoria) {
+      const enlace = HCE.el('a', null, 'Ver historia');
+      enlace.href = '/historia/?id=' + encodeURIComponent(h.idHistoriaClinica);
+      accion.append(enlace);
+    }
+    tr.appendChild(accion);
+    cuerpo.appendChild(tr);
+  });
+  $('cuenta').textContent = lista.length;
+  const vacio = $('vacio');
+  vacio.hidden = lista.length > 0;
+  vacio.textContent = todas.length === 0
+    ? 'Aún no hay historias abiertas en tu hospital.'
+    : 'No hay pacientes que coincidan con la búsqueda.';
+  $('rango').textContent = lista.length === 0 ? '' :
+    'Mostrando ' + (pagina * POR_PAGINA + 1) + ' a ' + (pagina * POR_PAGINA + visibles.length) + ' de ' + lista.length;
+  $('anterior').disabled = pagina === 0;
+  $('siguiente').disabled = pagina >= paginas - 1;
+}
+
+$('buscar').addEventListener('input', () => { pagina = 0; dibujar(); });
+$('anterior').addEventListener('click', () => { pagina--; dibujar(); });
+$('siguiente').addEventListener('click', () => { pagina++; dibujar(); });
 
 (async () => {
-  const sesion = await HCE.iniciarPantalla('pacientes');
-  if (sesion) cargar();
+  const sesion = await HCE.iniciarPantalla();
+  if (!sesion) return;
+  puedeVerHistoria = HCE.tieneOpcion(sesion, 'historia');
+  $('nuevoPaciente').hidden = !HCE.tieneOpcion(sesion, 'registrar-paciente');
+  const r = await HCE.api('/api/historias');
+  if (r.ok) todas = r.cuerpo;
+  dibujar();
 })();

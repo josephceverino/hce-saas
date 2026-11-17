@@ -8,7 +8,7 @@ $('formLogin').addEventListener('submit', async (e) => {
     cuerpo: { usuario: $('usuario').value, clave: $('clave').value }
   });
   if (r.ok) {
-    window.location.href = '/pacientes/index.html';
+    window.location.href = HCE.rutaInicial(r.cuerpo);
   } else {
     HCE.mostrar($('mensajeLogin'), (r.cuerpo && r.cuerpo.mensaje) || 'No se pudo iniciar sesión.', 'error');
   }
@@ -20,4 +20,4 @@ document.querySelectorAll('.hce-demo button').forEach(b => b.addEventListener('c
 }));
 
 // Si ya hay sesión, va directo a la aplicación.
-HCE.api('/api/sesion', { sinRedireccion: true }).then(r => { if (r.ok) window.location.replace('/pacientes/index.html'); });
+HCE.api('/api/sesion', { sinRedireccion: true }).then(r => { if (r.ok) window.location.replace(HCE.rutaInicial(r.cuerpo)); });

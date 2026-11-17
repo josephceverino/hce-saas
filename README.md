@@ -35,6 +35,12 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Con `paciente.a` probar lo que NO debe: `GET /api/historias/1`, `GET /api/historias` y `POST /api/atenciones` responden 403 (RN-04). `paciente.b` ve solo su propia historia (Hospital B).
 4. Contratos: `docs/contratos/portal_paciente.md` y `docs/contratos/consentimiento.md`.
 
+## Cómo probar (pantallas 1: menú por rol, Inicio y Pacientes; A-5 y A-2)
+1. `./mvnw spring-boot:run` y abrir `http://localhost:8090` (clave `demo123`).
+2. Entrar con `admision.a`: llega a **Inicio** con tarjetas reales. En **Pacientes** busca por DNI, N.° de historia o nombre. En **Registrar paciente** prueba un DNI nuevo (201), el mismo otra vez (200) y uno del otro hospital, por ejemplo `90000005` (409).
+3. Entrar con `medico.a`: el menú trae Historia clínica y Registrar atención; las filas de Pacientes ganan "Ver historia". Con `paciente.a` el menú es Mi historial y Consentimiento, y con `plataforma` solo Hospitales.
+4. Pantallas aún sin construir (Historia, Atención, Mi historial, Consentimiento, Auditoría, Hospitales y Mi perfil) dan 404 hasta los siguientes bloques.
+
 ## Cómo probar (v5: paquete portable)
 Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
 1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).

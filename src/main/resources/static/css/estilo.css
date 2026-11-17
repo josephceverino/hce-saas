@@ -90,6 +90,23 @@ h2 { font-size: 17px; margin: 0 0 16px; }
 .hce-demo { margin-top: 18px; background: var(--hce-primario-claro); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; }
 .hce-demo button { all: unset; cursor: pointer; color: var(--hce-primario-oscuro); text-decoration: underline; font-weight: 600; }
 
+/* ---- Indicadores, buscador y paginacion (A-2, A-5) ---- */
+.hce-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.hce-indicador { background: var(--hce-tarjeta); border: 1px solid var(--hce-borde); border-radius: var(--hce-radio); box-shadow: var(--hce-sombra); padding: 20px; display: grid; gap: 4px; }
+.hce-indicador .titulo { font-weight: 600; color: var(--hce-texto-suave); }
+.hce-indicador .valor { font-size: 38px; font-weight: 700; color: var(--hce-primario-oscuro); line-height: 1.1; }
+.hce-indicador .nota { font-size: 13px; color: var(--hce-texto-suave); }
+.hce-buscador { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.hce-buscador input { flex: 1; min-width: 220px; padding: 10px 12px; border: 1px solid var(--hce-borde); border-radius: 8px; font: inherit; }
+.hce-buscador input:focus { outline: 2px solid var(--hce-primario); outline-offset: 1px; }
+.hce-paginacion { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.hce-paginacion .botones { display: flex; gap: 8px; }
+.hce-boton.claro { background: #fff; color: var(--hce-primario-oscuro); border-color: var(--hce-borde); padding: 8px 14px; }
+.hce-boton.claro:disabled { opacity: .5; cursor: default; }
+.hce-acciones { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+a.hce-boton { text-decoration: none; display: inline-block; }
+.hce-tabla a { color: var(--hce-primario-oscuro); font-weight: 600; }
+
 @media (max-width: 800px) {
   .hce-login { grid-template-columns: 1fr; }
   .hce-login-marca { padding: 28px; }

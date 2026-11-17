@@ -1,6 +1,20 @@
-/* Utilidades comunes del frontend HCE. Sin librerias ni CDN. */
+/* Utilidades comunes del frontend HCE. Sin librerias ni CDN.
+   El menu lo decide el servidor (MenuService, DEC-03, RN-02): aqui solo se dibuja. Ocultar un enlace no es seguridad. */
 const HCE = (() => {
-  const ICONO_PACIENTES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+  const SVG = (trazos) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + trazos + '</svg>';
+  /* Iconos propios por clave de menu (no vienen del usuario, por eso se pueden insertar como HTML). */
+  const ICONOS = {
+    inicio: SVG('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'),
+    pacientes: SVG('<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'),
+    'registrar-paciente': SVG('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>'),
+    historia: SVG('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>'),
+    atencion: SVG('<path d="M12 5v14"/><path d="M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/>'),
+    'mi-historial': SVG('<path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/>'),
+    consentimiento: SVG('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'),
+    auditoria: SVG('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
+    hospitales: SVG('<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M12 9v6"/><path d="M9 12h6"/>'),
+    perfil: SVG('<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>')
+  };
 
   /** Llama a la API y devuelve {ok, status, cuerpo}. Un 401 manda al login. */
   async function api(ruta, opciones = {}) {
@@ -30,8 +44,23 @@ const HCE = (() => {
     return nodo;
   }
 
+  /** Primera pantalla de cada rol: la primera opcion del menu que entrega el servidor. */
+  function rutaInicial(sesion) {
+    return (sesion && sesion.menu && sesion.menu.length) ? sesion.menu[0].ruta : '/login/index.html';
+  }
+
+  /** Indica si el menu del usuario trae una opcion (para mostrar o no un enlace; el servidor igual valida). */
+  function tieneOpcion(sesion, clave) {
+    return !!(sesion && sesion.menu && sesion.menu.some(o => o.clave === clave));
+  }
+
+  function esRutaActual(ruta) {
+    const ahora = window.location.pathname;
+    return ahora === ruta || (ruta.endsWith('/') && ahora === ruta + 'index.html');
+  }
+
   /** Exige sesion, dibuja sidebar y barra superior y devuelve los datos de la sesion. */
-  async function iniciarPantalla(activo) {
+  async function iniciarPantalla() {
     const r = await api('/api/sesion');
     if (!r.ok) return null;
     const sesion = r.cuerpo;
@@ -42,11 +71,13 @@ const HCE = (() => {
     const logo = el('img'); logo.src = '/logo.svg'; logo.alt = '';
     marca.append(logo, el('span', null, 'Plataforma HCE'));
     const menu = el('nav', 'hce-menu');
-    const enlace = el('a', activo === 'pacientes' ? 'activo' : '');
-    enlace.href = '/pacientes/index.html';
-    enlace.insertAdjacentHTML('afterbegin', ICONO_PACIENTES); // SVG propio, sin datos del usuario
-    enlace.append(document.createTextNode('Pacientes'));
-    menu.append(enlace);
+    (sesion.menu || []).forEach(opcion => {
+      const enlace = el('a', esRutaActual(opcion.ruta) ? 'activo' : '');
+      enlace.href = opcion.ruta;
+      if (ICONOS[opcion.clave]) enlace.insertAdjacentHTML('afterbegin', ICONOS[opcion.clave]);
+      enlace.append(document.createTextNode(opcion.titulo));
+      menu.append(enlace);
+    });
     const perfil = el('div', 'hce-perfil');
     perfil.append(el('div', 'nombre', sesion.usuario), el('div', 'rol', sesion.rol));
     const salir = el('button', 'hce-boton secundario', 'Cerrar sesión');
@@ -59,12 +90,16 @@ const HCE = (() => {
     sidebar.append(marca, menu, perfil);
 
     const barra = el('header', 'hce-barra');
-    barra.append(el('span', 'hce-chip', 'Hospital activo'), el('span', 'hce-hospital', sesion.establecimiento));
+    if (sesion.establecimiento) {
+      barra.append(el('span', 'hce-chip', 'Hospital activo'), el('span', 'hce-hospital', sesion.establecimiento));
+    } else {
+      barra.append(el('span', 'hce-chip', 'Administración de la plataforma'));
+    }
 
     app.prepend(sidebar);
     app.insertBefore(barra, document.getElementById('contenido'));
     return sesion;
   }
 
-  return { api, mostrar, el, iniciarPantalla };
+  return { api, mostrar, el, iniciarPantalla, rutaInicial, tieneOpcion };
 })();
