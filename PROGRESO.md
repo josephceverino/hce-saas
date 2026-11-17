@@ -50,6 +50,11 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 ## Pruebas
 - [x] `docs/pruebas/pruebas_manuales_v3.md`: 24 casos manuales (MV-01 a MV-24) para ejecutar en esta PC, con el resultado esperado y la captura de referencia de cada uno. Todos en Pendiente: se llenan al ejecutarlos.
 
+## Cierre de pendientes (17 nov, tarde)
+- [x] `REVISION_DECISIONES.md`: hoja para marcar con mi recomendación en cada decisión (11 para mirar con cuidado, el resto en bloque, 3 obsoletas). Deja a la vista dos pendientes heredados: P-2 a P-4 (campos de la atención como texto libre) y **P-5 (diagnóstico presuntivo o definitivo) sin aplicar**.
+- [x] Recorrido paso 10 (17 verificaciones, sin errores): segundo hospital sin ver datos del primero, permisos por rol, bloqueo tras 5 intentos y restablecer. Cubre MV-21 a MV-23 en automático; **no sustituye** la prueba manual.
+- [x] README: sección "Archivo" que marca las pruebas antiguas (con `demo123`) como no aplicables a la app actual.
+
 ## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 
 **Qué quedó hecho.** Los 17 ítems del checklist. La rama `integracion` contiene todo y está subida.

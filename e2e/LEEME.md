@@ -21,5 +21,6 @@ Cada paso imprime `ok:` por cada comprobación. Si una falla, se detiene con el 
 - Paso 7: apoyo al diagnóstico ve el examen pendiente de su hospital y registra el resultado.
 - Paso 8: el médico ve el resultado, cierra la atención (sin formularios de edición, solo enmienda) y el paciente sale de su cola.
 - Paso 9: admisión restablece la clave del paciente; el paciente entra, ve su historial cerrado y su resumen y otorga y revoca un consentimiento; el administrador del hospital ve la auditoría. Corre solo con `node recorrido.mjs 9 9` (usa las claves fijas de los pasos 1 a 8).
+- Paso 10 (controles): un segundo hospital no ve pacientes, historias, atenciones ni auditoría del primero (RN-06); enfermería y médico reciben 403 en lo que no les toca (RN-02); 5 claves malas bloquean la cuenta y el administrador la restablece (RN-12). Corre solo y se puede repetir: `node recorrido.mjs 10 10`.
 
-Recorrido completo actual: `npm run recorrido -- 9` (unos 90 segundos). Cada corrida necesita una base nueva.
+Recorrido completo actual: `npm run recorrido -- 10` (unos 2 minutos). Cada corrida necesita una base nueva.

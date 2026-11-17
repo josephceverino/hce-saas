@@ -2,7 +2,7 @@
 
 Se ejecutan **a mano, en la PC de desarrollo**, con la aplicación en `http://localhost:8090` (IntelliJ o `mvnw spring-boot:run`) o con `dist\HCE-Demo\HCE-Demo.exe` (puerto 8091 si el 8090 está ocupado).
 Todos están en estado **Pendiente**: el Resultado real, el Estado, la Fecha y el Responsable se llenan solo después de ejecutarlos, con evidencia (captura propia). No marcar **Aprobado** sin ella.
-Las capturas `docs/capturas/paso*` las generó el recorrido automático (`npm run recorrido -- 9`): sirven como referencia de lo esperado, **no** como evidencia de esta ejecución.
+Las capturas `docs/capturas/paso*` las generó el recorrido automático (`npm run recorrido -- 10`): sirven como referencia de lo esperado, **no** como evidencia de esta ejecución.
 
 ## Preparación
 - Base limpia: con la app cerrada, renombra `data/` (por ejemplo a `data_vieja/`). Solo existirá `admin` / `Temporal2026`.
@@ -33,9 +33,9 @@ Las capturas `docs/capturas/paso*` las generó el recorrido automático (`npm ru
 | MV-18 | 9 | CU-10, RF-16 | Paciente | **Ver resumen** e imprimir o guardar como PDF | El resumen lista alergias, antecedentes, diagnósticos y exámenes con resultado | `paso9_P-05_resumen` | | Pendiente | | |
 | MV-19 | 9 | CU-11, RN-09 | Paciente | **Consentimiento**: otorgar a un tercero y luego apagar el interruptor | Queda registrado con fecha y alcance; al revocar queda "revocado" y no se reactiva (se otorga uno nuevo) | `paso9_P-06_consentimiento_revocado` | | Pendiente | | |
 | MV-20 | 9 | CU-25, RN-07 | `admin.trujillo` | **Auditoría**: filtrar por `RESTABLECER_CLAVE` y por `SOLICITAR_EXAMEN` | Aparece quién lo hizo, cuándo y desde qué IP | `paso9_P-14_auditoria_restablecer` | | Pendiente | | |
-| MV-21 | Transversal | RNF-06, RN-06 | Dos hospitales | Crear un **segundo hospital** (paso 1) con su administrador y personal; entrar con su admisión y su médico | No ve pacientes, admisiones, exámenes ni auditoría del primer hospital | — | | Pendiente | | |
-| MV-22 | Transversal | RN-02 | Distintos roles | Con enfermería, intentar abrir `/usuarios/` y `/hospitales/`; con el médico, `/examenes/` | El menú no las ofrece y el servidor responde con "No tienes permiso" al pedir sus datos | — | | Pendiente | | |
-| MV-23 | Transversal | RN-12 | Cualquier usuario | Fallar la clave 5 veces seguidas | La cuenta se bloquea unos minutos con mensaje claro; el administrador del hospital puede restablecer la clave y se levanta el bloqueo | — | | Pendiente | | |
+| MV-21 | Transversal | RNF-06, RN-06 | Dos hospitales | Crear un **segundo hospital** (paso 1) con su administrador y personal; entrar con su admisión y su médico | No ve pacientes, admisiones, exámenes ni auditoría del primer hospital | `paso10_P-02_segundo_hospital_sin_pacientes` | | Pendiente | | |
+| MV-22 | Transversal | RN-02 | Distintos roles | Con enfermería, intentar abrir `/usuarios/` y `/hospitales/`; con el médico, `/examenes/` | El menú no las ofrece y el servidor responde con "No tienes permiso" al pedir sus datos | (automático: paso 10) | | Pendiente | | |
+| MV-23 | Transversal | RN-12 | Cualquier usuario | Fallar la clave 5 veces seguidas | La cuenta se bloquea unos minutos con mensaje claro; el administrador del hospital puede restablecer la clave y se levanta el bloqueo | `paso10_P-08_restablecer_bloqueada` | | Pendiente | | |
 | MV-24 | Portabilidad | RNF | Paquete | Doble clic en `dist\HCE-Demo\HCE-Demo.exe`; cerrar y volver a abrir | Se abre el navegador; sin internet funciona; los datos siguen en `HCE-Demo\data` | — | | Pendiente | | |
 
 ## Cobertura automática de las mismas reglas

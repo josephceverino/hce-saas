@@ -353,6 +353,95 @@ const pasos = {
     verificar((await admin.textContent('#cuerpo')).includes('jorge.paz'), 'la auditoría muestra al médico que pidió el examen');
     await captura(admin, 'paso9_P-14_auditoria_examen', false);
     await admin.context().close();
+  },
+
+  /** Paso 10, controles transversales (MV-21 a MV-23): un segundo hospital no ve nada del primero (RN-06), los roles no
+      pasan sus permisos (RN-02) y 5 claves malas bloquean la cuenta hasta que el administrador la restablece (RN-12).
+      Usa claves fijas de los pasos 1 a 9 y un sufijo propio, asi que puede repetirse: node recorrido.mjs 10 10 */
+  async 10(page) {
+    const numero = String(Date.now());
+    const sufijo = numero.slice(-5);
+    const estado = async (p, ruta, metodo = 'GET') => p.evaluate(async ([r, m]) => (await fetch(r, { method: m })).status, [ruta, metodo]);
+
+    // Segundo hospital con su administrador y su admision (por pantallas)
+    await entrarConClave(page, 'admin', 'Plataforma2026');
+    await page.goto(BASE + '/hospitales/');
+    await page.waitForLoadState('networkidle');
+    await page.click('#nuevo');
+    await page.fill('#nombre', 'Hospital Regional de Chiclayo ' + sufijo);
+    await page.fill('#codigo', '00' + numero.slice(-6));
+    await page.fill('#region', 'Lambayeque');
+    await page.selectOption('#plan', 'BASICO');
+    await page.fill('#adminNombre', 'Marta Rojas Díaz');
+    await page.fill('#adminDocumento', '46789123');
+    await page.fill('#adminCorreo', 'mrojas@example.com');
+    await page.fill('#adminUsuario', 'admin.chiclayo' + sufijo);
+    await page.click('#formulario button[type=submit]');
+    await page.waitForSelector('#constancia:not([hidden])');
+    const admin2 = { usuario: await page.textContent('#cUsuario'), clave: await page.textContent('#cClave') };
+    await captura(page, 'paso10_P-07_segundo_hospital', false);
+
+    const adm = await nuevaPagina();
+    await entrarConTemporal(adm, admin2.usuario, admin2.clave, 'Chiclayo2026');
+    await adm.goto(BASE + '/usuarios/');
+    await adm.waitForLoadState('networkidle');
+    await adm.click('#nuevo');
+    await adm.fill('#nombres', 'Luis');
+    await adm.fill('#apellidos', 'Mora Vega');
+    await adm.fill('#documento', '47891234');
+    await adm.fill('#correo', 'lmora@example.com');
+    await adm.fill('#usuario', 'luis.mora' + sufijo);
+    await adm.selectOption('#rol', 'ADMISION');
+    await adm.click('#formulario button[type=submit]');
+    await adm.waitForSelector('#constancia:not([hidden])');
+    const luis = { usuario: 'luis.mora' + sufijo, clave: await adm.textContent('#cClave') };
+    await adm.click('#cerrarConstancia');
+
+    // MV-21: la admision del segundo hospital no ve nada del primero
+    const op = await nuevaPagina();
+    await entrarConTemporal(op, luis.usuario, luis.clave, 'Admision2026b');
+    await op.goto(BASE + '/pacientes/');
+    await op.waitForLoadState('networkidle');
+    const lista = await op.textContent('#contenido');
+    verificar(!lista.includes('Gutiérrez') && !lista.includes('Vargas'), 'el segundo hospital no ve a los pacientes del primero');
+    await captura(op, 'paso10_P-02_segundo_hospital_sin_pacientes', false);
+    verificar([403, 404].includes(await estado(op, '/api/historias/1')), 'pedir la historia de otro hospital por la API se rechaza');
+    verificar([403, 404].includes(await estado(op, '/api/atenciones/1')), 'pedir la atención de otro hospital por la API se rechaza');
+    await adm.goto(BASE + '/auditoria/');
+    await adm.waitForLoadState('networkidle');
+    await adm.waitForSelector('#cuerpo tr');
+    const auditoria = await adm.textContent('#cuerpo');
+    verificar(!auditoria.includes('jorge.paz') && !auditoria.includes('carlos.rios'), 'la auditoría del segundo hospital no muestra acciones del primero');
+    await captura(adm, 'paso10_P-14_auditoria_segundo_hospital', false);
+
+    // MV-22: cada rol solo hace lo suyo (el servidor lo impone, no solo el menu)
+    const enf = await nuevaPagina();
+    await entrarConClave(enf, 'ana.flores', 'Enfermeria2026');
+    const menu = await enf.textContent('#app');
+    verificar(!menu.includes('Usuarios') && !menu.includes('Hospitales') && !menu.includes('Exámenes'), 'el menú de enfermería no ofrece usuarios, hospitales ni exámenes');
+    verificar(await estado(enf, '/api/usuarios') === 403, 'enfermería no puede pedir la lista de usuarios');
+    verificar(await estado(enf, '/api/examenes') === 403, 'enfermería no puede ver los exámenes');
+    verificar(await estado(enf, '/api/restablecimientos/personal/1', 'POST') === 403, 'enfermería no puede restablecer claves');
+    const med = await nuevaPagina();
+    await entrarConClave(med, 'jorge.paz', 'Medico2026');
+    verificar(await estado(med, '/api/examenes') === 403, 'el médico no registra resultados de exámenes');
+    verificar(await estado(med, '/api/indicadores/hospitales') === 403, 'el médico no ve la lista de hospitales');
+
+    // MV-23: 5 claves malas bloquean la cuenta; el administrador del hospital restablece la clave y se levanta
+    const intento = async (clave) => (await op.request.post(BASE + '/api/login', { data: { usuario: luis.usuario, clave } }));
+    for (let i = 0; i < 5; i++) verificar((await intento('incorrecta1')).status() === 401, 'intento fallido ' + (i + 1) + ' rechazado');
+    const bloqueada = await intento('Admision2026b');
+    verificar(bloqueada.status() === 401 && JSON.stringify(await bloqueada.json()).includes('bloqueada'), 'tras 5 intentos la cuenta queda bloqueada, aunque la clave sea la correcta');
+    await adm.goto(BASE + '/usuarios/');
+    await adm.waitForLoadState('networkidle');
+    await adm.fill('#buscar', luis.usuario);
+    await adm.click('#cuerpo tr:first-child button:has-text("Restablecer clave")');
+    await adm.click('.hce-modal .primario');
+    await adm.waitForSelector('.hce-modal .hce-clave');
+    const nueva = (await adm.textContent('.hce-modal .hce-clave')).trim();
+    await captura(adm, 'paso10_P-08_restablecer_bloqueada', false);
+    verificar((await intento(nueva)).status() === 200, 'tras restablecer la clave, la cuenta entra de nuevo');
+    for (const p of [adm, op, enf, med]) await p.context().close();
   }
 };
 
