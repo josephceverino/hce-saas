@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <title>Plataforma HCE</title>
 <script>
-  // Entrada: segun haya sesion o no, va a pacientes o al login.
-  fetch('/api/sesion').then(r => { window.location.replace(r.ok ? '/pacientes/index.html' : '/login/index.html'); })
+  // Entrada: con sesion va a la primera opcion del menu de su rol; sin sesion, al login.
+  fetch('/api/sesion').then(r => r.ok ? r.json() : null)
+    .then(s => { window.location.replace(s && s.menu && s.menu.length ? s.menu[0].ruta : '/login/index.html'); })
     .catch(() => { window.location.replace('/login/index.html'); });
 </script>
 </head>

@@ -22,7 +22,7 @@ El **servidor** decide el menú (`MenuService`) y lo entrega en `menu` dentro de
 | Médico | Inicio, Pacientes, Historia clínica, Registrar atención |
 | Enfermería | Inicio, Pacientes, Historia clínica (**sin** Registrar atención, RN-02) |
 | Paciente | Mi historial, Consentimiento |
-| Administrador del hospital (v5) | Inicio (tablero con gráficos), Usuarios y roles, Auditoría, Reportes |
+| Administrador del hospital (v5) | Inicio (tablero con gráficos), Auditoría. *Usuarios y roles (RF-11) y Reportes (RF-19) quedaron fuera del menú: no se construyen (recorte, 16 nov)* |
 | Administrador de plataforma (v5) | Hospitales |
 | Apoyo al diagnóstico | Sin casos de uso en el alcance: solo Mi perfil |
 | Todos | **Mi perfil** (al final) |
