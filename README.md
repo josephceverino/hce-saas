@@ -41,6 +41,12 @@ Requisito: JDK 21 o superior (el código compila a nivel 21). Maven viene inclui
 3. Entrar con `medico.a`: el menú trae Historia clínica y Registrar atención; las filas de Pacientes ganan "Ver historia". Con `paciente.a` el menú es Mi historial y Consentimiento, y con `plataforma` solo Hospitales.
 4. Pantallas aún sin construir (Historia, Atención, Mi historial, Consentimiento, Auditoría, Hospitales y Mi perfil) dan 404 hasta los siguientes bloques.
 
+## Cómo probar (pantallas 2: historia clínica y atención; A-4 y A-3)
+1. `./mvnw spring-boot:run`, abrir `http://localhost:8090` y entrar con `medico.a` (clave `demo123`).
+2. **Pacientes > Ver historia:** cabecera con iniciales, alergias en rojo, antecedentes y línea de tiempo. Las atenciones cerradas llevan candado y solo ofrecen "Agregar enmienda".
+3. **Registrar atención:** elige un paciente, abre la atención, agrega un diagnóstico (busca por código o nombre CIE-10) y un tratamiento, y ciérrala con el modal de confirmación. Al cerrar desaparecen los formularios de edición (RN-03).
+4. Entra con `medico.b` y abre la historia 1: se muestra el mensaje de otro establecimiento y ningún dato (RN-06). Con `enfermera.a` se ve la historia sin el botón de registrar atención.
+
 ## Cómo probar (v5: paquete portable)
 Requisito en la PC donde se arma: JDK 21 a 25 (no basta el JRE). La PC de la demo no necesita Java.
 1. Doble clic en `empaquetar.bat` (o `empaquetar.bat` en una consola). Corre los tests, construye `dist\HCE-Demo\HCE-Demo.exe` con el Java incluido (`jpackage`) y genera `dist\HCE-Demo.zip` (unos 75 MB).
