@@ -31,8 +31,8 @@ Las decisiones tomadas sin respaldo en los documentos están en `DECISIONES_PEND
 - [x] R3b.1 El médico inicia la atención desde la cola (LISTO → EN_ATENCION), atención ampliada (enfermedad actual, funciones biológicas, examen por sistemas) y el cierre de la atención cierra la admisión (RN-13); 5 tests (207 en total). Decisión D-40.
 - [x] R3b.2 Pedido de exámenes (CU-22, RF-25; RN-18): tabla `solicitud_examen`, formulario en la atención abierta, lista en la atención y la historia.
 - [x] R3b.3 Resultados (CU-23, RF-09; RN-18, RN-06): P-12 `/examenes/` para apoyo al diagnóstico, tabla `resultado_examen`, cifras reales en su Inicio; 6 tests (213 en total). Decisión D-41.
-- [ ] R3b.4 Cierre de la atención
-- [ ] R3b.5 Recorrido Playwright pasos 6 a 8 y regenerar `script_sqlserver.sql`
+- [x] R3b.4 Cierre de la atención: cerrarla pasa la admisión a ATENCION_CERRADA y la atención cerrada no se edita (RN-03); quedó cubierto por los tests de R3b.1 y el paso 8 del recorrido.
+- [x] R3b.5 `npm run recorrido -- 8` recorre los pasos 1 a 8 con 28 verificaciones y sin errores de consola; capturas paso6_ a paso8_ en `docs/capturas/`. `docs/script_sqlserver.sql` actualizado (admision, signos_vitales, solicitud_examen y columnas nuevas; sin probar en SQL Server).
 
 ## Resumen al parar (cierre de R2) (checklist completo, 0 ítems bloqueados)
 

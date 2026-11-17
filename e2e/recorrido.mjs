@@ -199,6 +199,89 @@ const pasos = {
     const medico = await nuevaPagina();
     await colaDelMedico(medico);
     await medico.context().close();
+  },
+
+  /** Paso 6 (CU-05 ampliado, CU-08, CU-22): el medico inicia la atencion desde la cola, diagnostica, indica y pide un examen. */
+  async 6(page) {
+    await entrarConClave(page, datos.personal.MEDICO.usuario, 'Medico2026');
+    await captura(page, 'paso6_inicio_medico', false);
+    await page.goto(BASE + '/cola/');
+    await page.waitForLoadState('networkidle');
+    await captura(page, 'paso6_P-09_cola_medico', false);
+    await page.click('#cuerpo tr:first-child a:has-text("Iniciar atención")');
+    await page.waitForSelector('#nueva:not([hidden])');
+    verificar(await page.isVisible('#enfermedadActual'), 'desde la cola aparecen los campos ampliados de la atención');
+    await page.fill('#motivo', 'Dolor torácico opresivo de 2 horas');
+    await page.fill('#enfermedadActual', 'Dolor retroesternal que se irradia al brazo izquierdo, con sudoración');
+    await page.fill('#anamnesis', 'Paciente con hipertensión arterial; refiere dolor desde hace 2 horas.');
+    await page.fill('#funcionesBiologicas', 'Apetito conservado, sueño alterado, orina normal');
+    await page.fill('#examenFisico', 'Ansioso, sudoroso, ruidos cardíacos rítmicos');
+    await page.fill('#examenSistemas', 'Cardiovascular: sin soplos. Respiratorio: murmullo vesicular conservado.');
+    await captura(page, 'paso6_P-03_atencion_ampliada', true);
+    await page.click('#formNueva button[type=submit]');
+    await page.waitForURL('**/atencion/?id=*');
+    await page.waitForSelector('#atencion:not([hidden])');
+    datos.atencionUrl = page.url();
+    await page.fill('#cie10', 'J02.9');
+    await page.click('#formDiagnostico button[type=submit]');
+    await page.waitForSelector('#mensajeDiagnostico.ok');
+    await page.fill('#medicamento', 'Paracetamol');
+    await page.fill('#dosis', '500 mg cada 8 horas');
+    await page.fill('#duracion', '3 días');
+    await page.fill('#indicacion', 'Reposo relativo y control en 48 horas');
+    await page.click('#formTratamiento button[type=submit]');
+    await page.waitForSelector('#mensajeTratamiento.ok');
+    await page.fill('#tipoExamen', 'Hemograma completo');
+    await page.fill('#indicacionesExamen', 'Urgente');
+    await page.click('#formExamen button[type=submit]');
+    await page.waitForSelector('#mensajeExamen.ok');
+    const detalle = await page.textContent('#detalle');
+    verificar(detalle.includes('Enfermedad actual') && detalle.includes('Examen por sistemas'), 'la atención guarda los datos ampliados');
+    verificar(detalle.includes('Hemograma completo') && detalle.includes('pendiente de resultado'), 'el examen pedido figura pendiente en la atención');
+    await captura(page, 'paso6_P-03_atencion_con_examen', true);
+    await page.goto(BASE + '/cola/');
+    await page.waitForLoadState('networkidle');
+    verificar((await page.textContent('#cuerpo')).includes('En atención'), 'la admisión pasó a "en atención"');
+  },
+
+  /** Paso 7 (CU-23): apoyo al diagnostico ve el examen pendiente de su hospital y registra el resultado. */
+  async 7(page) {
+    const a = datos.personal.APOYO_DIAGNOSTICO;
+    await entrarConTemporal(page, a.usuario, a.clave, 'Apoyo2026');
+    await captura(page, 'paso7_inicio_apoyo', false);
+    await page.goto(BASE + '/examenes/');
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('#cuerpo tr');
+    const fila = await page.textContent('#cuerpo tr:first-child');
+    verificar(fila.includes('Vargas León') && fila.includes('Hemograma completo'), 'apoyo ve el examen pendiente con su paciente');
+    await captura(page, 'paso7_P-12_examenes_pendientes', false);
+    await page.click('#cuerpo tr:first-child button:has-text("Registrar resultado")');
+    await page.waitForSelector('.hce-modal textarea');
+    await page.fill('.hce-modal textarea', 'Hemoglobina 13,2 g/dL; leucocitos 11 200 por microlitro');
+    await captura(page, 'paso7_P-12_resultado', false);
+    await page.click('.hce-modal .primario');
+    await page.waitForSelector('#mensaje.ok');
+    verificar((await page.textContent('#pestanas')).includes('Con resultado 1'), 'el examen pasa a "con resultado"');
+    await captura(page, 'paso7_P-12_examenes_resueltos', false);
+  },
+
+  /** Paso 8 (CU-05, RN-03): el medico ve el resultado en la atencion, la cierra y ya no se puede editar. */
+  async 8(page) {
+    await entrarConClave(page, datos.personal.MEDICO.usuario, 'Medico2026');
+    await page.goto(datos.atencionUrl);
+    await page.waitForSelector('#atencion:not([hidden])');
+    const antes = await page.textContent('#detalle');
+    verificar(antes.includes('Hemoglobina 13,2'), 'el médico ve el resultado del examen en la atención');
+    await captura(page, 'paso8_P-03_resultado_visible', true);
+    await page.click('#cerrar');
+    await page.click('.hce-modal .primario');
+    await page.waitForFunction(() => document.getElementById('estadoAtencion').textContent === 'Cerrada');
+    verificar(await page.isHidden('#edicion'), 'la atención cerrada ya no muestra formularios de edición (RN-03)');
+    verificar(await page.isVisible('#enmienda'), 'la corrección posterior es por enmienda');
+    await captura(page, 'paso8_P-03_atencion_cerrada', true);
+    await page.goto(BASE + '/cola/');
+    await page.waitForLoadState('networkidle');
+    verificar(!(await page.textContent('#cuerpo')).includes('Vargas León'), 'el paciente sale de la cola del médico al cerrar');
   }
 };
 

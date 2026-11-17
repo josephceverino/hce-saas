@@ -7,7 +7,7 @@ Usan el Chrome instalado en la PC (`playwright-core`, sin descargar navegadores)
 1. Una sola vez: `cd e2e` y `npm install`.
 2. Arranca la aplicación **con una base nueva** (solo existe `admin` / `Temporal2026`). Por ejemplo, en el puerto 8191 y en memoria:
    `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8191 --spring.datasource.url=jdbc:h2:mem:recorrido"`
-3. En otra terminal: `cd e2e` y `npm run recorrido -- 5` (el número es el último paso a recorrer; sin número recorre todos los que existan).
+3. En otra terminal: `cd e2e` y `npm run recorrido -- 8` (el número es el último paso a recorrer; sin número recorre todos los que existan).
    Otra URL: `set HCE_URL=http://localhost:8090` antes del comando.
 
 ## Qué verifica
@@ -17,5 +17,8 @@ Cada paso imprime `ok:` por cada comprobación. Si una falla, se detiene con el 
 - Paso 3: admisión registra a una paciente con filiación completa; se abre su historia y su cuenta del portal.
 - Paso 4: admisión registra a un segundo paciente y admite a los dos (consulta externa y emergencia).
 - Paso 5: enfermería ve la cola con la emergencia primero, toma al paciente, registra signos vitales (un valor imposible se rechaza), antecedentes y una alergia, y lo deja listo; el médico lo ve en su cola y no ve a quien aún no pasó por enfermería.
+- Paso 6: el médico inicia la atención desde la cola (campos ampliados), agrega diagnóstico y tratamiento y pide un examen; la admisión queda "en atención".
+- Paso 7: apoyo al diagnóstico ve el examen pendiente de su hospital y registra el resultado.
+- Paso 8: el médico ve el resultado, cierra la atención (sin formularios de edición, solo enmienda) y el paciente sale de su cola.
 
-Recorrido completo actual: `npm run recorrido -- 5` (unos 40 segundos). Cada corrida necesita una base nueva.
+Recorrido completo actual: `npm run recorrido -- 8` (unos 70 segundos). Cada corrida necesita una base nueva.

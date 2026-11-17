@@ -1,5 +1,7 @@
 -- Script de creación de la base de datos (SQL Server)
 -- Generado a partir del modelo lógico 3.4.2 (3FN). Revisar antes de ejecutar.
+-- Actualizado el 17-nov-2026 con las tablas del plan v3 (admision, signos_vitales, solicitud_examen) y las columnas nuevas.
+-- Sin probar en SQL Server: la demo usa H2 y el esquema que genera JPA.
 
 CREATE DATABASE hce_saas;
 GO
@@ -58,6 +60,11 @@ CREATE TABLE usuario (
     contrasena_hash VARCHAR(255) NOT NULL,
     estado VARCHAR(20) NOT NULL,
     ultimo_acceso DATETIME NULL,
+    debe_cambiar_clave BIT NOT NULL DEFAULT 0, -- RN-14
+    nombre_completo VARCHAR(150) NULL,
+    documento VARCHAR(20) NULL,
+    correo VARCHAR(100) NULL,
+    clave_restablecida_en DATETIME NULL, -- CU-26
     CONSTRAINT pk_usuario PRIMARY KEY (id_usuario)
 );
 GO
@@ -86,6 +93,15 @@ CREATE TABLE paciente (
     telefono VARCHAR(20) NOT NULL,
     correo VARCHAR(100) NOT NULL,
     direccion VARCHAR(200) NOT NULL,
+    lugar_nacimiento VARCHAR(100) NULL,
+    procedencia VARCHAR(100) NULL,
+    estado_civil VARCHAR(30) NULL,
+    grado_instruccion VARCHAR(40) NULL,
+    ocupacion VARCHAR(100) NULL,
+    religion VARCHAR(60) NULL,
+    contacto_emergencia_nombre VARCHAR(150) NULL,
+    contacto_emergencia_parentesco VARCHAR(40) NULL,
+    contacto_emergencia_telefono VARCHAR(20) NULL,
     CONSTRAINT pk_paciente PRIMARY KEY (id_paciente)
 );
 GO
@@ -122,6 +138,10 @@ CREATE TABLE atencion (
     anamnesis TEXT NOT NULL,
     examen_fisico TEXT NOT NULL,
     estado VARCHAR(20) NOT NULL,
+    id_admision INT NULL, -- CU-05 ampliado
+    enfermedad_actual TEXT NULL,
+    funciones_biologicas TEXT NULL,
+    examen_sistemas TEXT NULL,
     CONSTRAINT pk_atencion PRIMARY KEY (id_atencion)
 );
 GO
@@ -167,6 +187,47 @@ CREATE TABLE tratamiento (
 );
 GO
 
+CREATE TABLE admision ( -- CU-20, RF-21, RF-22; RN-13
+    id_admision INT IDENTITY(1,1) NOT NULL,
+    id_historia_clinica INT NOT NULL,
+    id_establecimiento INT NOT NULL,
+    tipo_atencion VARCHAR(20) NOT NULL, -- CONSULTA_EXTERNA / EMERGENCIA
+    estado VARCHAR(25) NOT NULL, -- ADMITIDO, EN_ENFERMERIA, LISTO_PARA_ATENCION, EN_ATENCION, ATENCION_CERRADA, CANCELADO
+    fecha_hora_admision DATETIME NOT NULL,
+    id_usuario_admite INT NOT NULL,
+    fecha_hora_estado DATETIME NOT NULL,
+    CONSTRAINT pk_admision PRIMARY KEY (id_admision)
+);
+GO
+
+CREATE TABLE signos_vitales ( -- CU-21; RN-17
+    id_signos_vitales INT IDENTITY(1,1) NOT NULL,
+    id_admision INT NOT NULL,
+    presion_sistolica INT NOT NULL,
+    presion_diastolica INT NOT NULL,
+    frecuencia_cardiaca INT NOT NULL,
+    frecuencia_respiratoria INT NOT NULL,
+    temperatura DECIMAL(4,1) NOT NULL,
+    saturacion_oxigeno INT NOT NULL,
+    fecha_hora DATETIME NOT NULL,
+    id_usuario INT NOT NULL,
+    CONSTRAINT pk_signos_vitales PRIMARY KEY (id_signos_vitales)
+);
+GO
+
+CREATE TABLE solicitud_examen ( -- CU-22; RN-18
+    id_solicitud_examen INT IDENTITY(1,1) NOT NULL,
+    id_atencion INT NOT NULL,
+    id_establecimiento INT NOT NULL,
+    id_profesional_salud INT NOT NULL,
+    tipo_examen VARCHAR(100) NOT NULL,
+    indicaciones TEXT NULL,
+    estado VARCHAR(25) NOT NULL, -- SOLICITADO / RESULTADO_REGISTRADO
+    fecha_hora DATETIME NOT NULL,
+    CONSTRAINT pk_solicitud_examen PRIMARY KEY (id_solicitud_examen)
+);
+GO
+
 CREATE TABLE resultado_examen (
     id_resultado_examen INT IDENTITY(1,1) NOT NULL,
     id_atencion INT NOT NULL,
@@ -174,7 +235,8 @@ CREATE TABLE resultado_examen (
     tipo_examen VARCHAR(100) NOT NULL,
     fecha DATE NOT NULL,
     resultado TEXT NOT NULL,
-    archivo_adjunto VARCHAR(255) NOT NULL,
+    archivo_adjunto VARCHAR(255) NULL, -- opcional en la demo (D-41)
+    id_solicitud_examen INT NOT NULL, -- RN-18
     CONSTRAINT pk_resultado_examen PRIMARY KEY (id_resultado_examen)
 );
 GO
@@ -244,6 +306,17 @@ ALTER TABLE antecedente ADD CONSTRAINT fk_antecedente_id_historia_clinica FOREIG
 ALTER TABLE alergia ADD CONSTRAINT fk_alergia_id_historia_clinica FOREIGN KEY (id_historia_clinica) REFERENCES historia_clinica(id_historia_clinica);
 ALTER TABLE diagnostico ADD CONSTRAINT fk_diagnostico_id_atencion FOREIGN KEY (id_atencion) REFERENCES atencion(id_atencion);
 ALTER TABLE tratamiento ADD CONSTRAINT fk_tratamiento_id_atencion FOREIGN KEY (id_atencion) REFERENCES atencion(id_atencion);
+ALTER TABLE atencion ADD CONSTRAINT fk_atencion_id_admision FOREIGN KEY (id_admision) REFERENCES admision(id_admision);
+ALTER TABLE admision ADD CONSTRAINT fk_admision_id_historia_clinica FOREIGN KEY (id_historia_clinica) REFERENCES historia_clinica(id_historia_clinica);
+ALTER TABLE admision ADD CONSTRAINT fk_admision_id_establecimiento FOREIGN KEY (id_establecimiento) REFERENCES establecimiento(id_establecimiento);
+ALTER TABLE admision ADD CONSTRAINT fk_admision_id_usuario_admite FOREIGN KEY (id_usuario_admite) REFERENCES usuario(id_usuario);
+ALTER TABLE signos_vitales ADD CONSTRAINT fk_signos_vitales_id_admision FOREIGN KEY (id_admision) REFERENCES admision(id_admision);
+ALTER TABLE signos_vitales ADD CONSTRAINT fk_signos_vitales_id_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario);
+ALTER TABLE solicitud_examen ADD CONSTRAINT fk_solicitud_examen_id_atencion FOREIGN KEY (id_atencion) REFERENCES atencion(id_atencion);
+ALTER TABLE solicitud_examen ADD CONSTRAINT fk_solicitud_examen_id_establecimiento FOREIGN KEY (id_establecimiento) REFERENCES establecimiento(id_establecimiento);
+ALTER TABLE solicitud_examen ADD CONSTRAINT fk_solicitud_examen_id_profesional_salud FOREIGN KEY (id_profesional_salud) REFERENCES profesional_salud(id_profesional_salud);
+ALTER TABLE resultado_examen ADD CONSTRAINT fk_resultado_examen_id_solicitud_examen FOREIGN KEY (id_solicitud_examen) REFERENCES solicitud_examen(id_solicitud_examen);
+ALTER TABLE resultado_examen ADD CONSTRAINT uq_resultado_solicitud UNIQUE (id_solicitud_examen); -- RN-18
 ALTER TABLE resultado_examen ADD CONSTRAINT fk_resultado_examen_id_atencion FOREIGN KEY (id_atencion) REFERENCES atencion(id_atencion);
 ALTER TABLE resultado_examen ADD CONSTRAINT fk_resultado_examen_id_profesional_salud FOREIGN KEY (id_profesional_salud) REFERENCES profesional_salud(id_profesional_salud);
 ALTER TABLE enmienda ADD CONSTRAINT fk_enmienda_id_atencion FOREIGN KEY (id_atencion) REFERENCES atencion(id_atencion);
